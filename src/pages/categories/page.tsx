@@ -1,0 +1,129 @@
+import { Link } from "react-router-dom";
+import Navbar from "@/components/feature/Navbar";
+import Footer from "@/components/feature/Footer";
+import { categories } from "@/mocks/categories";
+import { getStandardProviders } from "@/mocks/providerStandards";
+import { providers } from "@/mocks/providers";
+
+const accentStyles = {
+  primary: "bg-primary-50 text-primary-600",
+  secondary: "bg-secondary-100 text-secondary-700",
+  accent: "bg-accent-100 text-accent-700",
+};
+
+function getCategoryProviderCount(standardIds: string[]): number {
+  if (standardIds.length === 0) return 0;
+  const ids = new Set<string>();
+  standardIds.forEach((sid) => {
+    getStandardProviders(sid).forEach((ps) => ids.add(ps.provider_id));
+  });
+  return ids.size;
+}
+
+export default function Categories() {
+  return (
+    <div className="min-h-screen bg-background-50">
+      <Navbar />
+
+      {/* Hero */}
+      <section className="relative w-full overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://readdy.ai/api/search-image?query=Professionals%20organizing%20documents%20and%20browsing%20categories%20together%20on%20a%20large%20screen%20in%20a%20modern%20office%2C%20collaborative%20and%20focused%2C%20warm%20natural%20light%2C%20soft%20cream%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20photography%2C%20high%20detail%2C%20realistic%20organized%20professional%20atmosphere&width=1800&height=700&seq=categories-hero&orientation=landscape&nocache=true"
+            alt="Abstract background representing apprenticeship categories"
+            className="w-full h-full object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+        <div className="relative z-10 w-full px-4 md:px-6 lg:px-8 py-20 md:py-28">
+          <div className="max-w-6xl mx-auto">
+            <h1 className="font-heading text-3xl md:text-4xl font-bold text-white">
+              Apprenticeship categories
+            </h1>
+            <p className="mt-3 text-sm md:text-base text-white/90 max-w-2xl">
+              Browse training providers and reviews by apprenticeship sector. More categories are added as the platform grows.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories grid */}
+      <section className="w-full bg-background-50">
+        <div className="w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+              {categories.map((cat) => {
+                const providerCount = getCategoryProviderCount(cat.standard_ids);
+                return (
+                  <div
+                    key={cat.id}
+                    className="group relative p-6 bg-background-50 border border-background-200/70 rounded-2xl hover:-translate-y-1 hover:border-primary-200 transition-all duration-300 flex flex-col"
+                  >
+                    <div className={`w-14 h-14 flex items-center justify-center rounded-2xl mb-4 ${accentStyles[cat.accent]}`}>
+                      <i className={`${cat.icon} text-2xl`} />
+                    </div>
+                    <h3 className="font-heading text-lg font-bold text-foreground-900 mb-2 group-hover:text-primary-600 transition-colors">
+                      {cat.name}
+                    </h3>
+                    <p className="text-sm text-foreground-500 leading-relaxed mb-5 flex-1">
+                      {cat.description}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-background-200/60">
+                      <span className="text-xs font-medium text-foreground-500">
+                        {providerCount > 0
+                          ? `${providerCount} provider${providerCount !== 1 ? "s" : ""}`
+                          : "Coming soon"}
+                      </span>
+                      {providerCount > 0 ? (
+                        <Link
+                          to={`/providers?sector=${encodeURIComponent(cat.name)}`}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 whitespace-nowrap"
+                        >
+                          Browse
+                          <i className="ri-arrow-right-line text-xs group-hover:translate-x-0.5 transition-transform" />
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-foreground-400">No providers yet</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="w-full bg-primary-600">
+        <div className="w-full px-4 md:px-6 lg:px-8 py-14 md:py-16">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-white mb-3">
+              Not sure which category fits you?
+            </h2>
+            <p className="text-white/90 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+              Browse all providers or compare a shortlist side by side to find the right training partner for your apprenticeship.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link
+                to="/providers"
+                className="w-full sm:w-auto px-8 py-3.5 bg-background-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-background-100 transition-colors whitespace-nowrap"
+              >
+                Find a Provider
+              </Link>
+              <Link
+                to="/compare"
+                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-full border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+              >
+                Compare Providers
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+}

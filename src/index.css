@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import './lib/special-effects/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-label: 'Inter', system-ui, sans-serif;
+
+  --background-50: 0.97 0.005 260;
+  --background-100: 0.95 0.008 260;
+  --background-200: 0.90 0.012 258;
+  --background-300: 0.82 0.015 257;
+  --background-400: 0.70 0.018 257;
+  --background-500: 0.55 0.020 256;
+  --background-600: 0.43 0.018 256;
+  --background-700: 0.35 0.016 257;
+  --background-800: 0.28 0.014 258;
+  --background-900: 0.22 0.012 259;
+  --background-950: 0.14 0.010 261;
+
+  --primary-50: 0.96 0.015 250;
+  --primary-100: 0.93 0.035 251;
+  --primary-200: 0.86 0.065 250;
+  --primary-300: 0.78 0.095 249;
+  --primary-400: 0.70 0.115 248;
+  --primary-500: 0.58 0.22 250;
+  --primary-600: 0.52 0.20 250;
+  --primary-700: 0.46 0.18 250;
+  --primary-800: 0.40 0.16 250;
+  --primary-900: 0.34 0.14 250;
+  --primary-950: 0.28 0.12 250;
+
+  --accent-50: 0.97 0.02 245;
+  --accent-100: 0.94 0.04 244;
+  --accent-200: 0.88 0.08 243;
+  --accent-300: 0.80 0.12 242;
+  --accent-400: 0.72 0.15 241;
+  --accent-500: 0.65 0.18 240;
+  --accent-600: 0.58 0.16 240;
+  --accent-700: 0.50 0.14 240;
+  --accent-800: 0.42 0.12 240;
+  --accent-900: 0.35 0.10 240;
+  --accent-950: 0.28 0.08 240;
+
+  --secondary-50: 0.96 0.01 255;
+  --secondary-100: 0.92 0.02 254;
+  --secondary-200: 0.84 0.04 253;
+  --secondary-300: 0.75 0.06 252;
+  --secondary-400: 0.65 0.08 251;
+  --secondary-500: 0.55 0.10 250;
+  --secondary-600: 0.48 0.09 250;
+  --secondary-700: 0.40 0.08 250;
+  --secondary-800: 0.34 0.07 250;
+  --secondary-900: 0.28 0.06 250;
+  --secondary-950: 0.22 0.05 250;
+
+  --foreground-50: 0.978 0.003 264;
+  --foreground-100: 0.935 0.012 260;
+  --foreground-200: 0.865 0.024 258;
+  --foreground-300: 0.785 0.034 257;
+  --foreground-400: 0.65 0.04 257;
+  --foreground-500: 0.55 0.04 257;
+  --foreground-600: 0.43 0.035 256;
+  --foreground-700: 0.35 0.03 257;
+  --foreground-800: 0.25 0.025 258;
+  --foreground-900: 0.18 0.02 259;
+  --foreground-950: 0.12 0.015 261;
+}
+
+:root.dark {
+  --background-50: 0.16 0.012 259;
+  --background-100: 0.20 0.013 259;
+  --background-200: 0.25 0.014 258;
+  --background-300: 0.32 0.016 257;
+  --background-400: 0.40 0.018 257;
+  --background-500: 0.50 0.020 256;
+  --background-600: 0.60 0.018 256;
+  --background-700: 0.70 0.016 257;
+  --background-800: 0.80 0.014 258;
+  --background-900: 0.88 0.012 260;
+  --background-950: 0.94 0.010 261;
+
+  --foreground-50: 0.14 0.015 261;
+  --foreground-100: 0.20 0.02 259;
+  --foreground-200: 0.28 0.025 258;
+  --foreground-300: 0.38 0.03 257;
+  --foreground-400: 0.50 0.04 257;
+  --foreground-500: 0.60 0.04 257;
+  --foreground-600: 0.70 0.04 257;
+  --foreground-700: 0.80 0.034 257;
+  --foreground-800: 0.88 0.024 258;
+  --foreground-900: 0.94 0.012 260;
+  --foreground-950: 0.978 0.003 264;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #05122b oklch(var(--background-100));
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(var(--background-100));
+}
+::-webkit-scrollbar-thumb {
+  background: #05122b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0a1f47;
+}
+::-webkit-scrollbar-corner {
+  background: oklch(var(--background-100));
+}
+
+:root.dark {
+  scrollbar-color: oklch(var(--background-600)) oklch(var(--background-100));
+}
+:root.dark ::-webkit-scrollbar-thumb {
+  background: oklch(var(--background-600));
+}
+:root.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--background-700));
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: oklch(var(--background-50));
+  color: oklch(var(--foreground-900));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.honeypot-field {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
