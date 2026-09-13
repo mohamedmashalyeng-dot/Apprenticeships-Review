@@ -1,9 +1,12 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
-import { categories } from "@/mocks/categories";
-import { getStandardProviders } from "@/mocks/providerStandards";
-import { providers } from "@/mocks/providers";
+import LoadingIndicator from "@/components/base/LoadingIndicator";
+import { getCategories } from "@/services/categories.service";
+import { getCompanies } from "@/services/companies.service";
+import type { ApprenticeshipCategory } from "@/types/category";
+import type { Provider } from "@/types/provider";
 
 const accentStyles = {
   primary: "bg-primary-50 text-primary-600",
@@ -11,16 +14,20 @@ const accentStyles = {
   accent: "bg-accent-100 text-accent-700",
 };
 
-function getCategoryProviderCount(standardIds: string[]): number {
-  if (standardIds.length === 0) return 0;
-  const ids = new Set<string>();
-  standardIds.forEach((sid) => {
-    getStandardProviders(sid).forEach((ps) => ids.add(ps.provider_id));
-  });
-  return ids.size;
-}
-
 export default function Categories() {
+  const [categories, setCategories] = useState<ApprenticeshipCategory[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getCategories(), getCompanies()])
+      .then(([cats, companies]) => {
+        setCategories(cats);
+        setProviders(companies);
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
+
   return (
     <div className="min-h-screen bg-background-50">
       <Navbar />
@@ -51,9 +58,14 @@ export default function Categories() {
       <section className="w-full bg-background-50">
         <div className="w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
           <div className="max-w-6xl mx-auto">
+            {isLoading ? (
+              <div className="py-16">
+                <LoadingIndicator />
+              </div>
+            ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
               {categories.map((cat) => {
-                const providerCount = getCategoryProviderCount(cat.standard_ids);
+                const providerCount = providers.filter((p) => p.category_names.includes(cat.name)).length;
                 return (
                   <div
                     key={cat.id}
@@ -91,6 +103,7 @@ export default function Categories() {
                 );
               })}
             </div>
+            )}
           </div>
         </div>
       </section>

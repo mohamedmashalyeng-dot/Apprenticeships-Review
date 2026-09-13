@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { submitReport, type ReportReason } from "@/services/reports.service";
 
 interface ReportReviewModalProps {
   reviewId: string;
@@ -19,10 +20,19 @@ export default function ReportReviewModal({ reviewId, reviewTitle, onClose }: Re
   const [selectedReason, setSelectedReason] = useState("");
   const [details, setDetails] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = () => {
-    if (!selectedReason) return;
-    setSubmitted(true);
+    if (!selectedReason || isSubmitting) return;
+    setIsSubmitting(true);
+    submitReport({
+      reviewId,
+      reason: selectedReason as ReportReason,
+      details: details.trim() || undefined,
+    })
+      .then(() => setSubmitted(true))
+      .catch((err) => console.error(err))
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -102,10 +112,10 @@ export default function ReportReviewModal({ reviewId, reviewTitle, onClose }: Re
 
               <button
                 onClick={handleSubmit}
-                disabled={!selectedReason}
+                disabled={!selectedReason || isSubmitting}
                 className="mt-5 w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
               >
-                Submit report
+                {isSubmitting ? "Submitting..." : "Submit report"}
               </button>
             </div>
           </>

@@ -24,7 +24,7 @@ export default function AboutSection() {
               </h2>
               <p className="text-sm md:text-base text-foreground-600 leading-relaxed mb-4">
                 Choosing an apprenticeship provider is one of the most important decisions a young person
-                or employer can make — yet most people do it with very little information. Providers look
+                or employer can make, yet most people do it with very little information. Providers look
                 similar on paper, marketing claims are hard to verify, and genuine feedback is scattered
                 or hard to find.
               </p>

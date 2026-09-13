@@ -4,7 +4,6 @@ import { useTheme } from "@/hooks/useTheme";
 
 const exploreLinks = [
   { label: "Find a Provider", href: "/providers" },
-  { label: "Categories", href: "/categories" },
   { label: "Top Rated", href: "/top-rated" },
   { label: "Compare", href: "/compare" },
 ];
@@ -47,6 +46,16 @@ export default function Footer() {
 
   return (
     <>
+      {/* Add a review */}
+      <Link
+        to="/add-review"
+        aria-label="Write a review"
+        title="Write a review"
+        className="fixed bottom-36 right-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-primary-500 text-white shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-primary-600 transition-all duration-300 cursor-pointer"
+      >
+        <i className="ri-pencil-line text-lg" />
+      </Link>
+
       {/* Dark mode toggle */}
       <button
         onClick={toggleTheme}
@@ -67,7 +76,7 @@ export default function Footer() {
         <i className="ri-arrow-up-line text-lg" />
       </button>
 
-      <footer className="w-full bg-background-50 relative overflow-hidden">
+      <footer className="w-full relative overflow-hidden" style={{ backgroundColor: "#05122b" }}>
         {/* Soft professional shadow rising upward */}
         <div className="pointer-events-none absolute inset-x-0 -top-10 h-10 bg-gradient-to-t from-background-200/40 via-background-200/15 to-transparent" />
 
@@ -96,7 +105,7 @@ export default function Footer() {
           />
         </div>
 
-        <div className="border-t border-background-200">
+        <div className="border-t border-white/10">
           <div className="relative max-w-6xl mx-auto px-4 md:px-6 lg:px-8 pt-14 pb-10">
             <div className="flex flex-col items-center text-center">
               {/* Logo */}
@@ -104,23 +113,23 @@ export default function Footer() {
                 <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary-500 text-white">
                   <i className="ri-star-fill text-base" />
                 </div>
-                <span className="font-heading text-lg font-bold tracking-tight text-foreground-900">
-                  Apprenticeships <span className="text-primary-500">Reviews</span>
+                <span className="font-heading text-lg font-bold tracking-tight text-white">
+                  Apprenticeships <span className="text-primary-400">Reviews</span>
                 </span>
               </Link>
 
-              <p className="text-sm text-foreground-500 max-w-sm leading-relaxed mb-8">
+              <p className="text-sm text-white/60 max-w-sm leading-relaxed mb-8">
                 Independent reviews and ratings for UK apprenticeship providers. Trusted by thousands of learners and employers.
               </p>
 
               {/* Page links */}
               <div className="grid grid-cols-3 gap-x-10 gap-y-8 w-full max-w-2xl">
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground-400 mb-3">Explore</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Explore</h4>
                   <ul className="flex flex-col gap-2">
                     {exploreLinks.map((link) => (
                       <li key={link.href}>
-                        <Link to={link.href} className="text-sm text-foreground-600 hover:text-primary-500 transition-colors duration-200">
+                        <Link to={link.href} className="text-sm text-white/70 hover:text-primary-400 transition-colors duration-200">
                           {link.label}
                         </Link>
                       </li>
@@ -128,11 +137,11 @@ export default function Footer() {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground-400 mb-3">Reviews</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Reviews</h4>
                   <ul className="flex flex-col gap-2">
                     {reviewLinks.map((link) => (
                       <li key={link.href}>
-                        <Link to={link.href} className="text-sm text-foreground-600 hover:text-primary-500 transition-colors duration-200">
+                        <Link to={link.href} className="text-sm text-white/70 hover:text-primary-400 transition-colors duration-200">
                           {link.label}
                         </Link>
                       </li>
@@ -140,11 +149,11 @@ export default function Footer() {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground-400 mb-3">Company</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Company</h4>
                   <ul className="flex flex-col gap-2">
                     {companyLinks.map((link) => (
                       <li key={link.href}>
-                        <Link to={link.href} className="text-sm text-foreground-600 hover:text-primary-500 transition-colors duration-200">
+                        <Link to={link.href} className="text-sm text-white/70 hover:text-primary-400 transition-colors duration-200">
                           {link.label}
                         </Link>
                       </li>
@@ -160,7 +169,7 @@ export default function Footer() {
                     key={social.label}
                     href="#"
                     aria-label={social.label}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-background-100 text-foreground-400 hover:text-primary-500 hover:bg-primary-50 transition-colors duration-200"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/60 hover:text-white hover:bg-primary-500 transition-colors duration-200"
                   >
                     <i className={`${social.icon} text-sm`} />
                   </a>
@@ -170,15 +179,15 @@ export default function Footer() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="relative border-t border-background-200 px-4 md:px-6 lg:px-8 py-5">
+          <div className="relative border-t border-white/10 px-4 md:px-6 lg:px-8 py-5">
             <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3">
-              <p className="text-xs text-foreground-400">
+              <p className="text-xs text-white/40">
                 &copy; {new Date().getFullYear()} ApprenticeshipsReviews
               </p>
               <div className="flex items-center gap-5">
-                <Link to="/privacy-policy" className="text-xs text-foreground-400 hover:text-foreground-700 transition-colors">Privacy</Link>
-                <Link to="/terms" className="text-xs text-foreground-400 hover:text-foreground-700 transition-colors">Terms</Link>
-                <Link to="/review-policy" className="text-xs text-foreground-400 hover:text-foreground-700 transition-colors">Guidelines</Link>
+                <Link to="/privacy-policy" className="text-xs text-white/40 hover:text-white transition-colors">Privacy</Link>
+                <Link to="/terms" className="text-xs text-white/40 hover:text-white transition-colors">Terms</Link>
+                <Link to="/review-policy" className="text-xs text-white/40 hover:text-white transition-colors">Guidelines</Link>
               </div>
             </div>
           </div>

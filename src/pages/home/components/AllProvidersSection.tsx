@@ -9,6 +9,7 @@ interface MiniProvider {
   rating: number;
   reviews: number;
   logoUrl?: string;
+  website?: string;
   brandColor: string;
 }
 
@@ -46,9 +47,18 @@ function ProviderCard({ provider, idx }: { provider: MiniProvider; idx: number }
       {/* Top gradient line on hover */}
       <div className="card-top-line absolute top-[1px] left-4 right-4 h-0.5 rounded-full transition-all duration-400" />
 
-      {/* Brand identity — logo */}
+      {/* Brand identity — logo (links out to the provider's own website) */}
       <div className="relative flex items-center justify-center mb-4">
-        <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center overflow-visible group-hover:scale-110 transition-all duration-400 ease-out z-10">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (provider.website) window.open(provider.website, "_blank", "noopener,noreferrer");
+          }}
+          title={provider.website ? `Visit ${provider.name}'s website` : undefined}
+          className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center overflow-visible group-hover:scale-110 transition-all duration-400 ease-out z-10"
+        >
           {provider.logoUrl ? (
             <div className="w-20 h-20 flex items-center justify-center rounded-xl bg-white p-2" style={{ boxShadow: "0 1px 6px rgba(0,0,0,0.08)" }}>
               <img
@@ -65,7 +75,7 @@ function ProviderCard({ provider, idx }: { provider: MiniProvider; idx: number }
               {provider.initials}
             </div>
           )}
-        </div>
+        </button>
       </div>
 
       {/* Rating pill */}

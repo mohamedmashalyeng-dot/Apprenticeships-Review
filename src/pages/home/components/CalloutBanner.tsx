@@ -18,7 +18,7 @@ export default function CalloutBanner() {
         <div className="max-w-6xl mx-auto">
           <div className="relative flex flex-col md:flex-row items-center gap-6 md:gap-10 rounded-2xl bg-background-50/5 backdrop-blur-sm border border-background-50/15 p-6 md:p-9">
             {/* Icon */}
-            <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-2xl bg-accent-500 text-black">
+            <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-2xl bg-accent-500 text-white">
               <i className="ri-shield-check-line text-2xl" />
             </div>
 
@@ -36,7 +36,7 @@ export default function CalloutBanner() {
             <div className="flex items-center gap-6 flex-shrink-0">
               <Link
                 to="/compare"
-                className="px-7 py-3.5 bg-accent-500 text-black text-sm font-bold rounded-full hover:bg-accent-400 transition-colors whitespace-nowrap shadow-lg shadow-accent-500/20"
+                className="px-7 py-3.5 bg-white text-black text-sm font-bold rounded-full hover:bg-white/90 transition-colors whitespace-nowrap shadow-lg shadow-black/20"
               >
                 Start comparing providers
                 <i className="ri-arrow-right-line ml-2" />

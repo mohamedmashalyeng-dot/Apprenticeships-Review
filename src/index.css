@@ -157,3 +157,18 @@ body {
   overflow: hidden;
   pointer-events: none;
 }
+
+@keyframes star-fill-sweep {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  60% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.animate-star-fill-sweep {
+  animation: star-fill-sweep 1.4s ease-in-out infinite;
+}

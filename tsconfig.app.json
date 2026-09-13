@@ -26,7 +26,7 @@
     "strictPropertyInitialization": false,
     "noImplicitThis": false,
     "useUnknownInCatchVariables": false,
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "alwaysStrict": false,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": false,
@@ -36,4 +36,4 @@
     }
   },
   "include": ["src", "vite-env.d.ts"]
-}
+} 

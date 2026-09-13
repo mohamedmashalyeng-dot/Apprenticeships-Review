@@ -1,50 +1,44 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
 import StarRating from "@/components/base/StarRating";
-import { providers } from "@/mocks/providers";
-import { getProviderRating } from "@/mocks/ratings";
-import { categories } from "@/mocks/categories";
-import { getProviderStandards } from "@/mocks/providerStandards";
-
-function getProviderCategories(providerId: string): string[] {
-  const providerStds = getProviderStandards(providerId);
-  return categories
-    .filter((c) => c.standard_ids.some((sid) => providerStds.some((ps) => ps.standard_id === sid)))
-    .map((c) => c.name);
-}
+import LoadingIndicator from "@/components/base/LoadingIndicator";
+import { getCompanies } from "@/services/companies.service";
+import { getCategories } from "@/services/categories.service";
+import type { Provider } from "@/types/provider";
+import type { ApprenticeshipCategory } from "@/types/category";
 
 export default function TopRated() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [categories, setCategories] = useState<ApprenticeshipCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getCategories().then(setCategories);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    getCompanies({
+      sortBy: "rating",
+      categoryId: categoryFilter !== "all" ? categoryFilter : undefined,
+      level: levelFilter !== "all" ? parseInt(levelFilter) : undefined,
+    })
+      .then(setProviders)
+      .finally(() => setIsLoading(false));
+  }, [categoryFilter, levelFilter]);
 
   const rankedProviders = useMemo(() => {
-    const ranked = providers
-      .map((p) => {
-        const rating = getProviderRating(p.provider_id);
-        return {
-          ...p,
-          overall: rating?.overall ?? 0,
-          reviewCount: rating?.review_count ?? 0,
-          recommendation: rating?.recommendation_percent ?? 0,
-          providerCategories: getProviderCategories(p.provider_id),
-        };
-      })
-      // Only rank providers with genuine review data (at least a few reviews)
-      .filter((p) => p.reviewCount >= 5)
+    return providers
+      .filter((p) => p.total_reviews >= 5)
       .sort((a, b) => {
-        // Sort by overall rating, tie-break by review count
-        if (b.overall !== a.overall) return b.overall - a.overall;
-        return b.reviewCount - a.reviewCount;
+        if (b.average_rating !== a.average_rating) return b.average_rating - a.average_rating;
+        return b.total_reviews - a.total_reviews;
       });
-
-    let result = ranked;
-    if (categoryFilter !== "all") {
-      result = result.filter((p) => p.providerCategories.includes(categoryFilter));
-    }
-    return result;
-  }, [categoryFilter, levelFilter]);
+  }, [providers]);
 
   const hasFilters = categoryFilter !== "all" || levelFilter !== "all";
 
@@ -86,7 +80,7 @@ export default function TopRated() {
             >
               <option value="all">All categories</option>
               {categories.map((c) => (
-                <option key={c.id} value={c.name}>{c.name}</option>
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
             {hasFilters && (
@@ -108,7 +102,11 @@ export default function TopRated() {
       <section className="w-full bg-background-50">
         <div className="w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
           <div className="max-w-3xl mx-auto">
-            {rankedProviders.length > 0 ? (
+            {isLoading ? (
+              <div className="py-16">
+                <LoadingIndicator />
+              </div>
+            ) : rankedProviders.length > 0 ? (
               <div className="flex flex-col gap-3">
                 {rankedProviders.map((p, idx) => (
                   <Link
@@ -133,18 +131,19 @@ export default function TopRated() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-semibold text-foreground-900 truncate">{p.trading_name}</h3>
                       <p className="text-xs text-foreground-500 mt-0.5 truncate">
-                        {p.providerCategories.join(", ") || p.location}
+                        {p.category_names.join(", ") || p.location}
                       </p>
                     </div>
 
                     {/* Rating */}
                     <div className="flex flex-col items-end flex-shrink-0">
                       <div className="flex items-center gap-1.5">
-                        <StarRating rating={p.overall} size="sm" />
-                        <span className="text-sm font-bold text-foreground-900">{p.overall.toFixed(1)}</span>
+                        <StarRating rating={p.average_rating} size="sm" />
+                        <span className="text-sm font-bold text-foreground-900">{p.average_rating.toFixed(1)}</span>
                       </div>
                       <span className="text-xs text-foreground-500 mt-0.5">
-                        {p.reviewCount} reviews · {p.recommendation}% recommend
+                        {p.total_reviews} reviews
+                        {p.recommendation_percent != null && ` · ${p.recommendation_percent}% recommend`}
                       </span>
                     </div>
                   </Link>

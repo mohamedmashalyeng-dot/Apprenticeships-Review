@@ -1,27 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
 import StarRating from "@/components/base/StarRating";
+import VerifiedBadge from "@/components/base/VerifiedBadge";
+import LoadingIndicator from "@/components/base/LoadingIndicator";
+import ReviewerAvatar from "@/components/base/ReviewerAvatar";
 import ReportReviewModal from "@/components/feature/ReportReviewModal";
-import { learnerReviews, employerReviews } from "@/mocks/reviews";
-import { providers } from "@/mocks/providers";
-import { ratingCategories } from "@/mocks/ratings";
-import { getProviderResponse } from "@/mocks/ratings";
-import { standards, additionalStandards } from "@/mocks/standards";
-
-const allReviews = [...learnerReviews, ...employerReviews];
-const allStandards = [...standards, ...additionalStandards];
-
-function getReviewCategoryRatings(reviewId: string, overall: number): Record<string, number> {
-  let hash = 0;
-  for (let i = 0; i < reviewId.length; i++) hash = (hash * 31 + reviewId.charCodeAt(i)) % 100;
-  return ratingCategories.reduce((acc, cat, idx) => {
-    const offset = ((hash + idx * 7) % 5) / 5 - 0.4;
-    acc[cat.key] = Math.max(1, Math.min(5, Math.round((overall + offset) * 2) / 2));
-    return acc;
-  }, {} as Record<string, number>);
-}
+import { getReviewById, getProviderResponseForReview, incrementHelpful } from "@/services/reviews.service";
+import { getCompanyBySlug } from "@/services/companies.service";
+import { getStandardBySlug } from "@/services/standards.service";
+import { getRatingCategories } from "@/services/ratings.service";
+import type { Review } from "@/types/review";
+import type { Provider } from "@/types/provider";
+import type { Standard } from "@/types/standard";
+import type { ProviderResponse, RatingCategory } from "@/types/rating";
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -32,12 +25,58 @@ export default function ReviewDetails() {
   const { id } = useParams<{ id: string }>();
   const [showReport, setShowReport] = useState(false);
   const [helpful, setHelpful] = useState(false);
-  const [helpfulCount, setHelpfulCount] = useState(12);
+  const [helpfulCount, setHelpfulCount] = useState(0);
 
-  const review = allReviews.find((r) => r.review_id === id);
-  const provider = review ? providers.find((p) => p.provider_id === review.provider_id) : null;
-  const standard = review ? allStandards.find((s) => s.standard_id === review.standard_id) : null;
-  const response = review ? getProviderResponse(review.review_id) : null;
+  const [review, setReview] = useState<Review | null>(null);
+  const [provider, setProvider] = useState<Provider | null>(null);
+  const [standard, setStandard] = useState<Standard | null>(null);
+  const [response, setResponse] = useState<ProviderResponse | null>(null);
+  const [ratingCategories, setRatingCategories] = useState<RatingCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    getReviewById(id)
+      .then(async (r) => {
+        setReview(r);
+        setHelpful(false);
+        setHelpfulCount(r?.helpful_count ?? 0);
+        if (!r) {
+          setProvider(null);
+          setStandard(null);
+          setResponse(null);
+          setRatingCategories([]);
+          return;
+        }
+        const [providerResult, standardResult, responseResult, categoriesResult] = await Promise.all([
+          getCompanyBySlug(r.provider_id),
+          getStandardBySlug(r.standard_id),
+          getProviderResponseForReview(r.review_id),
+          getRatingCategories(),
+        ]);
+        setProvider(providerResult);
+        setStandard(standardResult);
+        setResponse(responseResult);
+        setRatingCategories(categoriesResult);
+      })
+      .finally(() => setIsLoading(false));
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background-50">
+        <Navbar />
+        <div className="w-full px-4 md:px-6 lg:px-8 py-24">
+          <LoadingIndicator />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!review) {
     return (
@@ -60,14 +99,17 @@ export default function ReviewDetails() {
     );
   }
 
-  const categoryRatings = getReviewCategoryRatings(review.review_id, review.rating);
+  const categoryRatings = review.category_ratings ?? {};
 
   const toggleHelpful = () => {
-    setHelpful((prev) => {
-      const next = !prev;
-      setHelpfulCount((c) => c + (next ? 1 : -1));
-      return next;
-    });
+    const nextHelpful = !helpful;
+    const delta: 1 | -1 = nextHelpful ? 1 : -1;
+    incrementHelpful(review.review_id, delta)
+      .then((count) => {
+        setHelpfulCount(count);
+        setHelpful(nextHelpful);
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -95,28 +137,19 @@ export default function ReviewDetails() {
               {/* Header */}
               <div className="flex items-start justify-between gap-4 mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 flex items-center justify-center rounded-full bg-primary-50 text-primary-600 font-bold text-sm">
-                    {review.reviewer_type === "learner" ? "AP" : "EM"}
-                  </div>
+                  <ReviewerAvatar name={review.reviewer_name} />
                   <div>
                     <p className="text-sm font-semibold text-foreground-900">
-                      {review.reviewer_type === "learner" ? "Apprentice" : "Employer"}
+                      {review.reviewer_name?.trim() || "Anonymous"}
                     </p>
                     <p className="text-xs text-foreground-500">
-                      {review.reviewer_type === "learner"
-                        ? review.programme_studied || "Apprenticeship"
-                        : review.employer_type || "Employer"}
+                      {review.reviewer_type === "learner" ? "Apprentice" : "Employer"}
+                      {(review.reviewer_type === "learner" ? review.programme_studied : review.employer_type) &&
+                        ` · ${review.reviewer_type === "learner" ? review.programme_studied : review.employer_type}`}
                     </p>
                   </div>
                 </div>
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-                  review.verification_status === "Verified"
-                    ? "bg-primary-50 text-primary-700"
-                    : "bg-secondary-50 text-secondary-600"
-                }`}>
-                  <i className={`text-xs ${review.verification_status === "Verified" ? "ri-shield-check-line" : "ri-time-line"}`} />
-                  {review.verification_status === "Verified" ? "Verified Apprentice" : review.verification_status}
-                </span>
+                {review.verification_status === "Verified" && <VerifiedBadge label="Verified Apprentice" size="md" />}
               </div>
 
               {/* Rating */}

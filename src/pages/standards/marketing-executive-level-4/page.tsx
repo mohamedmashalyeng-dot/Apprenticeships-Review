@@ -1,8 +1,5 @@
-import StandardDetailLayout from "@/pages/standards/components/StandardDetailLayout";
-import { standards } from "@/mocks/standards";
-
-const standard = standards.find((s) => s.standard_id === "marketing-executive-level-4")!;
+import StandardBySlugPage from "@/pages/standards/components/StandardBySlugPage";
 
 export default function MarketingExecutiveLevel4() {
-  return <StandardDetailLayout standard={standard} />;
+  return <StandardBySlugPage slug="marketing-executive-level-4" />;
 }

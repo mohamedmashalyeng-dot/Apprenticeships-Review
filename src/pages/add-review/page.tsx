@@ -1,25 +1,16 @@
-import { useState, useRef, type FormEvent, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect, type FormEvent } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
 import AuthModal from "@/components/feature/AuthModal";
-import { providers } from "@/mocks/providers";
-import { standards, additionalStandards } from "@/mocks/standards";
-import { learnerReviews, employerReviews } from "@/mocks/reviews";
-import StarRating from "@/components/base/StarRating";
-import { ratingCategories } from "@/mocks/ratings";
-
-const allStandards = [...standards, ...additionalStandards];
-
-// ── Trust stats (same logic as HeroSection) ──
-function useTrustStats() {
-  return useMemo(() => {
-    const all = [...learnerReviews, ...employerReviews];
-    const total = all.length;
-    const avg = total > 0 ? all.reduce((s, r) => s + r.rating, 0) / total : 0;
-    return { total, avg };
-  }, []);
-}
+import { getCompanies } from "@/services/companies.service";
+import { getStandards } from "@/services/standards.service";
+import { getRatingCategories } from "@/services/ratings.service";
+import { submitReview } from "@/services/reviews.service";
+import { useAuth, getApiErrorMessage } from "@/contexts/AuthContext";
+import type { Provider } from "@/types/provider";
+import type { Standard } from "@/types/standard";
+import type { RatingCategory } from "@/types/rating";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -51,6 +42,8 @@ function StarInput({ value, onChange }: { value: number; onChange: (v: number) =
 }
 
 export default function AddReview() {
+  const [searchParams] = useSearchParams();
+  const { user, isLoading: authLoading } = useAuth();
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [formError, setFormError] = useState("");
   const [rating, setRating] = useState(0);
@@ -59,14 +52,23 @@ export default function AddReview() {
   const [consent, setConsent] = useState(false);
   const [charCount, setCharCount] = useState(0);
   const [categoryRatings, setCategoryRatings] = useState<Record<string, number>>({});
-  const [providerChoice, setProviderChoice] = useState("");
-  const [otherProviderName, setOtherProviderName] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [providerChoice, setProviderChoice] = useState(() => searchParams.get("provider") ?? "");
   const [authOpen, setAuthOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const { total: totalReviews, avg: avgPlatformRating } = useTrustStats();
 
-  const submitAddr = "https://readdy.ai/api/form/d9589odmi650so75e8ug";
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [standards, setStandards] = useState<Standard[]>([]);
+  const [ratingCategories, setRatingCategories] = useState<RatingCategory[]>([]);
+
+  useEffect(() => {
+    Promise.all([getCompanies(), getStandards(), getRatingCategories()]).then(
+      ([companiesData, standardsData, categoriesData]) => {
+        setProviders(companiesData);
+        setStandards(standardsData);
+        setRatingCategories(categoriesData);
+      }
+    );
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -86,30 +88,24 @@ export default function AddReview() {
       setCharCount(0);
       setCategoryRatings({});
       setProviderChoice("");
-      setOtherProviderName("");
       return;
     }
 
     // Client-side validation
-    const reviewerType = formData.get("reviewer_type") as string;
+    const reviewerType = formData.get("reviewer_type") as "learner" | "employer" | "";
     const providerId = formData.get("provider_id") as string;
-    const customProviderName = (formData.get("provider_name") as string || "").trim();
     const standardId = formData.get("standard_id") as string;
-    const completionStatus = formData.get("completion_status") as string;
-    const ratingVal = formData.get("rating") as string;
+    const completionStatus = formData.get("completion_status") as "currently-enrolled" | "completed" | "withdrawn" | "";
     const reviewTitle = (formData.get("review_title") as string || "").trim();
     const reviewText = (formData.get("review_text") as string || "").trim();
 
     const errors: string[] = [];
     if (!reviewerType) errors.push("Please select whether you are a learner or employer.");
-    if (providerId === "other") {
-      if (!customProviderName) errors.push("Please enter the name of your training provider.");
-    } else if (!providerId) {
-      errors.push("Please select a provider.");
-    }
+    if (!providerId) errors.push("Please select a provider.");
+    if (providerId === "other") errors.push("We can't yet accept reviews for providers not in our directory — please claim/add the provider first, or contact us.");
     if (!standardId) errors.push("Please select an apprenticeship standard.");
     if (!completionStatus) errors.push("Please select your completion status.");
-    if (!ratingVal || parseInt(ratingVal) < 1) errors.push("Please rate your experience from 1 to 5.");
+    if (!rating || rating < 1) errors.push("Please rate your experience from 1 to 5.");
     if (!reviewTitle) errors.push("Please enter a review title.");
     if (!reviewText) errors.push("Please write your review.");
     if (reviewText.length > 500) errors.push("Review text must be 500 characters or fewer.");
@@ -121,7 +117,7 @@ export default function AddReview() {
     }
 
     // Require login before publishing
-    if (!isAuthenticated) {
+    if (!user) {
       setAuthOpen(true);
       return;
     }
@@ -129,72 +125,33 @@ export default function AddReview() {
     setFormStatus("submitting");
 
     try {
-      const submitData = new FormData();
-      submitData.append("reviewer_type", reviewerType);
-      if (providerId === "other") {
-        submitData.append("provider_id", "other");
-        submitData.append("provider_name", customProviderName);
-      } else {
-        submitData.append("provider_id", providerId);
-      }
-      submitData.append("standard_id", standardId);
-      submitData.append("completion_status", completionStatus);
-      submitData.append("rating", ratingVal);
-      submitData.append("review_title", reviewTitle);
-      submitData.append("review_text", reviewText);
-      if (recommend) submitData.append("would_recommend", recommend);
-      submitData.append("consent", consent ? "true" : "false");
-      submitData.append("source", "apprenticeships-reviews");
-      ratingCategories.forEach((cat) => {
-        if (categoryRatings[cat.key]) {
-          submitData.append(`category_${cat.key}`, String(categoryRatings[cat.key]));
-        }
+      await submitReview({
+        companySlug: providerId,
+        standardSlug: standardId,
+        reviewerType: reviewerType as "learner" | "employer",
+        rating,
+        reviewTitle,
+        reviewText,
+        completionStatus: completionStatus as "currently-enrolled" | "completed" | "withdrawn",
+        wouldRecommend: recommend ? recommend === "yes" : undefined,
+        categoryRatings,
       });
 
-      const res = await fetch(submitAddr, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(submitData as unknown as Record<string, string>).toString(),
-      });
-
-      const responseText = await res.text();
-      let parsed: Record<string, unknown> | null = null;
-      try { parsed = JSON.parse(responseText); } catch { /* not JSON */ }
-
-      const serverMsg: string =
-        (parsed && typeof (parsed as Record<string, unknown>).meta === "object" && (parsed as Record<string, unknown>).meta
-          ? ((parsed as Record<string, unknown>).meta as Record<string, string>).message || ""
-          : "") ||
-        (parsed && typeof (parsed as Record<string, string>).message === "string"
-          ? (parsed as Record<string, string>).message
-          : "") ||
-        responseText ||
-        "";
-
-      const isSpam = serverMsg.toLowerCase().includes("spam") || serverMsg.toLowerCase().includes("form data is spam");
-
-      if (res.ok && !isSpam) {
-        setFormStatus("success");
-        form.reset();
-        setRating(0);
-        setRecommend("");
-        setConsent(false);
-        setCharCount(0);
-        setCategoryRatings({});
-        setProviderChoice("");
-        setOtherProviderName("");
-      } else {
-        setFormStatus("error");
-        setFormError(serverMsg || "Something went wrong. Please try again.");
-      }
-    } catch {
+      setFormStatus("success");
+      form.reset();
+      setRating(0);
+      setRecommend("");
+      setConsent(false);
+      setCharCount(0);
+      setCategoryRatings({});
+      setProviderChoice("");
+    } catch (err) {
       setFormStatus("error");
-      setFormError("Network error. Please check your connection and try again.");
+      setFormError(getApiErrorMessage(err));
     }
   };
 
   const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
     setAuthOpen(false);
     formRef.current?.requestSubmit();
   };
@@ -204,7 +161,7 @@ export default function AddReview() {
     label: `${p.trading_name} (${p.legal_name})`,
   }));
 
-  const standardOptions = allStandards.map((s) => ({
+  const standardOptions = standards.map((s) => ({
     value: s.standard_id,
     label: `${s.standard_name} Level ${s.level}`,
   }));
@@ -231,18 +188,6 @@ export default function AddReview() {
         </div>
         <div className="relative z-10 w-full px-4 md:px-6 lg:px-8 pt-20 pb-14 md:pt-28 md:pb-20">
           <div className="max-w-3xl mx-auto text-center">
-            {/* Trust badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2.5 bg-background-50/15 backdrop-blur-sm border border-background-50/20 rounded-full mb-7">
-              <StarRating rating={avgPlatformRating} size="sm" />
-              <span className="text-sm font-semibold text-white">
-                {avgPlatformRating.toFixed(1)} out of 5
-              </span>
-              <span className="w-px h-3.5 bg-background-50/30" />
-              <span className="text-sm text-white/85">
-                {totalReviews} verified reviews
-              </span>
-            </div>
-
             <h1 className="font-heading text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-white leading-[1.08] tracking-tight">
               Share your experience{" "}
               <span className="text-primary-400">& help others choose</span>
@@ -298,7 +243,6 @@ export default function AddReview() {
             <form
               ref={formRef}
               onSubmit={handleSubmit}
-              data-readdy-form
               noValidate
               className="space-y-6"
             >
@@ -364,21 +308,10 @@ export default function AddReview() {
                 </select>
 
                 {providerChoice === "other" && (
-                  <div className="mt-3">
-                    <input
-                      type="text"
-                      id="provider_name"
-                      name="provider_name"
-                      value={otherProviderName}
-                      onChange={(e) => setOtherProviderName(e.target.value)}
-                      maxLength={120}
-                      placeholder="Enter the name of your training provider"
-                      className="w-full px-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors"
-                    />
-                    <p className="text-xs text-foreground-400 mt-1">
-                      This provider will be reviewed and added to our directory.
-                    </p>
-                  </div>
+                  <p className="text-xs text-amber-600 mt-2">
+                    We can&apos;t yet accept reviews for providers outside our directory. Please{" "}
+                    <Link to="/claim-provider" className="underline">get in touch</Link> so we can add them first.
+                  </p>
                 )}
               </div>
 
@@ -577,7 +510,7 @@ export default function AddReview() {
               {/* Submit */}
               <button
                 type="submit"
-                disabled={formStatus === "submitting" || formStatus === "success"}
+                disabled={formStatus === "submitting" || formStatus === "success" || authLoading}
                 className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
               >
                 {formStatus === "submitting" ? (
@@ -592,7 +525,7 @@ export default function AddReview() {
                 )}
               </button>
 
-              {!isAuthenticated && (
+              {!user && (
                 <p className="flex items-center justify-center gap-1.5 text-xs text-foreground-400">
                   <i className="ri-lock-2-line text-sm" />
                   You&apos;ll be asked to log in before your review is published.

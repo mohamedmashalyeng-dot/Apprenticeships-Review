@@ -10,3 +10,19 @@ Thumbs.db
 npm-debug.log*
 .vite/
 node_modules/.tmp/
+
+# Django backend
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/migrations/__pycache__/
+backend/db.sqlite3
+backend/fixtures/mock_data.json
+backend/staticfiles/
+backend/runserver.log
+
+# Raw DB exports (large, not meant to be committed)
+/data-exports/
+
+# Stray artifact filenames from tool glitches
+*scratchpad*full_diff*

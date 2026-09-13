@@ -1,21 +1,52 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
-import { standards, additionalStandards } from "@/mocks/standards";
-import { getStandardProviders } from "@/mocks/providerStandards";
-import { getStandardReviews } from "@/mocks/reviews";
-
-const allStandards = [...standards, ...additionalStandards];
-
-const sectors = Array.from(new Set(allStandards.map((s) => s.sector))).sort();
-
-const levels = Array.from(new Set(allStandards.map((s) => s.level))).sort((a, b) => a - b);
+import LoadingIndicator from "@/components/base/LoadingIndicator";
+import { getStandards, getAllCompanyStandards } from "@/services/standards.service";
+import { getReviews } from "@/services/reviews.service";
+import type { Standard } from "@/types/standard";
 
 export default function Standards() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLevels, setSelectedLevels] = useState<number[]>([]);
   const [selectedSectors, setSelectedSectors] = useState<string[]>([]);
+
+  const [allStandards, setAllStandards] = useState<Standard[]>([]);
+  const [providerCounts, setProviderCounts] = useState<Record<string, number>>({});
+  const [reviewCounts, setReviewCounts] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getStandards(), getAllCompanyStandards()])
+      .then(async ([data, allLinks]) => {
+        setAllStandards(data);
+
+        // One bulk request for every standard's provider count instead of one per standard.
+        const pCounts: Record<string, number> = {};
+        allLinks.forEach((link) => {
+          pCounts[link.standard_id] = (pCounts[link.standard_id] ?? 0) + 1;
+        });
+        setProviderCounts(pCounts);
+
+        const reviewCountEntries = await Promise.all(
+          data.map(async (s) => {
+            const { total } = await getReviews({}, { standard: s.standard_id });
+            return [s.standard_id, total] as const;
+          })
+        );
+        setReviewCounts(Object.fromEntries(reviewCountEntries));
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const sectors = useMemo(() => Array.from(new Set(allStandards.map((s) => s.sector))).sort(), [allStandards]);
+
+  const levels = useMemo(
+    () => Array.from(new Set(allStandards.map((s) => s.level))).sort((a, b) => a - b),
+    [allStandards]
+  );
 
   const toggleLevel = (level: number) => {
     setSelectedLevels((prev) =>
@@ -54,7 +85,7 @@ export default function Standards() {
       if (selectedSectors.length > 0 && !selectedSectors.includes(s.sector)) return false;
       return true;
     });
-  }, [searchQuery, selectedLevels, selectedSectors]);
+  }, [allStandards, searchQuery, selectedLevels, selectedSectors]);
 
   return (
     <div className="min-h-screen bg-background-50">
@@ -168,12 +199,15 @@ export default function Standards() {
                   </p>
                 </div>
 
-                {filteredStandards.length > 0 ? (
+                {isLoading ? (
+                  <div className="py-16">
+                    <LoadingIndicator />
+                  </div>
+                ) : filteredStandards.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {filteredStandards.map((s) => {
-                      const providerCount = getStandardProviders(s.standard_id).length;
-                      const reviews = getStandardReviews(s.standard_id);
-                      const totalReviews = reviews.learner.length + reviews.employer.length;
+                      const providerCount = providerCounts[s.standard_id] ?? 0;
+                      const totalReviews = reviewCounts[s.standard_id] ?? 0;
 
                       return (
                         <Link

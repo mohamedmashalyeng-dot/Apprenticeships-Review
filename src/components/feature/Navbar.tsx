@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { getNotifications } from "@/services/notifications.service";
 
 interface NavLink {
   label: string;
@@ -11,7 +13,6 @@ interface NavLink {
 const mainLinks: NavLink[] = [
   { label: "Home", href: "/home" },
   { label: "Find a Provider", href: "/providers" },
-  { label: "Categories", href: "/categories" },
   { label: "Compare", href: "/compare" },
   { label: "Top Rated", href: "/top-rated" },
   {
@@ -31,8 +32,28 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+    getNotifications()
+      .then((notifs) => setUnreadCount(notifs.filter((n) => !n.is_read).length))
+      .catch(() => {});
+  }, [user]);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/home");
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -45,7 +66,20 @@ export default function Navbar() {
     setOpenDropdown(null);
     setMobileExpanded(null);
     setMobileOpen(false);
+    setProfileMenuOpen(false);
   }, [location.pathname]);
+
+  // Close profile menu on outside click
+  useEffect(() => {
+    if (!profileMenuOpen) return;
+    const onClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [profileMenuOpen]);
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -158,18 +192,75 @@ export default function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-4">
-            <Link
-              to="/login"
-              className="text-sm text-white/70 hover:text-white transition-colors whitespace-nowrap"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/add-review"
-              className="px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors duration-200 whitespace-nowrap"
-            >
-              Write a Review
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard?tab=notifications"
+                  className="relative flex items-center text-white/70 hover:text-white transition-colors"
+                  aria-label="Notifications"
+                >
+                  <i className="ri-notification-3-line text-lg" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-primary-500 text-white text-[10px] font-semibold">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </Link>
+                {(user.role === "admin" || user.role === "moderator") && (
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-1.5 text-sm font-semibold text-primary-300 hover:text-primary-200 transition-colors whitespace-nowrap px-3 py-1.5 rounded-full bg-primary-500/10 hover:bg-primary-500/15"
+                  >
+                    <i className="ri-shield-user-line text-sm" />
+                    Admin panel
+                  </Link>
+                )}
+                <div className="relative" ref={profileMenuRef}>
+                  <button
+                    onClick={() => setProfileMenuOpen((open) => !open)}
+                    className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors whitespace-nowrap cursor-pointer"
+                  >
+                    <i className="ri-user-3-line text-base" />
+                    Profile
+                    <i className={`text-[10px] transition-transform duration-200 ${profileMenuOpen ? "ri-arrow-up-s-line" : "ri-arrow-down-s-line"}`} />
+                  </button>
+
+                  {profileMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-56 py-2 bg-[#0C2547] border border-background-50/10 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.4)] animate-[fadeIn_150ms_ease-out]">
+                      <div className="px-4 py-2.5 border-b border-background-50/10">
+                        <p className="text-xs text-white/50">Signed in as</p>
+                        <p className="text-sm text-white font-medium truncate">{user.displayName || user.email}</p>
+                      </div>
+                      <Link
+                        to={user.role === "company_owner" ? "/provider-dashboard" : "/dashboard"}
+                        className="flex items-center gap-2 px-4 py-2.5 mx-1.5 mt-1 rounded-lg text-sm text-white/80 hover:bg-background-50/8 hover:text-white transition-colors"
+                        onClick={() => setProfileMenuOpen(false)}
+                      >
+                        <i className="ri-dashboard-line text-sm" />
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setProfileMenuOpen(false);
+                          handleLogout();
+                        }}
+                        className="flex items-center gap-2 w-full text-left px-4 py-2.5 mx-1.5 rounded-lg text-sm text-white/80 hover:bg-background-50/8 hover:text-white transition-colors cursor-pointer"
+                      >
+                        <i className="ri-logout-box-line text-sm" />
+                        Log out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="text-sm text-white/70 hover:text-white transition-colors whitespace-nowrap"
+              >
+                Log in
+              </Link>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -236,20 +327,57 @@ export default function Navbar() {
                 )}
               </div>
             ))}
-            <Link
-              to="/login"
-              className="px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-background-50/5 transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              Log in
-            </Link>
-            <Link
-              to="/add-review"
-              className="mt-2 px-4 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full text-center hover:bg-primary-600 transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              Write a Review
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard?tab=notifications"
+                  className="px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-background-50/5 transition-colors flex items-center gap-1.5"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <i className="ri-notification-3-line text-sm" />
+                  Notifications
+                  {unreadCount > 0 && (
+                    <span className="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-primary-500 text-white text-[10px] font-semibold">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </Link>
+                {(user.role === "admin" || user.role === "moderator") && (
+                  <Link
+                    to="/admin"
+                    className="px-3 py-2.5 rounded-lg text-sm font-semibold text-primary-300 hover:bg-background-50/5 transition-colors flex items-center gap-1.5"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <i className="ri-shield-user-line text-sm" />
+                    Admin panel
+                  </Link>
+                )}
+                <Link
+                  to={user.role === "company_owner" ? "/provider-dashboard" : "/dashboard"}
+                  className="px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-background-50/5 transition-colors"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {user.displayName || user.email}
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    handleLogout();
+                  }}
+                  className="px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-background-50/5 transition-colors text-left cursor-pointer"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-background-50/5 transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                Log in
+              </Link>
+            )}
           </div>
         </div>
       )}

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: apprenticeships-reviews-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
+    startCommand: "python -m waitress --host=0.0.0.0 --port=$PORT config.wsgi:application"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false # set to your Render domain, e.g. apprenticeships-reviews-api.onrender.com
+      - key: DATABASE_URL
+        sync: false # Neon connection string
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false # your Hostinger domain, e.g. https://apprenticeshipsreviews.com
+      - key: FRONTEND_URL
+        sync: false # same as above, used to build password-reset links
+      - key: PYTHON_VERSION
+        value: "3.13.0"

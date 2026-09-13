@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
+import { submitClaim } from "@/services/claims.service";
+import { getApiErrorMessage } from "@/contexts/AuthContext";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -9,8 +11,6 @@ export default function ClaimProvider() {
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [formError, setFormError] = useState("");
   const [charCount, setCharCount] = useState(0);
-
-  const submitAddr = "https://readdy.ai/api/form/da06a7g3256a3o8koqjg";
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,46 +41,22 @@ export default function ClaimProvider() {
     setFormStatus("submitting");
 
     try {
-      const payload = new FormData();
-      payload.append("organisation_name", name.trim());
-      payload.append("contact_name", contact.trim());
-      payload.append("email", email.trim());
-      payload.append("role", role.trim());
-      payload.append("website", website.trim());
       const details = (formData.get("verification_details") as string || "").trim();
-      if (details) payload.append("verification_details", details);
-
-      const res = await fetch(submitAddr, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(payload as unknown as Record<string, string>).toString(),
+      await submitClaim({
+        organisationName: name.trim(),
+        contactName: contact.trim(),
+        email: email.trim(),
+        role: role.trim(),
+        website: website.trim(),
+        verificationDetails: details || undefined,
       });
 
-      const responseText = await res.text();
-      let parsed: Record<string, unknown> | null = null;
-      try { parsed = JSON.parse(responseText); } catch { /* not JSON */ }
-
-      const serverMsg: string =
-        (parsed && typeof (parsed as Record<string, unknown>).meta === "object"
-          ? ((parsed as Record<string, unknown>).meta as Record<string, string>)?.message || ""
-          : "") ||
-        (parsed && typeof (parsed as Record<string, string>).message === "string"
-          ? (parsed as Record<string, string>).message : "") ||
-        responseText || "";
-
-      const isSpam = serverMsg.toLowerCase().includes("spam");
-
-      if (res.ok && !isSpam && (!parsed || parsed.code === "OK" || !parsed.code)) {
-        setFormStatus("success");
-        form.reset();
-        setCharCount(0);
-      } else {
-        setFormStatus("error");
-        setFormError(serverMsg || "Something went wrong. Please try again.");
-      }
-    } catch {
+      setFormStatus("success");
+      form.reset();
+      setCharCount(0);
+    } catch (err) {
       setFormStatus("error");
-      setFormError("Network error. Please check your connection and try again.");
+      setFormError(getApiErrorMessage(err));
     }
   };
 
@@ -114,7 +90,7 @@ export default function ClaimProvider() {
               </div>
               <p className="text-xs text-foreground-600 leading-relaxed">
                 Your organisation must be verified before you can manage the profile. We'll confirm your
-                connection to the organisation using the details you provide — this usually takes 2–3 working days.
+                connection to the organisation using the details you provide, this usually takes a few working days.
               </p>
             </div>
 

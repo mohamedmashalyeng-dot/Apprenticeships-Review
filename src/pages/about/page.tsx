@@ -73,8 +73,8 @@ export default function About() {
         <div className="w-full px-4 md:px-6 lg:px-8 py-10 md:py-14">
           <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {stats.map((s) => (
-              <AnimateOnScroll key={s.label} direction="up" delay={0}>
-                <div className="flex items-start gap-3 p-4 md:p-5 bg-background-100 rounded-xl border border-background-200/70">
+              <AnimateOnScroll key={s.label} direction="up" delay={0} className="h-full">
+                <div className="flex items-start gap-3 h-full p-4 md:p-5 bg-background-100 rounded-xl border border-background-200/70">
                   <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-50 text-primary-600 shrink-0">
                     <i className={`${s.icon} text-lg`} />
                   </div>
@@ -112,7 +112,7 @@ export default function About() {
                 </h2>
                 <p className="text-sm md:text-base text-foreground-600 leading-relaxed mb-4">
                   Choosing an apprenticeship provider is one of the most important decisions a young person
-                  or employer can make — yet most people do it with very little information. Providers look
+                  or employer can make, yet most people do it with very little information. Providers look
                   similar on paper, marketing claims are hard to verify, and genuine feedback is scattered
                   or hard to find.
                 </p>
@@ -177,7 +177,7 @@ export default function About() {
               <div className="space-y-0">
                 {milestones.map((m, i) => (
                   <AnimateOnScroll key={m.year} direction="up" delay={0}>
-                    <div className="relative pl-8 pb-10 border-l-2 border-background-200 last:border-transparent">
+                    <div className={`relative pl-8 pb-10 border-l-2 ${i === milestones.length - 1 ? "border-transparent" : "border-accent-300"}`}>
                       <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-accent-500 ring-4 ring-background-50" />
                       <span className="inline-block px-2.5 py-1 bg-accent-100 text-accent-900 text-xs font-bold rounded-md mb-2">{m.year}</span>
                       <h3 className="font-heading text-base font-semibold text-foreground-900 mb-1">{m.title}</h3>

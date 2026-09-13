@@ -6,7 +6,6 @@ import Home from "@/pages/home/page";
 import CompareProviders from "@/pages/compare/page";
 import ProviderProfile from "@/pages/provider/page";
 import FindProvider from "@/pages/providers/page";
-import Categories from "@/pages/categories/page";
 import TopRated from "@/pages/top-rated/page";
 import ReviewDetails from "@/pages/review-detail/page";
 import Standards from "@/pages/standards/page";
@@ -19,8 +18,13 @@ import AddReview from "@/pages/add-review/page";
 import About from "@/pages/about/page";
 import Help from "@/pages/help/page";
 import Login from "@/pages/login/page";
+import ResetPassword from "@/pages/reset-password/page";
 import Dashboard from "@/pages/dashboard/page";
 import ProviderDashboard from "@/pages/provider-dashboard/page";
+import EditProviderProfile from "@/pages/provider-dashboard/edit/page";
+import Admin from "@/pages/admin/page";
+import CompetitorsList from "@/pages/competitors/page";
+import CompetitorDetailPage from "@/pages/competitors/detail/page";
 import ClaimProvider from "@/pages/claim-provider/page";
 import Methodology from "@/pages/methodology/page";
 import ReviewPolicy from "@/pages/review-policy/page";
@@ -28,13 +32,13 @@ import Contact from "@/pages/contact/page";
 import PrivacyPolicy from "@/pages/privacy-policy/page";
 import DataSources from "@/pages/data-sources/page";
 import TermsOfService from "@/pages/terms/page";
+import ProtectedRoute from "@/router/ProtectedRoute";
 
 const routes: RouteObject[] = [
   { path: "/", element: <Landing /> },
   { path: "/home", element: <Home /> },
   { path: "/landing", element: <Navigate to="/" replace /> },
   { path: "/providers", element: <FindProvider /> },
-  { path: "/categories", element: <Categories /> },
   { path: "/top-rated", element: <TopRated /> },
   { path: "/compare", element: <CompareProviders /> },
   { path: "/provider/:id", element: <ProviderProfile /> },
@@ -49,9 +53,42 @@ const routes: RouteObject[] = [
   { path: "/about", element: <About /> },
   { path: "/help", element: <Help /> },
   { path: "/login", element: <Login /> },
-  { path: "/dashboard", element: <Dashboard /> },
-  { path: "/provider-dashboard", element: <ProviderDashboard /> },
+  { path: "/reset-password", element: <ResetPassword /> },
+  {
+    path: "/dashboard",
+    element: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/provider-dashboard",
+    element: (
+      <ProtectedRoute role="company_owner">
+        <ProviderDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/provider-dashboard/edit",
+    element: (
+      <ProtectedRoute role="company_owner">
+        <EditProviderProfile />
+      </ProtectedRoute>
+    ),
+  },
   { path: "/claim-provider", element: <ClaimProvider /> },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute role={["admin", "moderator"]}>
+        <Admin />
+      </ProtectedRoute>
+    ),
+  },
+  { path: "/competitors", element: <CompetitorsList /> },
+  { path: "/competitors/:id", element: <CompetitorDetailPage /> },
   { path: "/methodology", element: <Methodology /> },
   { path: "/review-policy", element: <ReviewPolicy /> },
   { path: "/contact", element: <Contact /> },

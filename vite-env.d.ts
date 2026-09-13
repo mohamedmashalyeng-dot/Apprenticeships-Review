@@ -5,3 +5,14 @@ declare const __IS_PREVIEW__: boolean;
 declare const __READDY_PROJECT_ID__: string;
 declare const __READDY_VERSION_ID__: string;
 declare const __READDY_AI_DOMAIN__: string;
+
+interface ImportMetaEnv {
+  // Base URL of the Django API when it's deployed on a different domain than the SPA
+  // (e.g. Hostinger frontend + Render backend). Leave unset for same-domain deploys and
+  // local dev, where requests stay relative and go through the Vite dev proxy.
+  readonly VITE_API_BASE_URL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

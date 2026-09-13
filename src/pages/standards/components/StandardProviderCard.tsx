@@ -1,17 +1,15 @@
 import { Link } from "react-router-dom";
-import type { Provider } from "@/mocks/providers";
-import { getProviderScore } from "@/mocks/scores";
-import { getProviderReviews } from "@/mocks/reviews";
+import VerifiedBadge from "@/components/base/VerifiedBadge";
+import type { Provider, ProviderScore } from "@/types/provider";
+import type { Review } from "@/types/review";
 
 interface StandardProviderCardProps {
   provider: Provider;
-  standardId: string;
+  score: ProviderScore | null;
+  reviews: { learner: Review[]; employer: Review[] };
 }
 
-export default function StandardProviderCard({ provider, standardId }: StandardProviderCardProps) {
-  const score = getProviderScore(provider.provider_id);
-  const reviews = getProviderReviews(provider.provider_id);
-
+export default function StandardProviderCard({ provider, score, reviews }: StandardProviderCardProps) {
   return (
     <div className="p-5 bg-background-50 rounded-2xl border border-background-200/70 hover:border-primary-200 transition-all duration-200 flex flex-col h-full">
       {/* Header */}
@@ -25,20 +23,11 @@ export default function StandardProviderCard({ provider, standardId }: StandardP
           </Link>
           <p className="text-xs text-foreground-500 mt-0.5">{provider.legal_name}</p>
         </div>
-        <span
-          className={`flex-shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${
-            provider.verification_status === "Verified"
-              ? "bg-primary-50 text-primary-700"
-              : "bg-secondary-50 text-secondary-600"
-          }`}
-        >
-          <i
-            className={`text-xs ${
-              provider.verification_status === "Verified" ? "ri-shield-check-line" : "ri-time-line"
-            }`}
-          />
-          {provider.verification_status}
-        </span>
+        {provider.verification_status === "Verified" && (
+          <div className="flex-shrink-0">
+            <VerifiedBadge rounded="md" />
+          </div>
+        )}
       </div>
 
       {/* Meta row */}

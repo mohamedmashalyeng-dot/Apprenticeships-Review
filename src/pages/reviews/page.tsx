@@ -1,45 +1,133 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
-import { learnerReviews, employerReviews } from "@/mocks/reviews";
-import { providers } from "@/mocks/providers";
-import { standards, additionalStandards } from "@/mocks/standards";
+import LoadingIndicator from "@/components/base/LoadingIndicator";
 import ReviewCard from "@/pages/provider/components/ReviewCard";
-import type { Review } from "@/mocks/reviews";
+import { getReviews, splitByReviewerType } from "@/services/reviews.service";
+import { getCompanies, getPlatformStats } from "@/services/companies.service";
+import { getStandards } from "@/services/standards.service";
+import type { Review } from "@/types/review";
+import type { Provider } from "@/types/provider";
+import type { Standard } from "@/types/standard";
 
-const allReviews: Review[] = [...learnerReviews, ...employerReviews];
-const allStandards = [...standards, ...additionalStandards];
-
-type ReviewerFilter = "all" | "learner" | "employer";
 type RatingFilter = "all" | "5" | "4" | "3" | "2" | "1";
+
+const REVIEWS_PAGE_SIZE = 9;
+
+function ReviewGroup({ title, reviews, emptyMessage }: { title: string; reviews: Review[]; emptyMessage: string }) {
+  const [visibleCount, setVisibleCount] = useState(REVIEWS_PAGE_SIZE);
+
+  // Reset back to the first page whenever the underlying (filtered) review set changes.
+  useEffect(() => {
+    setVisibleCount(REVIEWS_PAGE_SIZE);
+  }, [reviews]);
+
+  const visibleReviews = reviews.slice(0, visibleCount);
+
+  return (
+    <div>
+      <h2 className="font-heading text-lg font-bold text-foreground-900 mb-4">
+        {title} <span className="text-foreground-400 font-normal text-sm">({reviews.length})</span>
+      </h2>
+      {reviews.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visibleReviews.map((review) => (
+              <div key={review.review_id} className="flex flex-col gap-2 h-full">
+                <ReviewCard
+                  rating={review.rating}
+                  reviewerType={review.reviewer_type}
+                  reviewer_name={review.reviewer_name}
+                  review_title={review.review_title}
+                  review_text={review.review_text}
+                  review_tags={review.review_tags}
+                  verification_status={review.verification_status}
+                  programme_studied={review.programme_studied}
+                  employer_type={review.employer_type}
+                  review_date={review.review_date}
+                />
+                <Link
+                  to={`/provider/${review.provider_id}`}
+                  className="self-end text-xs text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  View Provider <i className="ri-arrow-right-line text-[10px]" />
+                </Link>
+              </div>
+            ))}
+          </div>
+          {visibleCount < reviews.length && (
+            <div className="flex justify-center mt-5">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((count) => count + REVIEWS_PAGE_SIZE)}
+                className="px-5 py-2.5 bg-background-50 border border-background-200/70 text-sm font-semibold text-primary-500 rounded-full hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 transition-all duration-200 cursor-pointer"
+              >
+                Load more ({reviews.length - visibleCount} more)
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <p className="text-sm text-foreground-500">{emptyMessage}</p>
+      )}
+    </div>
+  );
+}
 
 export default function Reviews() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [reviewerFilter, setReviewerFilter] = useState<ReviewerFilter>("all");
   const [standardFilter, setStandardFilter] = useState("all");
   const [providerFilter, setProviderFilter] = useState("all");
   const [ratingFilter, setRatingFilter] = useState<RatingFilter>("all");
   const [sortBy, setSortBy] = useState<"newest" | "highest" | "lowest">("newest");
 
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [allStandards, setAllStandards] = useState<Standard[]>([]);
+  const [totalReviewsCount, setTotalReviewsCount] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
+  const [learnerCount, setLearnerCount] = useState(0);
+  const [employerCount, setEmployerCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // One-off data for the filter dropdowns and the (unfiltered) stats strip — all server-computed
+  // aggregates over the full review set, not just whatever page happens to be loaded below.
+  useEffect(() => {
+    Promise.all([getCompanies(), getStandards(), getPlatformStats()]).then(
+      ([companies, standardsList, platformStats]) => {
+        setProviders(companies);
+        setAllStandards(standardsList);
+        setTotalReviewsCount(platformStats.totalReviews);
+        setAvgRating(platformStats.averageRating);
+        setLearnerCount(platformStats.learnerReviews);
+        setEmployerCount(platformStats.employerReviews);
+      }
+    );
+  }, []);
+
+  // Server-side filtering/sorting for the params the API supports.
+  useEffect(() => {
+    setIsLoading(true);
+    getReviews(
+      {
+        rating: ratingFilter !== "all" ? parseInt(ratingFilter) : undefined,
+        sortBy,
+        limit: 200,
+      },
+      {
+        standard: standardFilter !== "all" ? standardFilter : undefined,
+        company: providerFilter !== "all" ? providerFilter : undefined,
+      }
+    )
+      .then((result) => setReviews(result.reviews))
+      .finally(() => setIsLoading(false));
+  }, [ratingFilter, sortBy, standardFilter, providerFilter]);
+
+  // Free-text search isn't supported by the API's filter params, so it's applied client-side
+  // on top of the already server-filtered/sorted response.
   const filteredReviews = useMemo(() => {
-    let result = [...allReviews];
-
-    if (reviewerFilter !== "all") {
-      result = result.filter((r) => r.reviewer_type === reviewerFilter);
-    }
-
-    if (standardFilter !== "all") {
-      result = result.filter((r) => r.standard_id === standardFilter);
-    }
-
-    if (providerFilter !== "all") {
-      result = result.filter((r) => r.provider_id === providerFilter);
-    }
-
-    if (ratingFilter !== "all") {
-      result = result.filter((r) => r.rating === parseInt(ratingFilter));
-    }
+    let result = [...reviews];
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -53,40 +141,13 @@ export default function Reviews() {
       );
     }
 
-    switch (sortBy) {
-      case "highest":
-        result.sort((a, b) => b.rating - a.rating);
-        break;
-      case "lowest":
-        result.sort((a, b) => a.rating - b.rating);
-        break;
-      case "newest":
-      default:
-        result.sort((a, b) => new Date(b.review_date).getTime() - new Date(a.review_date).getTime());
-        break;
-    }
-
     return result;
-  }, [searchQuery, reviewerFilter, standardFilter, providerFilter, ratingFilter, sortBy]);
+  }, [reviews, searchQuery]);
 
-  const avgRating =
-    allReviews.length > 0
-      ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length).toFixed(1)
-      : "0.0";
-
-  const learnerCount = learnerReviews.length;
-  const employerCount = employerReviews.length;
-  const verifiedCount = allReviews.filter((r) => r.verification_status === "Verified").length;
-
-  const getProviderName = (id: string) => {
-    const p = providers.find((pr) => pr.provider_id === id);
-    return p ? p.trading_name : id;
-  };
-
-  const getStandardName = (id: string) => {
-    const s = allStandards.find((st) => st.standard_id === id);
-    return s ? s.standard_name : id;
-  };
+  const { learner: learnerReviews, employer: employerReviews } = useMemo(
+    () => splitByReviewerType(filteredReviews),
+    [filteredReviews]
+  );
 
   return (
     <div className="min-h-screen bg-background-50">
@@ -102,7 +163,7 @@ export default function Reviews() {
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>
-        <div className="relative z-10 w-full px-4 md:px-6 lg:px-8 pt-24 pb-14 md:pt-32 md:pb-20">
+        <div className="relative z-10 w-full px-4 md:px-6 lg:px-8 pt-24 pb-16 md:pt-32 md:pb-24">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
               <div>
@@ -125,40 +186,36 @@ export default function Reviews() {
                 Add a Review
               </Link>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Stats strip */}
-      <section className="w-full px-4 md:px-6 lg:px-8 pb-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="p-4 bg-background-50 border border-background-200/70 rounded-2xl text-center">
-              <p className="text-2xl md:text-3xl font-heading font-bold text-foreground-950">
-                {allReviews.length}
-              </p>
-              <p className="text-xs text-foreground-500 mt-1">Total Reviews</p>
-            </div>
-            <div className="p-4 bg-background-50 border border-background-200/70 rounded-2xl text-center">
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-2xl md:text-3xl font-heading font-bold text-foreground-950">
-                  {avgRating}
-                </span>
-                <i className="ri-star-fill text-primary-500 text-lg" />
+            {/* Stats strip */}
+            <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl text-center">
+                <p className="text-2xl md:text-3xl font-heading font-bold text-white">
+                  {totalReviewsCount}
+                </p>
+                <p className="text-xs text-white/70 mt-1">Total Reviews</p>
               </div>
-              <p className="text-xs text-foreground-500 mt-1">Average Rating</p>
-            </div>
-            <div className="p-4 bg-background-50 border border-background-200/70 rounded-2xl text-center">
-              <p className="text-2xl md:text-3xl font-heading font-bold text-foreground-950">
-                {learnerCount}
-              </p>
-              <p className="text-xs text-foreground-500 mt-1">Learner Reviews</p>
-            </div>
-            <div className="p-4 bg-background-50 border border-background-200/70 rounded-2xl text-center">
-              <p className="text-2xl md:text-3xl font-heading font-bold text-foreground-950">
-                {employerCount}
-              </p>
-              <p className="text-xs text-foreground-500 mt-1">Employer Reviews</p>
+              <div className="p-4 bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <span className="text-2xl md:text-3xl font-heading font-bold text-white">
+                    {avgRating.toFixed(1)}
+                  </span>
+                  <i className="ri-star-fill text-primary-400 text-lg" />
+                </div>
+                <p className="text-xs text-white/70 mt-1">Average Rating</p>
+              </div>
+              <div className="p-4 bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl text-center">
+                <p className="text-2xl md:text-3xl font-heading font-bold text-white">
+                  {learnerCount}
+                </p>
+                <p className="text-xs text-white/70 mt-1">Learner Reviews</p>
+              </div>
+              <div className="p-4 bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl text-center">
+                <p className="text-2xl md:text-3xl font-heading font-bold text-white">
+                  {employerCount}
+                </p>
+                <p className="text-xs text-white/70 mt-1">Employer Reviews</p>
+              </div>
             </div>
           </div>
         </div>
@@ -193,25 +250,6 @@ export default function Reviews() {
 
             {/* Filter chips row */}
             <div className="flex flex-wrap gap-2">
-              {/* Reviewer type */}
-              <div className="flex gap-1">
-                {(["all", "learner", "employer"] as ReviewerFilter[]).map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => setReviewerFilter(f)}
-                    className={`whitespace-nowrap px-3 py-1.5 text-xs font-medium rounded-full transition-colors cursor-pointer ${
-                      reviewerFilter === f
-                        ? "bg-primary-500 text-white"
-                        : "bg-background-100 text-foreground-600 hover:bg-background-200"
-                    }`}
-                  >
-                    {f === "all" ? "All Reviewers" : f === "learner" ? "Learners" : "Employers"}
-                  </button>
-                ))}
-              </div>
-
-              <span className="w-px h-6 bg-background-200 self-center" />
-
               {/* Rating filter */}
               <div className="flex gap-1">
                 {(["all", "5", "4", "3", "2", "1"] as RatingFilter[]).map((f) => (
@@ -270,30 +308,22 @@ export default function Reviews() {
             {searchQuery && ` for "${searchQuery}"`}
           </p>
 
-          {filteredReviews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredReviews.map((review) => (
-                <div key={review.review_id} className="group relative">
-                  <Link
-                    to={`/provider/${review.provider_id}`}
-                    className="absolute top-3 right-3 z-10 text-xs text-primary-600 hover:text-primary-700 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    View Provider <i className="ri-arrow-right-line text-[10px]" />
-                  </Link>
-                  <ReviewCard
-                    key={review.review_id}
-                    rating={review.rating}
-                    reviewerType={review.reviewer_type}
-                    review_title={review.review_title}
-                    review_text={review.review_text}
-                    review_tags={review.review_tags}
-                    verification_status={review.verification_status}
-                    programme_studied={review.programme_studied}
-                    employer_type={review.employer_type}
-                    review_date={review.review_date}
-                  />
-                </div>
-              ))}
+          {isLoading ? (
+            <div className="py-16">
+              <LoadingIndicator />
+            </div>
+          ) : filteredReviews.length > 0 ? (
+            <div className="flex flex-col gap-10">
+              <ReviewGroup
+                title="Learner Reviews"
+                reviews={learnerReviews}
+                emptyMessage="No learner reviews match your filters."
+              />
+              <ReviewGroup
+                title="Employer Reviews"
+                reviews={employerReviews}
+                emptyMessage="No employer reviews match your filters yet."
+              />
             </div>
           ) : (
             <div className="p-14 bg-background-50 border border-background-200/70 rounded-2xl text-center">
@@ -305,7 +335,6 @@ export default function Reviews() {
               <button
                 onClick={() => {
                   setSearchQuery("");
-                  setReviewerFilter("all");
                   setStandardFilter("all");
                   setProviderFilter("all");
                   setRatingFilter("all");

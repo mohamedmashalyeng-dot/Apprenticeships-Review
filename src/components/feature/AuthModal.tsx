@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useAuth, getApiErrorMessage } from "@/contexts/AuthContext";
 
 type Mode = "login" | "register";
 
@@ -10,13 +11,31 @@ interface AuthModalProps {
 
 export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
   const [mode, setMode] = useState<Mode>("login");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, register } = useAuth();
 
   if (!open) return null;
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Demo authentication — real backend auth will be connected in a later step.
-    onSuccess();
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      if (mode === "login") {
+        await login(email, password);
+      } else {
+        await register({ email, password, displayName: name });
+      }
+      onSuccess();
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -80,6 +99,8 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
                 id="auth-name"
                 type="text"
                 required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sophie Carter"
                 className="w-full px-4 py-3 bg-background-100 border border-background-200/70 rounded-lg text-sm text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors"
               />
@@ -94,6 +115,8 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
               id="auth-email"
               type="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               className="w-full px-4 py-3 bg-background-100 border border-background-200/70 rounded-lg text-sm text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors"
             />
@@ -107,16 +130,21 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
               id="auth-password"
               type="password"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="w-full px-4 py-3 bg-background-100 border border-background-200/70 rounded-lg text-sm text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors"
             />
           </div>
 
+          {error && <p className="text-xs text-red-600">{error}</p>}
+
           <button
             type="submit"
-            className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap"
+            disabled={isSubmitting}
+            className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-60"
           >
-            {mode === "login" ? "Log in & publish" : "Create account & publish"}
+            {isSubmitting ? "Please wait…" : mode === "login" ? "Log in & publish" : "Create account & publish"}
           </button>
         </form>
 

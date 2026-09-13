@@ -278,7 +278,7 @@ export default function LandingPage() {
 
               {/* Description */}
               <p className="text-foreground-500 text-lg md:text-xl max-w-xl mb-10 leading-relaxed">
-                Compare UK apprenticeship providers using verified reviews, public data, and transparent scoring — all in one place.
+                Explore UK apprenticeship providers, read learner experiences, and compare your options in one place.
               </p>
 
               {/* CTA Button */}
@@ -286,14 +286,14 @@ export default function LandingPage() {
                 onClick={revealHome}
                 className="bg-primary-500 hover:bg-primary-600 text-white font-semibold text-base px-10 py-3.5 rounded-full transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
               >
-                LOOKING NOW
+                Find your provider
               </button>
 
               {/* Trust indicators */}
               <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-12">
                 <div className="flex items-center gap-2 text-foreground-500 text-sm">
                   <i className="ri-shield-check-line text-primary-500 text-base" />
-                  <span>Verified reviews</span>
+                  <span>Learner experiences</span>
                 </div>
                 <div className="flex items-center gap-2 text-foreground-500 text-sm">
                   <i className="ri-government-line text-primary-500 text-base" />
@@ -301,7 +301,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-2 text-foreground-500 text-sm">
                   <i className="ri-bar-chart-box-line text-primary-500 text-base" />
-                  <span>Transparent scoring</span>
+                  <span>Side-by-side comparisons</span>
                 </div>
               </div>
 

@@ -1,15 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
-import type { Standard } from "@/mocks/standards";
-import { providers } from "@/mocks/providers";
-import { getStandardProviders } from "@/mocks/providerStandards";
-import { getStandardReviews } from "@/mocks/reviews";
-import { getProviderScore } from "@/mocks/scores";
-import { standardFAQs } from "@/mocks/standardFAQs";
+import LoadingIndicator from "@/components/base/LoadingIndicator";
+import type { Standard, FAQItem } from "@/types/standard";
+import type { Provider, ProviderScore } from "@/types/provider";
+import type { Review } from "@/types/review";
+import { getCompanies } from "@/services/companies.service";
+import { getStandardCompanySlugs, getStandardFAQs } from "@/services/standards.service";
+import { getReviews, getCompanyReviews, splitByReviewerType } from "@/services/reviews.service";
 import StandardProviderCard from "./StandardProviderCard";
 import ReviewCard from "@/pages/provider/components/ReviewCard";
+
+// getCompanyScore is a fixed all-zero stub regardless of provider (no real evidence-scoring
+// data exists yet) — build it locally instead of firing one request per linked provider.
+function emptyScore(providerId: string): ProviderScore {
+  return {
+    provider_id: providerId,
+    learner_experience_score: 0,
+    employer_satisfaction_score: 0,
+    outcome_score: 0,
+    quality_score: 0,
+    confidence_score: 0,
+    overall_score: 0,
+    data_confidence_label: "Not Publicly Available",
+  };
+}
 
 interface StandardDetailLayoutProps {
   standard: Standard;
@@ -17,26 +33,47 @@ interface StandardDetailLayoutProps {
 
 export default function StandardDetailLayout({ standard }: StandardDetailLayoutProps) {
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+  const [isLoading, setIsLoading] = useState(true);
+  const [linkedProviders, setLinkedProviders] = useState<Provider[]>([]);
+  const [providerScores, setProviderScores] = useState<Record<string, ProviderScore>>({});
+  const [providerReviews, setProviderReviews] = useState<Record<string, { learner: Review[]; employer: Review[] }>>({});
+  const [faqs, setFaqs] = useState<FAQItem[]>([]);
+  const [reviews, setReviews] = useState<{ learner: Review[]; employer: Review[] }>({ learner: [], employer: [] });
 
-  const linkedProviders = getStandardProviders(standard.standard_id);
-  const faqs = standardFAQs[standard.standard_id] ?? [];
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.all([
+      getStandardCompanySlugs(standard.standard_id),
+      getStandardFAQs(standard.standard_id),
+      getReviews({}, { standard: standard.standard_id }),
+      getCompanies(),
+    ])
+      .then(async ([slugs, faqData, reviewsResult, allCompanies]) => {
+        const matchedProviders = allCompanies.filter((c) => slugs.includes(c.provider_id));
+        setLinkedProviders(matchedProviders);
+        setFaqs(faqData);
+        setReviews(splitByReviewerType(reviewsResult.reviews));
 
-  const providerData = linkedProviders
-    .map((lp) => {
-      const p = providers.find((pr) => pr.provider_id === lp.provider_id);
-      return p ? { ...lp, provider: p } : null;
-    })
-    .filter(Boolean) as Array<{
-    provider_id: string;
-    standard_id: string;
-    delivery_status: string;
-    evidence_source: string;
-    provider: (typeof providers)[0];
-  }>;
+        const scoreMap: Record<string, ProviderScore> = {};
+        matchedProviders.forEach((p) => {
+          scoreMap[p.provider_id] = emptyScore(p.provider_id);
+        });
+        setProviderScores(scoreMap);
 
-  const reviews = getStandardReviews(standard.standard_id);
+        // One batched request per linked provider instead of leaving each card to fetch its
+        // own reviews on mount.
+        const reviewsPerProvider = await Promise.all(matchedProviders.map((p) => getCompanyReviews(p.provider_id)));
+        const reviewsMap: Record<string, { learner: Review[]; employer: Review[] }> = {};
+        matchedProviders.forEach((p, i) => {
+          reviewsMap[p.provider_id] = reviewsPerProvider[i];
+        });
+        setProviderReviews(reviewsMap);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
+  }, [standard.standard_id]);
 
-  const allProviderIds = providerData.map((pd) => pd.provider_id);
+  const allProviderIds = linkedProviders.map((p) => p.provider_id);
   const compareUrl = `/compare?providers=${allProviderIds.slice(0, 3).join(",")}`;
 
   return (
@@ -151,7 +188,7 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
                   Training Providers
                 </h2>
                 <p className="mt-1 text-sm text-foreground-600">
-                  {providerData.length} provider{providerData.length !== 1 ? "s" : ""} delivering this standard
+                  {linkedProviders.length} provider{linkedProviders.length !== 1 ? "s" : ""} delivering this standard
                 </p>
               </div>
               <div className="flex items-center gap-1 bg-background-100 rounded-lg p-1">
@@ -180,15 +217,20 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
               </div>
             </div>
 
-            {providerData.length > 0 ? (
+            {isLoading ? (
+              <div className="py-10 bg-background-100 rounded-xl">
+                <LoadingIndicator />
+              </div>
+            ) : linkedProviders.length > 0 ? (
               <>
                 {viewMode === "cards" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {providerData.map((pd) => (
+                    {linkedProviders.map((p) => (
                       <StandardProviderCard
-                        key={pd.provider_id}
-                        provider={pd.provider}
-                        standardId={standard.standard_id}
+                        key={p.provider_id}
+                        provider={p}
+                        score={providerScores[p.provider_id] ?? null}
+                        reviews={providerReviews[p.provider_id] ?? { learner: [], employer: [] }}
                       />
                     ))}
                   </div>
@@ -206,30 +248,29 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
                         </tr>
                       </thead>
                       <tbody>
-                        {providerData.map((pd) => {
-                          const s = getProviderScore(pd.provider_id);
-                          const r = getStandardReviews(standard.standard_id);
+                        {linkedProviders.map((p) => {
+                          const s = providerScores[p.provider_id];
                           return (
                             <tr
-                              key={pd.provider_id}
+                              key={p.provider_id}
                               className="border-b border-background-100 hover:bg-background-50 transition-colors"
                             >
                               <td className="py-3 px-4">
                                 <div>
                                   <Link
-                                    to={`/provider/${pd.provider.provider_id}`}
+                                    to={`/provider/${p.provider_id}`}
                                     className="font-medium text-primary-600 hover:text-primary-700 text-sm"
                                   >
-                                    {pd.provider.trading_name}
+                                    {p.trading_name}
                                   </Link>
-                                  <p className="text-xs text-foreground-500 mt-0.5">{pd.provider.legal_name}</p>
+                                  <p className="text-xs text-foreground-500 mt-0.5">{p.legal_name}</p>
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-foreground-600 text-xs hidden sm:table-cell">
-                                {pd.provider.UKPRN}
+                                {p.UKPRN}
                               </td>
                               <td className="py-3 px-4 text-foreground-600 text-xs hidden md:table-cell">
-                                {pd.provider.location}
+                                {p.location}
                               </td>
                               <td className="py-3 px-4 hidden md:table-cell">
                                 <span className="text-xs text-foreground-600">
@@ -238,12 +279,12 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
                               </td>
                               <td className="py-3 px-4 hidden lg:table-cell">
                                 <span className="text-xs text-foreground-600">
-                                  {r.learner.length > 0 ? `${r.learner.length} review${r.learner.length > 1 ? "s" : ""}` : "None"}
+                                  {reviews.learner.length > 0 ? `${reviews.learner.length} review${reviews.learner.length > 1 ? "s" : ""}` : "None"}
                                 </span>
                               </td>
                               <td className="py-3 px-4 text-right">
                                 <Link
-                                  to={`/compare?providers=${pd.provider_id}`}
+                                  to={`/compare?providers=${p.provider_id}`}
                                   className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 whitespace-nowrap"
                                 >
                                   Compare
@@ -278,7 +319,11 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
               </p>
             </div>
 
-            {reviews.learner.length > 0 || reviews.employer.length > 0 ? (
+            {isLoading ? (
+              <div className="p-10 bg-background-50 rounded-xl border border-background-200/70">
+                <LoadingIndicator />
+              </div>
+            ) : reviews.learner.length > 0 || reviews.employer.length > 0 ? (
               <div className="space-y-6">
                 {/* Learner reviews */}
                 {reviews.learner.length > 0 && (
@@ -337,7 +382,11 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
             <h2 className="font-heading text-xl font-bold text-foreground-950 mb-6">
               Frequently Asked Questions
             </h2>
-            {faqs.length > 0 ? (
+            {isLoading ? (
+              <div className="py-8 bg-background-100 rounded-xl">
+                <LoadingIndicator />
+              </div>
+            ) : faqs.length > 0 ? (
               <div className="flex flex-col gap-3">
                 {faqs.map((faq, i) => (
                   <details

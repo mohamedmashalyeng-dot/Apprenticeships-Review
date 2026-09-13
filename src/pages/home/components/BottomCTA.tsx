@@ -35,7 +35,7 @@ export default function BottomCTA() {
 
           {/* Body */}
           <p className="text-base md:text-lg text-white/85 max-w-xl mx-auto leading-relaxed mb-10">
-            Compare ratings, reviews, and programme details across every registered apprenticeship provider. No bias, no hidden agenda — just the facts you need to decide.
+            Compare ratings, reviews, and programme details across every registered apprenticeship provider. No bias, no hidden agenda, just the facts you need to decide.
           </p>
 
           {/* CTA buttons */}
