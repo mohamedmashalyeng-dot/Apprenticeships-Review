@@ -493,3 +493,166 @@ def get_competitor_detail(slug):
         "google_place_id": google_row[0] if google_row else None,
         "sources": sources,
     }
+
+
+def get_landscape_overview():
+    """Aggregate stats across all 203 competitors — counts and distributions only, no
+    per-competitor detail. Used for the "Landscape / Overview" summary page."""
+    with connection.cursor() as cur:
+        cur.execute("SELECT id FROM competitors WHERE enabled = true")
+        ids = [r[0] for r in cur.fetchall()]
+        total = len(ids)
+        if total == 0:
+            return None
+
+        # Target-standard coverage: KBC mapping, FATP-current listing, QAR published evidence —
+        # kept as 3 independent counts per standard, exactly like the detail page (never collapsed).
+        cur.execute(
+            """
+            SELECT ap.standard_key, COUNT(DISTINCT cap.competitor_id)
+            FROM competitor_apprenticeship_programmes cap
+            JOIN apprenticeship_programmes ap ON ap.id = cap.programme_id
+            WHERE cap.active = true
+            GROUP BY ap.standard_key
+            """
+        )
+        kbc_counts = dict(cur.fetchall())
+
+        cur.execute(
+            """
+            SELECT standard_reference, COUNT(DISTINCT competitor_id)
+            FROM competitor_fatp_standards
+            WHERE is_current = true AND standard_reference = ANY(%s)
+            GROUP BY standard_reference
+            """,
+            [TARGET_ST_CODES],
+        )
+        fatp_counts = dict(cur.fetchall())
+
+        cur.execute(
+            """
+            SELECT standard_code, COUNT(DISTINCT competitor_id)
+            FROM competitor_dfe_qar
+            WHERE is_overall = false AND standard_code = ANY(%s)
+            GROUP BY standard_code
+            """,
+            [TARGET_ST_CODES],
+        )
+        qar_counts = dict(cur.fetchall())
+
+        target_standard_coverage = [
+            {
+                "st_code": t["st_code"],
+                "name": t["name"],
+                "kbc_mapped_count": kbc_counts.get(t["standard_key"], 0),
+                "fatp_current_count": fatp_counts.get(t["st_code"], 0),
+                "qar_evidence_count": qar_counts.get(t["st_code"], 0),
+            }
+            for t in TARGET_STANDARDS
+        ]
+
+        # Source coverage — one competitor-count per source, out of the 203 total.
+        cur.execute(
+            """
+            SELECT 'trustpilot', COUNT(DISTINCT competitor_id) FROM latest_competitor_ratings WHERE source_key = 'trustpilot'
+            UNION ALL
+            SELECT 'fatp', COUNT(DISTINCT competitor_id) FROM latest_competitor_ratings WHERE source_key = 'fatp'
+            UNION ALL
+            SELECT 'apar', COUNT(DISTINCT competitor_id) FROM competitor_apar_profiles
+            UNION ALL
+            SELECT 'dfe_activity', COUNT(DISTINCT competitor_id) FROM competitor_dfe_provider_activity
+            UNION ALL
+            SELECT 'dfe_qar', COUNT(DISTINCT competitor_id) FROM competitor_dfe_qar
+            UNION ALL
+            SELECT 'ofsted', COUNT(DISTINCT competitor_id) FROM competitor_ofsted_inspections
+            UNION ALL
+            SELECT 'google_place', COUNT(DISTINCT competitor_id) FROM google_place_candidates WHERE approval_status = 'approved'
+            """
+        )
+        source_coverage = {key: count for key, count in cur.fetchall()}
+
+        # FATP standards portfolio size distribution (current listings only).
+        cur.execute(
+            """
+            SELECT AVG(n)::numeric(10,1), MIN(n), MAX(n)
+            FROM (
+                SELECT competitor_id, COUNT(*) AS n
+                FROM competitor_fatp_standards
+                WHERE is_current = true
+                GROUP BY competitor_id
+            ) counts
+            """
+        )
+        avg_standards, min_standards, max_standards = cur.fetchone()
+
+        # Trustpilot performance snapshot (only over competitors that have a rating).
+        cur.execute(
+            "SELECT AVG(rating_value)::numeric(10,2), SUM(review_count) FROM latest_competitor_ratings WHERE source_key = 'trustpilot'"
+        )
+        trustpilot_avg_rating, trustpilot_total_reviews = cur.fetchone()
+
+        # FATP achievement-rate average across competitors that publish one.
+        cur.execute(
+            "SELECT AVG(rating_value)::numeric(10,1) FROM latest_competitor_ratings WHERE source_key = 'fatp' AND metric_key = 'fatp_achievement_rate'"
+        )
+        (fatp_avg_achievement,) = cur.fetchone()
+
+        # QAR achievement-rate average — latest year's overall row per competitor, suppressed excluded.
+        cur.execute(
+            """
+            SELECT AVG(achievement_rate)::numeric(10,1)
+            FROM (
+                SELECT DISTINCT ON (competitor_id) achievement_rate
+                FROM competitor_dfe_qar
+                WHERE is_overall = true AND achievement_rate_suppressed = false
+                ORDER BY competitor_id, time_period DESC
+            ) latest
+            """
+        )
+        (qar_avg_achievement,) = cur.fetchone()
+
+        # Ofsted grade distribution — renewed and legacy kept as separate distributions, per
+        # competitor's most relevant inspection (same "prefer renewed" rule as the list page).
+        cur.execute(
+            """
+            SELECT framework_era, legacy_overall_effectiveness_label, apprenticeships_achievement, competitor_id, date_published
+            FROM competitor_ofsted_inspections
+            ORDER BY competitor_id, (framework_era = 'renewed') DESC, date_published DESC NULLS LAST
+            """
+        )
+        seen = set()
+        renewed_dist: dict = {}
+        legacy_dist: dict = {}
+        for era, legacy_label, renewed_label, cid, _ in cur.fetchall():
+            if cid in seen:
+                continue
+            seen.add(cid)
+            if era == "renewed" and renewed_label:
+                renewed_dist[renewed_label] = renewed_dist.get(renewed_label, 0) + 1
+            elif legacy_label:
+                legacy_dist[legacy_label] = legacy_dist.get(legacy_label, 0) + 1
+
+    return {
+        "total_competitors": total,
+        "target_standard_coverage": target_standard_coverage,
+        "source_coverage": {
+            "trustpilot": source_coverage.get("trustpilot", 0),
+            "fatp": source_coverage.get("fatp", 0),
+            "apar": source_coverage.get("apar", 0),
+            "dfe_activity": source_coverage.get("dfe_activity", 0),
+            "dfe_qar": source_coverage.get("dfe_qar", 0),
+            "ofsted": source_coverage.get("ofsted", 0),
+            "google_place": source_coverage.get("google_place", 0),
+        },
+        "fatp_standards_portfolio": {
+            "average": float(avg_standards) if avg_standards is not None else None,
+            "min": min_standards,
+            "max": max_standards,
+        },
+        "trustpilot_average_rating": float(trustpilot_avg_rating) if trustpilot_avg_rating is not None else None,
+        "trustpilot_total_reviews": trustpilot_total_reviews,
+        "fatp_average_achievement_rate": float(fatp_avg_achievement) if fatp_avg_achievement is not None else None,
+        "qar_average_achievement_rate": float(qar_avg_achievement) if qar_avg_achievement is not None else None,
+        "ofsted_renewed_distribution": renewed_dist,
+        "ofsted_legacy_distribution": legacy_dist,
+    }

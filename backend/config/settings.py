@@ -109,15 +109,22 @@ REST_FRAMEWORK = {
 
 # ---- Session / CSRF cookies ----
 # In dev the SPA reaches the API through the Vite proxy, so it's same-origin and Lax
-# cookies work fine. In production the SPA (Hostinger) and API (Render) are on different
-# domains, so the browser needs SameSite=None (which requires Secure) to send cookies on
-# cross-origin fetches. COOKIE_SAMESITE lets this be overridden if that ever changes.
+# cookies work fine. In production the SPA (Hostinger) and API (Render, or a tunnel) are on
+# different domains, so the browser needs SameSite=None (which requires Secure) to send
+# cookies on cross-origin fetches.
+#
+# This is deliberately NOT tied to DEBUG: DEBUG controls error verbosity, but a Secure
+# cookie is rejected outright by the browser over plain http:// — which is exactly how
+# local testing hits this server (http://localhost:3000 via the Vite proxy), regardless
+# of DEBUG. Tying cookie security to DEBUG silently breaks local login. COOKIE_SAMESITE /
+# COOKIE_SECURE let each be set independently when this same server is temporarily exposed
+# cross-domain (e.g. via a tunnel) for a deployed-frontend test.
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = os.environ.get("COOKIE_SAMESITE", "Lax" if DEBUG else "None")
+SESSION_COOKIE_SAMESITE = os.environ.get("COOKIE_SAMESITE", "Lax")
 CSRF_COOKIE_HTTPONLY = False  # the SPA must be able to read this and echo it back as a header
-CSRF_COOKIE_SAMESITE = os.environ.get("COOKIE_SAMESITE", "Lax" if DEBUG else "None")
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = os.environ.get("COOKIE_SAMESITE", "Lax")
+SESSION_COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "False") == "True"
+CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
 
 CORS_ALLOWED_ORIGINS = [
     o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",") if o.strip()

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getStandards } from "@/services/standards.service";
 import type { Standard } from "@/types/standard";
 
-export default function HeroSection() {
+export default function HeroSection({ onReady }: { onReady?: () => void } = {}) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState("");
@@ -17,8 +17,10 @@ export default function HeroSection() {
       if (!active) return;
       setStandards(stds);
       setStatus("ready");
-    }).catch(() => { if (active) setStatus("error"); });
+    }).catch(() => { if (active) setStatus("error"); })
+      .finally(() => { if (active) onReady?.(); });
     return () => { active = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempt]);
 
   const levels = [...new Set(standards.map((item) => item.level))].sort((a, b) => a - b);

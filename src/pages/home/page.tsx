@@ -66,7 +66,12 @@ function toMiniProvider(p: Provider, programme: string, colorIndex: number): Min
 export default function Home() {
   const [tracks, setTracks] = useState<{ label: string; icon: string; providers: MiniProvider[] }[]>([]);
 
+  // Sections load one at a time instead of all firing their fetches together on mount —
+  // each stage's data-fetching section only starts once the previous one has settled.
+  const [stage, setStage] = useState(1);
+
   useEffect(() => {
+    if (stage !== 2) return;
     Promise.all(
       TRACKS.map((track) =>
         getCompanies({ categoryId: track.categoryId, sortBy: "reviews" }).then((companies) => ({
@@ -74,16 +79,18 @@ export default function Home() {
           companies: companies.slice(0, 6),
         }))
       )
-    ).then((results) => {
-      setTracks(
-        results.map(({ track, companies }) => ({
-          label: track.label,
-          icon: track.icon,
-          providers: companies.map((c, idx) => toMiniProvider(c, track.programme, idx)),
-        }))
-      );
-    });
-  }, []);
+    )
+      .then((results) => {
+        setTracks(
+          results.map(({ track, companies }) => ({
+            label: track.label,
+            icon: track.icon,
+            providers: companies.map((c, idx) => toMiniProvider(c, track.programme, idx)),
+          }))
+        );
+      })
+      .finally(() => setStage(3));
+  }, [stage]);
 
   return (
     <div className="min-h-screen bg-background-50">
@@ -91,7 +98,7 @@ export default function Home() {
 
       {/* 1. Hero — instant load with slight fade */}
       <AnimateOnScroll delay={100} duration={700} threshold={0}>
-        <HeroSection />
+        <HeroSection onReady={() => setStage((s) => Math.max(s, 2))} />
       </AnimateOnScroll>
 
       {/* 2. Categories */}
@@ -123,12 +130,12 @@ export default function Home() {
 
       {/* 6. Recent reviews */}
       <AnimateOnScroll delay={150} duration={650}>
-        <RecentReviewsSection />
+        <RecentReviewsSection active={stage >= 3} onReady={() => setStage((s) => Math.max(s, 4))} />
       </AnimateOnScroll>
 
       {/* 7. Provider intelligence */}
       <AnimateOnScroll delay={150} duration={650}>
-        <CompetitorsSection />
+        <CompetitorsSection active={stage >= 4} />
       </AnimateOnScroll>
 
       {/* 8. Bottom CTA */}

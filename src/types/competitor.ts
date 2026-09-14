@@ -176,3 +176,34 @@ export interface CompetitorDetail {
   google_place_id: string | null;
   sources: CompetitorSourceRow[];
 }
+
+export interface CompetitorLandscapeTargetCoverage {
+  st_code: string;
+  name: string;
+  kbc_mapped_count: number;
+  fatp_current_count: number;
+  qar_evidence_count: number;
+}
+
+export interface CompetitorLandscapeSourceCoverage {
+  trustpilot: number;
+  fatp: number;
+  apar: number;
+  dfe_activity: number;
+  dfe_qar: number;
+  ofsted: number;
+  google_place: number;
+}
+
+export interface CompetitorLandscapeOverview {
+  total_competitors: number;
+  target_standard_coverage: CompetitorLandscapeTargetCoverage[];
+  source_coverage: CompetitorLandscapeSourceCoverage;
+  fatp_standards_portfolio: { average: number | null; min: number | null; max: number | null };
+  trustpilot_average_rating: number | null;
+  trustpilot_total_reviews: number | null;
+  fatp_average_achievement_rate: number | null;
+  qar_average_achievement_rate: number | null;
+  ofsted_renewed_distribution: Record<string, number>;
+  ofsted_legacy_distribution: Record<string, number>;
+}

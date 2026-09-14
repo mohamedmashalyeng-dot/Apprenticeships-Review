@@ -7,7 +7,8 @@ from reviews.models import CompanyClaim, IngestionJob, Notification, Review, Rev
 
 class ReviewSerializer(serializers.ModelSerializer):
     review_id = serializers.UUIDField(source="id", read_only=True)
-    provider_id = serializers.CharField(source="company.slug", read_only=True)
+    provider_id = serializers.SerializerMethodField()
+    pending_provider_name = serializers.SerializerMethodField()
     standard_id = serializers.SerializerMethodField()
     rating = serializers.FloatField()
     category_ratings = serializers.SerializerMethodField()
@@ -17,6 +18,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = [
             "review_id",
             "provider_id",
+            "pending_provider_name",
             "standard_id",
             "reviewer_type",
             "reviewer_name",
@@ -37,6 +39,12 @@ class ReviewSerializer(serializers.ModelSerializer):
             "helpful_count",
             "category_ratings",
         ]
+
+    def get_provider_id(self, obj):
+        return obj.company.slug if obj.company_id else None
+
+    def get_pending_provider_name(self, obj):
+        return obj.pending_claim.organisation_name if obj.pending_claim_id else None
 
     def get_standard_id(self, obj):
         return obj.standard.standard_id if obj.standard_id else ""
@@ -84,7 +92,10 @@ class ModerateReviewSerializer(serializers.Serializer):
 
 
 class ReviewCreateSerializer(serializers.Serializer):
-    company_slug = serializers.SlugField()
+    # Exactly one of these two identifies who the review is about: an existing provider, or a
+    # provider that's just been requested via a CompanyClaim and doesn't exist yet.
+    company_slug = serializers.SlugField(required=False, allow_null=True)
+    pending_claim_id = serializers.UUIDField(required=False, allow_null=True)
     standard_slug = serializers.SlugField(required=False, allow_null=True)
     reviewer_type = serializers.ChoiceField(choices=Review.ReviewerType.choices)
     rating = serializers.FloatField(min_value=1, max_value=5)
@@ -99,12 +110,30 @@ class ReviewCreateSerializer(serializers.Serializer):
     )
     category_ratings = serializers.DictField(child=serializers.FloatField(), required=False, default=dict)
 
+    def validate(self, attrs):
+        if not attrs.get("company_slug") and not attrs.get("pending_claim_id"):
+            raise serializers.ValidationError("Either company_slug or pending_claim_id is required.")
+        return attrs
+
     def create(self, validated_data):
         import hashlib
 
         from django.utils import timezone
 
-        company = get_object_or_404(Company, slug=validated_data["company_slug"])
+        request = self.context["request"]
+        company = None
+        pending_claim = None
+        identity_key = ""
+
+        if validated_data.get("company_slug"):
+            company = get_object_or_404(Company, slug=validated_data["company_slug"])
+            identity_key = str(company.id)
+        else:
+            pending_claim = get_object_or_404(
+                CompanyClaim, id=validated_data["pending_claim_id"], submitted_by=request.user, status=CompanyClaim.Status.PENDING
+            )
+            identity_key = f"claim:{pending_claim.id}"
+
         standard = None
         if validated_data.get("standard_slug"):
             standard = get_object_or_404(Standard, standard_id=validated_data["standard_slug"])
@@ -112,13 +141,13 @@ class ReviewCreateSerializer(serializers.Serializer):
             source_key="native", defaults={"display_name": "Native submission"}
         )
         category_ratings = validated_data.pop("category_ratings", {})
-        request = self.context["request"]
         fingerprint = hashlib.sha256(
-            f"{company.id}|{request.user.id}|{validated_data['review_title']}|{validated_data['review_text']}".encode()
+            f"{identity_key}|{request.user.id}|{validated_data['review_title']}|{validated_data['review_text']}".encode()
         ).hexdigest()
 
         review = Review.objects.create(
             company=company,
+            pending_claim=pending_claim,
             standard=standard,
             source=native_source,
             reviewer_user=request.user,

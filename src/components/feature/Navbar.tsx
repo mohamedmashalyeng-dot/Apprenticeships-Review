@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { getNotifications } from "@/services/notifications.service";
+import type { AppNotification } from "@/types/notification";
+
+const NOTIFICATIONS_POLL_MS = 20000;
 
 interface NavLink {
   label: string;
@@ -39,16 +42,55 @@ export default function Navbar() {
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [toasts, setToasts] = useState<AppNotification[]>([]);
+  const seenIdsRef = useRef<Set<string> | null>(null);
 
   useEffect(() => {
     if (!user) {
       setUnreadCount(0);
+      seenIdsRef.current = null;
       return;
     }
-    getNotifications()
-      .then((notifs) => setUnreadCount(notifs.filter((n) => !n.is_read).length))
-      .catch(() => {});
+
+    let cancelled = false;
+
+    const poll = () => {
+      getNotifications()
+        .then((notifs) => {
+          if (cancelled) return;
+          setUnreadCount(notifs.filter((n) => !n.is_read).length);
+
+          // First poll after login/mount just establishes the baseline — nothing "new" yet,
+          // so nothing pops up for notifications that were already sitting there unread.
+          if (seenIdsRef.current === null) {
+            seenIdsRef.current = new Set(notifs.map((n) => n.id));
+            return;
+          }
+          const freshlyArrived = notifs.filter((n) => !seenIdsRef.current!.has(n.id));
+          if (freshlyArrived.length > 0) {
+            seenIdsRef.current = new Set(notifs.map((n) => n.id));
+            setToasts((prev) => [...freshlyArrived, ...prev].slice(0, 4));
+            freshlyArrived.forEach((n) => {
+              setTimeout(() => {
+                setToasts((prev) => prev.filter((t) => t.id !== n.id));
+              }, 7000);
+            });
+          }
+        })
+        .catch(() => {});
+    };
+
+    poll();
+    const interval = setInterval(poll, NOTIFICATIONS_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [user]);
+
+  const dismissToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -107,6 +149,7 @@ export default function Navbar() {
   const isDropdownOpen = (label: string) => openDropdown === label;
 
   return (
+    <>
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
@@ -388,7 +431,47 @@ export default function Navbar() {
           from { opacity: 0; transform: translateY(-4px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes toastIn {
+          from { opacity: 0; transform: translateX(16px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
       `}</style>
     </nav>
+
+    {/* Live notification toasts — appear the moment a poll picks up something new, no refresh needed */}
+    {toasts.length > 0 && (
+      <div className="fixed top-20 right-4 md:right-6 z-[60] flex flex-col gap-2.5 w-[calc(100%-2rem)] max-w-sm">
+        {toasts.map((n) => (
+          <Link
+            key={n.id}
+            to={n.link || "/dashboard?tab=notifications"}
+            onClick={() => dismissToast(n.id)}
+            className="flex items-start gap-3 p-4 bg-[#0C2547] border border-background-50/15 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:border-primary-400/40 transition-colors"
+            style={{ animation: "toastIn 200ms ease-out both" }}
+          >
+            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full bg-primary-500/15 text-primary-300">
+              <i className="ri-notification-3-line text-sm" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-white">{n.title}</p>
+              {n.message && <p className="text-xs text-white/70 mt-0.5 line-clamp-2">{n.message}</p>}
+            </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dismissToast(n.id);
+              }}
+              className="flex-shrink-0 text-white/40 hover:text-white/80 transition-colors cursor-pointer"
+              aria-label="Dismiss"
+            >
+              <i className="ri-close-line text-base" />
+            </button>
+          </Link>
+        ))}
+      </div>
+    )}
+    </>
   );
 }

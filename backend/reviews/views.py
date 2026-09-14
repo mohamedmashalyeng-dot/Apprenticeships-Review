@@ -98,6 +98,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
             qs = qs.order_by("-review_date")
 
         user = self.request.user
+        # A review still attached to an unapproved claim (no real company yet) isn't ready to
+        # be moderated — hide it from the moderation queue. The reviewer still sees it via
+        # ?mine=true regardless (filtered above), and it becomes moderatable once the claim
+        # is approved and CompanyClaimViewSet.approve links it to the new company.
+        if not (params.get("mine") == "true" and user.is_authenticated):
+            qs = qs.filter(pending_claim__isnull=True)
+
         if params.get("moderation_status") and user.is_authenticated and user.role in ("admin", "moderator"):
             return qs.filter(moderation_status=params["moderation_status"])
         if user.is_authenticated and user.role in ("admin", "moderator"):
@@ -164,6 +171,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["patch"], permission_classes=[IsAdminOrModerator])
     def moderate(self, request, id=None):
         review = get_object_or_404(Review.objects.select_related("company"), id=id)
+        if review.pending_claim_id:
+            return Response(
+                {"message": "This review is waiting on its provider claim to be approved first."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = ModerateReviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(review)
@@ -251,6 +263,16 @@ class CompanyClaimViewSet(viewsets.ModelViewSet):
         claim.reviewed_by = request.user
         claim.reviewed_at = timezone.now()
         claim.save(update_fields=["company", "status", "reviewed_by", "reviewed_at"])
+
+        # Any review submitted against this claim while the provider didn't exist yet gets
+        # linked to the now-real company and drops into the normal moderation queue — the
+        # reviewer doesn't have to come back and resubmit it.
+        pending_reviews = list(claim.pending_reviews.all())
+        for review in pending_reviews:
+            review.company = company
+            review.pending_claim = None
+            review.save(update_fields=["company", "pending_claim", "updated_at"])
+
         notify(
             claim.submitted_by,
             Notification.NotificationType.CLAIM_APPROVED,
@@ -258,6 +280,14 @@ class CompanyClaimViewSet(viewsets.ModelViewSet):
             message=f"You're now the owner of {company.trading_name}.",
             link="/provider-dashboard",
         )
+        if pending_reviews:
+            notify(
+                claim.submitted_by,
+                Notification.NotificationType.CLAIM_APPROVED,
+                title=f"{company.trading_name} is now live",
+                message="Your review is now in our standard moderation queue.",
+                link="/dashboard?tab=reviews",
+            )
         return Response(CompanyClaimSerializer(claim).data)
 
     @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])

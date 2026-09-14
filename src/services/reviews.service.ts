@@ -3,7 +3,10 @@ import type { Review } from "@/types/review";
 import type { ProviderResponse } from "@/types/rating";
 
 export interface SubmitReviewInput {
-  companySlug: string;
+  // Exactly one of these two — companySlug for an existing provider, pendingClaimId when
+  // submitting alongside a brand-new provider request that hasn't been approved yet.
+  companySlug?: string;
+  pendingClaimId?: string;
   standardSlug?: string;
   reviewerType: "learner" | "employer";
   rating: number;
@@ -89,6 +92,7 @@ export async function getMyReviews(): Promise<Review[]> {
 export async function submitReview(input: SubmitReviewInput): Promise<Review> {
   return api.post<Review>("/reviews/", {
     company_slug: input.companySlug,
+    pending_claim_id: input.pendingClaimId,
     standard_slug: input.standardSlug,
     reviewer_type: input.reviewerType,
     rating: input.rating,

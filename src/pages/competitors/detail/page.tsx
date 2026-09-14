@@ -39,29 +39,55 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+const REVIEWS_PAGE_SIZE = 6;
+
 function ReviewList({ reviews, emptyMessage }: { reviews: CompetitorReview[]; emptyMessage: string }) {
+  const [visibleCount, setVisibleCount] = useState(REVIEWS_PAGE_SIZE);
+
+  // Reset back to the first page whenever the underlying review set changes (e.g. navigating
+  // from one provider's detail page to another).
+  useEffect(() => {
+    setVisibleCount(REVIEWS_PAGE_SIZE);
+  }, [reviews]);
+
   if (reviews.length === 0) return <p className="text-sm text-foreground-500">{emptyMessage}</p>;
+
+  const visibleReviews = reviews.slice(0, visibleCount);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {reviews.map((r, i) => (
-        <div key={i} className="p-4 bg-background-100 rounded-xl">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-sm font-semibold text-foreground-900">{r.reviewer_name?.trim() || "Anonymous"}</span>
-            {r.rating_value != null && (
-              <span className="text-xs font-semibold text-foreground-700">
-                {r.rating_value}/{r.rating_scale}
-              </span>
-            )}
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {visibleReviews.map((r, i) => (
+          <div key={i} className="p-4 bg-background-100 rounded-xl">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm font-semibold text-foreground-900">{r.reviewer_name?.trim() || "Anonymous"}</span>
+              {r.rating_value != null && (
+                <span className="text-xs font-semibold text-foreground-700">
+                  {r.rating_value}/{r.rating_scale}
+                </span>
+              )}
+            </div>
+            {r.title && <p className="text-sm font-medium text-foreground-800 mb-1">{r.title}</p>}
+            {r.review_text && <p className="text-xs text-foreground-600 leading-relaxed line-clamp-4">{r.review_text}</p>}
+            <p className="mt-2 text-xs text-foreground-400">
+              {r.review_date ? new Date(r.review_date).toLocaleDateString() : "No date"}
+              {r.is_verified && <span className="ml-2 text-primary-600">Verified</span>}
+            </p>
           </div>
-          {r.title && <p className="text-sm font-medium text-foreground-800 mb-1">{r.title}</p>}
-          {r.review_text && <p className="text-xs text-foreground-600 leading-relaxed line-clamp-4">{r.review_text}</p>}
-          <p className="mt-2 text-xs text-foreground-400">
-            {r.review_date ? new Date(r.review_date).toLocaleDateString() : "No date"}
-            {r.is_verified && <span className="ml-2 text-primary-600">Verified</span>}
-          </p>
+        ))}
+      </div>
+      {visibleCount < reviews.length && (
+        <div className="flex justify-center mt-4">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((count) => count + REVIEWS_PAGE_SIZE)}
+            className="px-4 py-2 bg-background-50 border border-background-200/70 text-sm font-semibold text-primary-500 rounded-full hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 transition-all duration-200 cursor-pointer"
+          >
+            Read more ({reviews.length - visibleCount} more)
+          </button>
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }
 

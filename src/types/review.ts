@@ -1,6 +1,9 @@
 export interface Review {
   review_id: string;
-  provider_id: string;
+  // null while the review is attached to an unapproved provider claim instead of a real
+  // provider — see pending_provider_name for what to show in that state.
+  provider_id: string | null;
+  pending_provider_name?: string | null;
   standard_id: string;
   reviewer_type: "learner" | "employer";
   reviewer_name?: string;

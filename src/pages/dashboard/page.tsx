@@ -179,7 +179,30 @@ export default function Dashboard() {
                                 {user?.displayName?.trim() || "Anonymous"}
                               </span>
                             </div>
-                            {review.verification_status === "Verified" && <VerifiedBadge />}
+                            <div className="flex items-center gap-2">
+                              {review.pending_provider_name ? (
+                                <span className="text-xs font-semibold px-2 py-0.5 rounded-full capitalize whitespace-nowrap bg-amber-50 text-amber-700">
+                                  Awaiting provider approval
+                                </span>
+                              ) : (
+                                review.moderation_status && (
+                                  <span
+                                    className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize whitespace-nowrap ${
+                                      review.moderation_status === "approved"
+                                        ? "bg-green-50 text-green-700"
+                                        : review.moderation_status === "rejected"
+                                        ? "bg-red-50 text-red-700"
+                                        : review.moderation_status === "flagged"
+                                        ? "bg-amber-50 text-amber-700"
+                                        : "bg-yellow-50 text-yellow-700"
+                                    }`}
+                                  >
+                                    {review.moderation_status === "pending" ? "Pending review" : review.moderation_status}
+                                  </span>
+                                )
+                              )}
+                              {review.verification_status === "Verified" && <VerifiedBadge />}
+                            </div>
                           </div>
                           <div className="flex items-center gap-2 mb-2">
                             <StarRating rating={review.rating} size="sm" />
@@ -189,12 +212,14 @@ export default function Dashboard() {
                           <p className="text-sm text-foreground-600 line-clamp-2 mb-3">{review.review_text}</p>
                           <div className="flex items-center justify-between pt-3 border-t border-background-200/60">
                             <span className="text-xs text-foreground-500">
-                              {provider?.trading_name} · {review.review_date}
+                              {provider?.trading_name ?? review.pending_provider_name} · {review.review_date}
                             </span>
                             <div className="flex items-center gap-3">
-                              <Link to={`/review/${review.review_id}`} className="text-xs text-primary-600 hover:text-primary-700 font-medium">
-                                View
-                              </Link>
+                              {review.provider_id && (
+                                <Link to={`/review/${review.review_id}`} className="text-xs text-primary-600 hover:text-primary-700 font-medium">
+                                  View
+                                </Link>
+                              )}
                               <button className="text-xs text-primary-600 hover:text-primary-700 font-medium cursor-pointer">
                                 Edit
                               </button>

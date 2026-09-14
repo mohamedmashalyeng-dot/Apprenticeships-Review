@@ -9,10 +9,11 @@ function formatPercent(value: number | null): string {
   return value == null ? "—" : `${value.toFixed(1)}%`;
 }
 
-export default function CompetitorsSection() {
+export default function CompetitorsSection({ active = true, onReady }: { active?: boolean; onReady?: () => void } = {}) {
   const [competitors, setCompetitors] = useState<CompetitorSummary[]>([]);
 
   useEffect(() => {
+    if (!active) return;
     getCompetitors()
       .then((all) => {
         const ranked = [...all].sort((a, b) => {
@@ -23,8 +24,10 @@ export default function CompetitorsSection() {
         });
         setCompetitors(ranked.slice(0, PREVIEW_COUNT));
       })
-      .catch(() => setCompetitors([]));
-  }, []);
+      .catch(() => setCompetitors([]))
+      .finally(() => onReady?.());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   if (competitors.length === 0) return null;
 

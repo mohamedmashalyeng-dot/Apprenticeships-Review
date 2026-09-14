@@ -1,38 +1,43 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 import { Navigate } from "react-router-dom";
-import NotFound from "@/pages/NotFound";
-import Landing from "@/pages/landing/page";
-import Home from "@/pages/home/page";
-import CompareProviders from "@/pages/compare/page";
-import ProviderProfile from "@/pages/provider/page";
-import FindProvider from "@/pages/providers/page";
-import TopRated from "@/pages/top-rated/page";
-import ReviewDetails from "@/pages/review-detail/page";
-import Standards from "@/pages/standards/page";
-import MarketingExecutiveLevel4 from "@/pages/standards/marketing-executive-level-4/page";
-import MarketingManagerLevel6 from "@/pages/standards/marketing-manager-level-6/page";
-import AssociateProjectManagerLevel4 from "@/pages/standards/associate-project-manager-level-4/page";
-import ProjectControlsProfessionalLevel6 from "@/pages/standards/project-controls-professional-level-6/page";
-import Reviews from "@/pages/reviews/page";
-import AddReview from "@/pages/add-review/page";
-import About from "@/pages/about/page";
-import Help from "@/pages/help/page";
-import Login from "@/pages/login/page";
-import ResetPassword from "@/pages/reset-password/page";
-import Dashboard from "@/pages/dashboard/page";
-import ProviderDashboard from "@/pages/provider-dashboard/page";
-import EditProviderProfile from "@/pages/provider-dashboard/edit/page";
-import Admin from "@/pages/admin/page";
-import CompetitorsList from "@/pages/competitors/page";
-import CompetitorDetailPage from "@/pages/competitors/detail/page";
-import ClaimProvider from "@/pages/claim-provider/page";
-import Methodology from "@/pages/methodology/page";
-import ReviewPolicy from "@/pages/review-policy/page";
-import Contact from "@/pages/contact/page";
-import PrivacyPolicy from "@/pages/privacy-policy/page";
-import DataSources from "@/pages/data-sources/page";
-import TermsOfService from "@/pages/terms/page";
 import ProtectedRoute from "@/router/ProtectedRoute";
+
+// Each page is its own chunk, fetched only when its route is actually visited — keeps the
+// initial bundle to shared framework/layout code instead of all ~30 pages at once.
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const Landing = lazy(() => import("@/pages/landing/page"));
+const Home = lazy(() => import("@/pages/home/page"));
+const CompareProviders = lazy(() => import("@/pages/compare/page"));
+const ProviderProfile = lazy(() => import("@/pages/provider/page"));
+const FindProvider = lazy(() => import("@/pages/providers/page"));
+const TopRated = lazy(() => import("@/pages/top-rated/page"));
+const ReviewDetails = lazy(() => import("@/pages/review-detail/page"));
+const Standards = lazy(() => import("@/pages/standards/page"));
+const MarketingExecutiveLevel4 = lazy(() => import("@/pages/standards/marketing-executive-level-4/page"));
+const MarketingManagerLevel6 = lazy(() => import("@/pages/standards/marketing-manager-level-6/page"));
+const AssociateProjectManagerLevel4 = lazy(() => import("@/pages/standards/associate-project-manager-level-4/page"));
+const ProjectControlsProfessionalLevel6 = lazy(() => import("@/pages/standards/project-controls-professional-level-6/page"));
+const Reviews = lazy(() => import("@/pages/reviews/page"));
+const AddReview = lazy(() => import("@/pages/add-review/page"));
+const About = lazy(() => import("@/pages/about/page"));
+const Help = lazy(() => import("@/pages/help/page"));
+const Login = lazy(() => import("@/pages/login/page"));
+const ResetPassword = lazy(() => import("@/pages/reset-password/page"));
+const Dashboard = lazy(() => import("@/pages/dashboard/page"));
+const ProviderDashboard = lazy(() => import("@/pages/provider-dashboard/page"));
+const EditProviderProfile = lazy(() => import("@/pages/provider-dashboard/edit/page"));
+const Admin = lazy(() => import("@/pages/admin/page"));
+const CompetitorsList = lazy(() => import("@/pages/competitors/page"));
+const CompetitorDetailPage = lazy(() => import("@/pages/competitors/detail/page"));
+const CompetitorLandscapeOverviewPage = lazy(() => import("@/pages/competitors/overview/page"));
+const ClaimProvider = lazy(() => import("@/pages/claim-provider/page"));
+const Methodology = lazy(() => import("@/pages/methodology/page"));
+const ReviewPolicy = lazy(() => import("@/pages/review-policy/page"));
+const Contact = lazy(() => import("@/pages/contact/page"));
+const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy/page"));
+const DataSources = lazy(() => import("@/pages/data-sources/page"));
+const TermsOfService = lazy(() => import("@/pages/terms/page"));
 
 const routes: RouteObject[] = [
   { path: "/", element: <Landing /> },
@@ -88,6 +93,7 @@ const routes: RouteObject[] = [
     ),
   },
   { path: "/competitors", element: <CompetitorsList /> },
+  { path: "/competitors/overview", element: <CompetitorLandscapeOverviewPage /> },
   { path: "/competitors/:id", element: <CompetitorDetailPage /> },
   { path: "/methodology", element: <Methodology /> },
   { path: "/review-policy", element: <ReviewPolicy /> },

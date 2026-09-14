@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/feature/Navbar";
 import Footer from "@/components/feature/Footer";
 import { submitClaim } from "@/services/claims.service";
@@ -8,6 +8,8 @@ import { getApiErrorMessage } from "@/contexts/AuthContext";
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export default function ClaimProvider() {
+  const [searchParams] = useSearchParams();
+  const prefillName = searchParams.get("name") ?? "";
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [formError, setFormError] = useState("");
   const [charCount, setCharCount] = useState(0);
@@ -130,6 +132,7 @@ export default function ClaimProvider() {
                       name="organisation_name"
                       type="text"
                       required
+                      defaultValue={prefillName}
                       placeholder="e.g. Kent Business College"
                       className="w-full px-4 py-3 bg-background-100 border border-background-200/70 rounded-lg text-sm text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors"
                     />

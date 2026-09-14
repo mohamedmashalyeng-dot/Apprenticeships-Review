@@ -27,3 +27,9 @@ backend/runserver.log
 
 # Stray artifact filenames from tool glitches
 *scratchpad*full_diff*
+
+# Deployment artifacts (built locally per-session, not source)
+.env.production
+*.zip
+backend/cloudflared.log
+cookies_ft.txt

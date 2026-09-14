@@ -69,7 +69,7 @@ function ReviewCard({ review }: { review: SampleReview }) {
   );
 }
 
-export default function RecentReviewsSection() {
+export default function RecentReviewsSection({ active = true, onReady }: { active?: boolean; onReady?: () => void } = {}) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -80,6 +80,7 @@ export default function RecentReviewsSection() {
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
+    if (!active) return;
     Promise.all([getReviews({ sortBy: "newest", limit: 9 }), getCompanies()])
       .then(([{ reviews: recent }, companies]) => {
         const companyBySlug = new Map(companies.map((c) => [c.provider_id, c]));
@@ -100,8 +101,10 @@ export default function RecentReviewsSection() {
           })
         );
       })
-      .catch(() => setReviews([]));
-  }, []);
+      .catch(() => setReviews([]))
+      .finally(() => onReady?.());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   // Smooth continuous marquee scroll — arrow clicks ease toward a target,
   // then the automatic drift picks back up on its own, pausing only on hover.

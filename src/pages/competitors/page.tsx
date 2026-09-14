@@ -66,13 +66,24 @@ export default function CompetitorsList() {
             <Link to="/home" className="text-xs text-foreground-500 hover:text-primary-600">
               &larr; Home
             </Link>
-            <h1 className="mt-2 font-heading text-2xl md:text-3xl font-bold text-foreground-950">
-              Provider Intelligence
-            </h1>
-            <p className="mt-2 text-sm text-foreground-600">
-              {competitors.length} UK apprenticeship providers compared across Trustpilot, Find a Training Provider,
-              DfE achievement data and Ofsted.
-            </p>
+            <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950">
+                  Provider Intelligence
+                </h1>
+                <p className="mt-2 text-sm text-foreground-600">
+                  {competitors.length} UK apprenticeship providers compared across Trustpilot, Find a Training Provider,
+                  DfE achievement data and Ofsted.
+                </p>
+              </div>
+              <Link
+                to="/competitors/overview"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-background-50 border border-background-200/70 text-sm font-semibold text-primary-500 rounded-full hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 transition-all duration-200 whitespace-nowrap"
+              >
+                <i className="ri-bar-chart-2-line" />
+                Landscape overview
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -112,10 +123,10 @@ export default function CompetitorsList() {
               Couldn&apos;t load provider data.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-background-200/70 bg-background-50">
+            <div className="overflow-x-auto overflow-y-auto max-h-[75vh] rounded-2xl border border-background-200/70 bg-background-50">
               <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="bg-background-100 text-left text-xs font-semibold text-foreground-600 uppercase tracking-wide">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-background-100 text-left text-xs font-semibold text-foreground-600 uppercase tracking-wide shadow-[0_1px_0_rgba(0,0,0,0.06)]">
                     <th className="py-3 px-4">Provider</th>
                     <th className="py-3 px-4">Target standards</th>
                     <th className="py-3 px-4">Trustpilot</th>

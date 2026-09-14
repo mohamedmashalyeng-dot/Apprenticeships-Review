@@ -7,6 +7,7 @@ import { getCompanies } from "@/services/companies.service";
 import { getStandards } from "@/services/standards.service";
 import { getRatingCategories } from "@/services/ratings.service";
 import { submitReview } from "@/services/reviews.service";
+import { submitClaim } from "@/services/claims.service";
 import { useAuth, getApiErrorMessage } from "@/contexts/AuthContext";
 import type { Provider } from "@/types/provider";
 import type { Standard } from "@/types/standard";
@@ -53,8 +54,20 @@ export default function AddReview() {
   const [charCount, setCharCount] = useState(0);
   const [categoryRatings, setCategoryRatings] = useState<Record<string, number>>({});
   const [providerChoice, setProviderChoice] = useState(() => searchParams.get("provider") ?? "");
+  const [providerSearch, setProviderSearch] = useState("");
+  const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"review" | "add-provider" | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const providerFieldRef = useRef<HTMLDivElement>(null);
+
+  // Inline "add this provider" mini-form, shown right here instead of sending people to a
+  // separate page — website + role are the only extra fields; name/contact/email are reused.
+  const [newProviderName, setNewProviderName] = useState("");
+  const [newProviderWebsite, setNewProviderWebsite] = useState("");
+  const [newProviderRole, setNewProviderRole] = useState("");
+  const [claimStatus, setClaimStatus] = useState<FormStatus>("idle");
+  const [claimError, setClaimError] = useState("");
 
   const [providers, setProviders] = useState<Provider[]>([]);
   const [standards, setStandards] = useState<Standard[]>([]);
@@ -88,6 +101,7 @@ export default function AddReview() {
       setCharCount(0);
       setCategoryRatings({});
       setProviderChoice("");
+      setProviderSearch("");
       return;
     }
 
@@ -118,6 +132,7 @@ export default function AddReview() {
 
     // Require login before publishing
     if (!user) {
+      setPendingAction("review");
       setAuthOpen(true);
       return;
     }
@@ -145,6 +160,7 @@ export default function AddReview() {
       setCharCount(0);
       setCategoryRatings({});
       setProviderChoice("");
+      setProviderSearch("");
     } catch (err) {
       setFormStatus("error");
       setFormError(getApiErrorMessage(err));
@@ -153,13 +169,139 @@ export default function AddReview() {
 
   const handleAuthSuccess = () => {
     setAuthOpen(false);
-    formRef.current?.requestSubmit();
+    if (pendingAction === "add-provider") {
+      handleAddProvider();
+    } else {
+      formRef.current?.requestSubmit();
+    }
+    setPendingAction(null);
+  };
+
+  const handleAddProvider = async () => {
+    setClaimError("");
+    const effectiveName = (newProviderName || providerSearch).trim();
+
+    if (!effectiveName || !newProviderWebsite.trim() || !newProviderRole.trim()) {
+      setClaimError("Please fill in the provider name, website and your role.");
+      return;
+    }
+
+    // The rest of the review form is filled in above this box — read it the same way
+    // handleSubmit does, so requesting the provider submits the review in the same step
+    // instead of making the reviewer wait for approval and come back to redo it.
+    const formData = formRef.current ? new FormData(formRef.current) : null;
+    const reviewerType = (formData?.get("reviewer_type") as "learner" | "employer" | "") || "";
+    const standardId = (formData?.get("standard_id") as string) || "";
+    const completionStatus =
+      (formData?.get("completion_status") as "currently-enrolled" | "completed" | "withdrawn" | "") || "";
+    const reviewTitle = ((formData?.get("review_title") as string) || "").trim();
+    const reviewText = ((formData?.get("review_text") as string) || "").trim();
+
+    const reviewErrors: string[] = [];
+    if (!reviewerType) reviewErrors.push("whether you're a learner or employer");
+    if (!rating || rating < 1) reviewErrors.push("your rating");
+    if (!reviewTitle) reviewErrors.push("a review title");
+    if (!reviewText) reviewErrors.push("your review text");
+    if (!consent) reviewErrors.push("your agreement to the verification terms");
+    if (reviewErrors.length > 0) {
+      setClaimError(`Please also fill in ${reviewErrors.join(", ")} above before requesting this provider.`);
+      return;
+    }
+
+    if (!user) {
+      setPendingAction("add-provider");
+      setAuthOpen(true);
+      return;
+    }
+
+    setClaimStatus("submitting");
+    try {
+      const claim = await submitClaim({
+        organisationName: effectiveName,
+        contactName: user.displayName || user.email,
+        email: user.email,
+        role: newProviderRole.trim(),
+        website: newProviderWebsite.trim(),
+        verificationDetails: "Submitted via the add-review \"provider isn't listed\" form.",
+      });
+
+      try {
+        await submitReview({
+          pendingClaimId: claim.id,
+          standardSlug: standardId || undefined,
+          reviewerType: reviewerType as "learner" | "employer",
+          rating,
+          reviewTitle,
+          reviewText,
+          completionStatus: (completionStatus as "currently-enrolled" | "completed" | "withdrawn") || undefined,
+          wouldRecommend: recommend ? recommend === "yes" : undefined,
+          categoryRatings,
+        });
+      } catch (reviewErr) {
+        // The provider request itself went through — only the review side failed. Don't lose
+        // that, just say so plainly instead of claiming full success.
+        setClaimStatus("error");
+        setClaimError(
+          `Your provider request was sent, but we couldn't attach your review: ${getApiErrorMessage(reviewErr)}`
+        );
+        return;
+      }
+
+      // Both the claim and the review are in — reuse the same top-level success state as a
+      // normal review submission, since from here on that's exactly what this is.
+      setClaimStatus("success");
+      setFormStatus("success");
+      formRef.current?.reset();
+      setRating(0);
+      setRecommend("");
+      setConsent(false);
+      setCharCount(0);
+      setCategoryRatings({});
+      setProviderChoice("");
+      setProviderSearch("");
+      setNewProviderName("");
+      setNewProviderWebsite("");
+      setNewProviderRole("");
+    } catch (err) {
+      setClaimStatus("error");
+      setClaimError(getApiErrorMessage(err));
+    }
   };
 
   const providerOptions = providers.map((p) => ({
     value: p.provider_id,
     label: `${p.trading_name} (${p.legal_name})`,
   }));
+
+  const filteredProviderOptions = providerSearch.trim()
+    ? providerOptions.filter((o) => o.label.toLowerCase().includes(providerSearch.trim().toLowerCase()))
+    : providerOptions;
+
+  // Pre-fill the search box when a provider comes in via ?provider= or after providers load.
+  useEffect(() => {
+    if (!providerChoice) return;
+    const match = providerOptions.find((o) => o.value === providerChoice);
+    if (match) setProviderSearch(match.label);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providerChoice, providers]);
+
+  // Close the dropdown on outside click.
+  useEffect(() => {
+    if (!providerDropdownOpen) return;
+    const onClickOutside = (event: MouseEvent) => {
+      if (providerFieldRef.current && !providerFieldRef.current.contains(event.target as Node)) {
+        setProviderDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [providerDropdownOpen]);
+
+  const selectProvider = (value: string, label: string) => {
+    setProviderChoice(value);
+    setProviderSearch(label);
+    setProviderDropdownOpen(false);
+  };
 
   const standardOptions = standards.map((s) => ({
     value: s.standard_id,
@@ -288,30 +430,99 @@ export default function AddReview() {
               </div>
 
               {/* Provider */}
-              <div>
-                <label htmlFor="provider_id" className="block text-sm font-semibold text-foreground-900 mb-2">
+              <div className="relative" ref={providerFieldRef}>
+                <label htmlFor="provider_search" className="block text-sm font-semibold text-foreground-900 mb-2">
                   Training Provider<span className="text-red-500">*</span>
                 </label>
-                <select
-                  id="provider_id"
-                  name="provider_id"
-                  required
-                  value={providerChoice}
-                  onChange={(e) => setProviderChoice(e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 focus:outline-none focus:border-primary-400 transition-colors cursor-pointer"
-                >
-                  <option value="">Select a provider...</option>
-                  {providerOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                  <option value="other">My provider isn&apos;t listed</option>
-                </select>
+                <div className="relative">
+                  <i className="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground-400 text-sm" />
+                  <input
+                    id="provider_search"
+                    type="text"
+                    autoComplete="off"
+                    value={providerSearch}
+                    onChange={(e) => {
+                      setProviderSearch(e.target.value);
+                      setProviderChoice("");
+                      setProviderDropdownOpen(true);
+                    }}
+                    onFocus={() => setProviderDropdownOpen(true)}
+                    placeholder="Search for your training provider..."
+                    className="w-full pl-9 pr-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 focus:outline-none focus:border-primary-400 transition-colors"
+                  />
+                </div>
+                <input type="hidden" name="provider_id" value={providerChoice} />
+
+                {providerDropdownOpen && (
+                  <div className="absolute z-20 mt-1.5 w-full max-h-64 overflow-y-auto bg-background-50 border border-background-200/70 rounded-lg shadow-lg">
+                    {filteredProviderOptions.length === 0 ? (
+                      <p className="px-4 py-3 text-sm text-foreground-500">No matching providers.</p>
+                    ) : (
+                      filteredProviderOptions.map((o) => (
+                        <button
+                          key={o.value}
+                          type="button"
+                          onClick={() => selectProvider(o.value, o.label)}
+                          className="block w-full text-left px-4 py-2.5 text-sm text-foreground-800 hover:bg-primary-50 hover:text-primary-700 transition-colors cursor-pointer"
+                        >
+                          {o.label}
+                        </button>
+                      ))
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProviderChoice("other");
+                        setProviderDropdownOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2.5 text-sm font-medium text-foreground-600 border-t border-background-200/70 hover:bg-background-100 transition-colors cursor-pointer"
+                    >
+                      My provider isn&apos;t listed
+                    </button>
+                  </div>
+                )}
 
                 {providerChoice === "other" && (
-                  <p className="text-xs text-amber-600 mt-2">
-                    We can&apos;t yet accept reviews for providers outside our directory. Please{" "}
-                    <Link to="/claim-provider" className="underline">get in touch</Link> so we can add them first.
-                  </p>
+                  <div className="mt-3 p-4 bg-amber-50 border border-amber-200/70 rounded-lg">
+                    <p className="text-xs text-amber-700 leading-relaxed mb-3">
+                      We can&apos;t yet accept reviews for providers outside our directory, but fill in the
+                      details below and your review (from the form above) gets sent along with the request —
+                      no need to leave this page or come back later.
+                    </p>
+                    <div className="flex flex-col gap-2.5">
+                      <input
+                        type="text"
+                        value={newProviderName || providerSearch}
+                        onChange={(e) => setNewProviderName(e.target.value)}
+                        placeholder="Provider name"
+                        className="w-full px-3.5 py-2 text-sm bg-background-50 border border-amber-200 rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-amber-400 transition-colors"
+                      />
+                      <input
+                        type="url"
+                        value={newProviderWebsite}
+                        onChange={(e) => setNewProviderWebsite(e.target.value)}
+                        placeholder="Provider website (e.g. https://example.com)"
+                        className="w-full px-3.5 py-2 text-sm bg-background-50 border border-amber-200 rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-amber-400 transition-colors"
+                      />
+                      <input
+                        type="text"
+                        value={newProviderRole}
+                        onChange={(e) => setNewProviderRole(e.target.value)}
+                        placeholder="Your connection to this provider (e.g. Apprentice, Employer)"
+                        className="w-full px-3.5 py-2 text-sm bg-background-50 border border-amber-200 rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-amber-400 transition-colors"
+                      />
+                    </div>
+                    {claimError && <p className="text-xs text-red-600 mt-2">{claimError}</p>}
+                    <button
+                      type="button"
+                      onClick={handleAddProvider}
+                      disabled={claimStatus === "submitting"}
+                      className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-amber-500 text-white text-xs font-semibold rounded-full hover:bg-amber-600 disabled:opacity-60 transition-colors cursor-pointer"
+                    >
+                      <i className="ri-add-line" />
+                      {claimStatus === "submitting" ? "Submitting..." : "Request to add this provider"}
+                    </button>
+                  </div>
                 )}
               </div>
 

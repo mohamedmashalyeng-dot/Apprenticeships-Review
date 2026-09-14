@@ -58,7 +58,13 @@ class Review(models.Model):
         FLAGGED = "flagged", "Flagged"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="reviews")
+    company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE, related_name="reviews")
+    # Set instead of `company` when the reviewer's provider doesn't exist yet — the review is
+    # captured immediately rather than lost, and gets linked to the real Company (and dropped
+    # from here) the moment the claim is approved. See CompanyClaimViewSet.approve.
+    pending_claim = models.ForeignKey(
+        "reviews.CompanyClaim", null=True, blank=True, on_delete=models.SET_NULL, related_name="pending_reviews"
+    )
     standard = models.ForeignKey(Standard, null=True, blank=True, on_delete=models.SET_NULL)
     source = models.ForeignKey(ReviewSource, on_delete=models.PROTECT)
     reviewer_user = models.ForeignKey(
