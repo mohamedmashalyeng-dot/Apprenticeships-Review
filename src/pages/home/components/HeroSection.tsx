@@ -42,7 +42,7 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
     <section className="relative overflow-hidden bg-slate-950">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <video
-          src="https://kentbusinesscollege.com/wp-content/uploads/2026/09/Elegant_abstract_D_animation_.webm"
+          src="https://kentbusinesscollege.com/wp-content/uploads/2026/09/hero-secion-vedio-reviews.webm"
           autoPlay
           loop
           muted

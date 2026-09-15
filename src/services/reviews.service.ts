@@ -55,8 +55,9 @@ export async function getCompanyReviews(companySlug: string): Promise<{ learner:
   return splitByReviewerType(reviews);
 }
 
-export async function getReviewById(reviewId: string): Promise<Review | null> {
-  return getOrNull<Review>(`/reviews/${reviewId}/`);
+export async function getReviewById(reviewId: string, opts: { includeUnapproved?: boolean } = {}): Promise<Review | null> {
+  const qs = opts.includeUnapproved ? "?moderation_status=all" : "";
+  return getOrNull<Review>(`/reviews/${reviewId}/${qs}`);
 }
 
 export async function getProviderResponseForReview(reviewId: string): Promise<ProviderResponse | null> {
@@ -128,16 +129,18 @@ export async function incrementHelpful(reviewId: string, delta: 1 | -1): Promise
 export interface AdminReviewFilters {
   companySlug?: string;
   sourceKey?: string;
-  moderationStatus?: "pending" | "approved" | "rejected" | "flagged";
+  moderationStatus?: "pending" | "approved" | "rejected" | "flagged" | "all";
   rating?: number;
   page?: number;
   limit?: number;
 }
 
+/** Admin-only: unlike the public listing helpers above, this defaults to every moderation
+ *  status (not just approved) since it's only ever called from the moderation dashboard. */
 export async function getReviewsForModeration(filters: AdminReviewFilters = {}): Promise<PaginatedReviews> {
   return getReviews(
     { rating: filters.rating, sourceKey: filters.sourceKey, page: filters.page, limit: filters.limit, sortBy: "newest" },
-    { company: filters.companySlug, moderation_status: filters.moderationStatus }
+    { company: filters.companySlug, moderation_status: filters.moderationStatus ?? "all" }
   );
 }
 

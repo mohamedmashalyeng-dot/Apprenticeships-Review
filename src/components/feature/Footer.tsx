@@ -46,30 +46,30 @@ export default function Footer() {
 
   return (
     <>
-      {/* Add a review */}
+      {/* Add a review — right side, stacked above the chat widget */}
       <Link
         to="/add-review"
         aria-label="Write a review"
         title="Write a review"
-        className="fixed bottom-36 right-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-primary-500 text-white shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-primary-600 transition-all duration-300 cursor-pointer"
+        className="fixed bottom-24 right-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-primary-500 text-white shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-primary-600 transition-all duration-300 cursor-pointer"
       >
         <i className="ri-pencil-line text-lg" />
       </Link>
 
-      {/* Dark mode toggle */}
+      {/* Dark mode toggle — left side */}
       <button
         onClick={toggleTheme}
         aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-        className="fixed bottom-20 right-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-background-100 text-foreground-700 border border-background-200 shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-background-200 transition-all duration-300 cursor-pointer"
+        className="fixed bottom-6 left-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-background-100 text-foreground-700 border border-background-200 shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-background-200 transition-all duration-300 cursor-pointer"
       >
         <i className={`text-lg ${theme === "dark" ? "ri-sun-line" : "ri-moon-line"}`} />
       </button>
 
-      {/* Scroll to top button */}
+      {/* Scroll to top button — left side, above the dark mode toggle */}
       <button
         onClick={scrollToTop}
         aria-label="Scroll to top"
-        className={`fixed bottom-6 right-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-all duration-300 cursor-pointer ${
+        className={`fixed bottom-20 left-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-all duration-300 cursor-pointer ${
           showScrollTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         }`}
       >

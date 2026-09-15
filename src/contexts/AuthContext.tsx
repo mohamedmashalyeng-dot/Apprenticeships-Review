@@ -83,4 +83,5 @@ export function useAuth(): AuthContextValue {
   return ctx;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- re-exported for convenience alongside the provider/hook
 export { ApiError, getApiErrorMessage };

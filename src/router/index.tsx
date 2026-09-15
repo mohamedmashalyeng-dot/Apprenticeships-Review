@@ -11,6 +11,7 @@ declare global {
   }
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- shared with AppRoutes below, which sets window.REACT_APP_NAVIGATE
 export const navigatePromise = new Promise<NavigateFunction>((resolve) => {
   navigateResolver = resolve;
 });

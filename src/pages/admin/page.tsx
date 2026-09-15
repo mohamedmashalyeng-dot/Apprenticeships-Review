@@ -33,7 +33,10 @@ export default function Admin() {
       getReviewsForModeration({ moderationStatus: "pending", limit: 50 }).then((r) => setPendingReviews(r.reviews)),
       getReports("open").then(async (reports) => {
         const withReviews = await Promise.all(
-          reports.map(async (report) => ({ ...report, review: await getReviewById(report.review_id) }))
+          reports.map(async (report) => ({
+            ...report,
+            review: await getReviewById(report.review_id, { includeUnapproved: true }),
+          }))
         );
         setOpenReports(withReviews);
       }),

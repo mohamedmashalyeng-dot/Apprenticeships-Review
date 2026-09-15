@@ -5,6 +5,7 @@ import i18n from "./i18n";
 import { AuthProvider } from "./contexts/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 import { ComparisonProvider } from "./contexts/ComparisonContext";
+import ChatWidget from "./components/feature/ChatWidget";
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <ScrollToTop />
           <ComparisonProvider>
             <AppRoutes />
+            <ChatWidget />
           </ComparisonProvider>
         </AuthProvider>
       </BrowserRouter>

@@ -19,5 +19,7 @@ services:
         sync: false # your Hostinger domain, e.g. https://apprenticeshipsreviews.com
       - key: FRONTEND_URL
         sync: false # same as above, used to build password-reset links
+      - key: OPENROUTER_API_KEY
+        sync: false # openrouter.ai/settings/keys — without this the chatbot endpoint returns 503
       - key: PYTHON_VERSION
         value: "3.13.0"

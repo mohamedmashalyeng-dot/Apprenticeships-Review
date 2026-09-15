@@ -105,10 +105,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if not (params.get("mine") == "true" and user.is_authenticated):
             qs = qs.filter(pending_claim__isnull=True)
 
-        if params.get("moderation_status") and user.is_authenticated and user.role in ("admin", "moderator"):
-            return qs.filter(moderation_status=params["moderation_status"])
-        if user.is_authenticated and user.role in ("admin", "moderator"):
-            return qs
+        # Staff only get unapproved reviews when the caller explicitly asks for a moderation
+        # context (?moderation_status=pending/rejected/flagged/all). Without that, an
+        # admin/moderator just browsing an ordinary page (a provider profile, the reviews
+        # feed) falls through to the same `visible` filter as everyone else below — otherwise
+        # a pending or rejected review would blend in there as if already live, with no badge
+        # to say it isn't.
+        if user.is_authenticated and user.role in ("admin", "moderator") and params.get("moderation_status"):
+            status_param = params["moderation_status"]
+            return qs if status_param == "all" else qs.filter(moderation_status=status_param)
         visible = Q(moderation_status=Review.ModerationStatus.APPROVED)
         if user.is_authenticated:
             visible |= Q(reviewer_user=user)
