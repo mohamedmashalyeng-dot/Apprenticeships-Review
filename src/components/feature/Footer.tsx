@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useTheme } from "@/hooks/useTheme";
 
 const exploreLinks = [
   { label: "Find a Provider", href: "/providers" },
@@ -30,7 +29,6 @@ const footerSocials = [
 
 export default function Footer() {
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,20 +54,11 @@ export default function Footer() {
         <i className="ri-pencil-line text-lg" />
       </Link>
 
-      {/* Dark mode toggle — left side */}
-      <button
-        onClick={toggleTheme}
-        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-        className="fixed bottom-6 left-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-background-100 text-foreground-700 border border-background-200 shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-background-200 transition-all duration-300 cursor-pointer"
-      >
-        <i className={`text-lg ${theme === "dark" ? "ri-sun-line" : "ri-moon-line"}`} />
-      </button>
-
-      {/* Scroll to top button — left side, above the dark mode toggle */}
+      {/* Scroll to top button — left side (dark mode toggle now lives in the Navbar) */}
       <button
         onClick={scrollToTop}
         aria-label="Scroll to top"
-        className={`fixed bottom-20 left-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-all duration-300 cursor-pointer ${
+        className={`fixed bottom-6 left-6 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-all duration-300 cursor-pointer ${
           showScrollTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         }`}
       >

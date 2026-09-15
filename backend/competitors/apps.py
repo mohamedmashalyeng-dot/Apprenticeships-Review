@@ -22,7 +22,6 @@ def _warm_loop():
     while True:
         try:
             cache.set("competitors:list", repository.list_competitor_summaries(), 600)
-            cache.set("competitors:overview", repository.get_landscape_overview(), 600)
         except Exception:
             logger.exception("competitors cache warm-up failed")
         finally:
@@ -32,7 +31,6 @@ def _warm_loop():
             # Closing it here forces a fresh connection on the next loop iteration.
             connection.close()
         threading.Event().wait(WARM_INTERVAL_SECONDS)
-
 
 class CompetitorsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"

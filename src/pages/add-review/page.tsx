@@ -15,6 +15,16 @@ import type { RatingCategory } from "@/types/rating";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
+type FieldKey =
+  | "reviewer_type"
+  | "provider_id"
+  | "standard_id"
+  | "completion_status"
+  | "rating"
+  | "review_title"
+  | "review_text"
+  | "consent";
+
 function StarInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [hover, setHover] = useState(0);
   return (
@@ -60,6 +70,29 @@ export default function AddReview() {
   const [pendingAction, setPendingAction] = useState<"review" | "add-provider" | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const providerFieldRef = useRef<HTMLDivElement>(null);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
+  const reviewerTypeRef = useRef<HTMLDivElement>(null);
+  const standardRef = useRef<HTMLSelectElement>(null);
+  const completionRef = useRef<HTMLSelectElement>(null);
+  const ratingRef = useRef<HTMLDivElement>(null);
+  const reviewTitleRef = useRef<HTMLInputElement>(null);
+  const reviewTextRef = useRef<HTMLTextAreaElement>(null);
+  const consentRef = useRef<HTMLInputElement>(null);
+
+  const clearFieldError = (key: FieldKey) => {
+    setFieldErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const focusAndScroll = (el: HTMLElement | null) => {
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.focus({ preventScroll: true });
+  };
 
   // Inline "add this provider" mini-form, shown right here instead of sending people to a
   // separate page — website + role are the only extra fields; name/contact/email are reused.
@@ -113,22 +146,68 @@ export default function AddReview() {
     const reviewTitle = (formData.get("review_title") as string || "").trim();
     const reviewText = (formData.get("review_text") as string || "").trim();
 
-    const errors: string[] = [];
-    if (!reviewerType) errors.push("Please select whether you are a learner or employer.");
-    if (!providerId) errors.push("Please select a provider.");
-    if (providerId === "other") errors.push("We can't yet accept reviews for providers not in our directory — please claim/add the provider first, or contact us.");
-    if (!standardId) errors.push("Please select an apprenticeship standard.");
-    if (!completionStatus) errors.push("Please select your completion status.");
-    if (!rating || rating < 1) errors.push("Please rate your experience from 1 to 5.");
-    if (!reviewTitle) errors.push("Please enter a review title.");
-    if (!reviewText) errors.push("Please write your review.");
-    if (reviewText.length > 500) errors.push("Review text must be 500 characters or fewer.");
-    if (!consent) errors.push("Please agree to the review verification terms.");
+    const fieldChecks: { key: FieldKey; invalid: boolean; message: string; el: HTMLElement | null }[] = [
+      {
+        key: "reviewer_type",
+        invalid: !reviewerType,
+        message: "Please select whether you are a learner or employer.",
+        el: reviewerTypeRef.current,
+      },
+      {
+        key: "provider_id",
+        invalid: !providerId || providerId === "other",
+        message: !providerId
+          ? "Please select a provider."
+          : "We can't yet accept reviews for providers not in our directory — request to add them below.",
+        el: providerFieldRef.current,
+      },
+      {
+        key: "standard_id",
+        invalid: !standardId,
+        message: "Please select an apprenticeship standard.",
+        el: standardRef.current,
+      },
+      {
+        key: "completion_status",
+        invalid: !completionStatus,
+        message: "Please select your completion status.",
+        el: completionRef.current,
+      },
+      {
+        key: "rating",
+        invalid: !rating || rating < 1,
+        message: "Please rate your experience from 1 to 5.",
+        el: ratingRef.current,
+      },
+      {
+        key: "review_title",
+        invalid: !reviewTitle,
+        message: "Please enter a review title.",
+        el: reviewTitleRef.current,
+      },
+      {
+        key: "review_text",
+        invalid: !reviewText || reviewText.length > 500,
+        message: !reviewText ? "Please write your review." : "Review text must be 500 characters or fewer.",
+        el: reviewTextRef.current,
+      },
+      {
+        key: "consent",
+        invalid: !consent,
+        message: "Please agree to the review verification terms.",
+        el: consentRef.current,
+      },
+    ];
 
-    if (errors.length > 0) {
-      setFormError(errors.join(" "));
+    const failing = fieldChecks.filter((c) => c.invalid);
+    if (failing.length > 0) {
+      setFieldErrors(Object.fromEntries(failing.map((c) => [c.key, c.message])));
+      setFormStatus("error");
+      setFormError(`Please fix ${failing.length} field${failing.length > 1 ? "s" : ""} below before submitting.`);
+      focusAndScroll(failing[0].el);
       return;
     }
+    setFieldErrors({});
 
     // Require login before publishing
     if (!user) {
@@ -165,6 +244,14 @@ export default function AddReview() {
       setFormStatus("error");
       setFormError(getApiErrorMessage(err));
     }
+  };
+
+  const handleWriteAnother = () => {
+    setFormStatus("idle");
+    setFormError("");
+    setClaimStatus("idle");
+    setClaimError("");
+    setFieldErrors({});
   };
 
   const handleAuthSuccess = () => {
@@ -301,6 +388,7 @@ export default function AddReview() {
     setProviderChoice(value);
     setProviderSearch(label);
     setProviderDropdownOpen(false);
+    clearFieldError("provider_id");
   };
 
   const standardOptions = standards.map((s) => ({
@@ -354,22 +442,31 @@ export default function AddReview() {
       <section className="w-full px-4 md:px-6 lg:px-8 pb-20">
         <div className="max-w-4xl mx-auto">
           <div className="p-6 md:p-8 bg-background-50 border border-background-200/70 rounded-2xl shadow-[0_4px_20px_rgba(7,27,58,0.04)]">
-            {/* Status messages */}
-            {formStatus === "success" && (
-              <div className="mb-6 p-4 bg-primary-50 dark:bg-primary-950/40 border border-primary-100/50 dark:border-primary-800/40 rounded-lg flex items-start gap-3">
-                <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full bg-primary-50 text-primary-500">
-                  <i className="ri-check-line text-base" />
+            {formStatus === "success" ? (
+              <div className="py-10 px-4 text-center">
+                <div className="mx-auto w-14 h-14 flex items-center justify-center rounded-full bg-primary-50 text-primary-500 mb-5">
+                  <i className="ri-check-double-line text-2xl" />
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground-900">Review submitted!</p>
-                  <p className="text-xs text-foreground-600 mt-0.5">
-                    Thank you for sharing your experience. Your review will be reviewed by our
-                    verification team before being published.
-                  </p>
-                </div>
+                <h2 className="font-heading text-xl font-bold text-foreground-900">Review submitted successfully</h2>
+                <p className="mt-2.5 text-sm text-foreground-600 max-w-md mx-auto leading-relaxed">
+                  Thank you for sharing your experience. Please wait while our team reviews and approves it —
+                  you can track its status anytime from{" "}
+                  <Link to="/dashboard?tab=reviews" className="text-primary-600 hover:text-primary-700 font-medium underline">
+                    My Reviews
+                  </Link>
+                  .
+                </p>
+                <button
+                  type="button"
+                  onClick={handleWriteAnother}
+                  className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer"
+                >
+                  <i className="ri-add-line" />
+                  Write another review
+                </button>
               </div>
-            )}
-
+            ) : (
+            <>
             {formStatus === "error" && formError && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                 <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full bg-red-100 text-red-600">
@@ -395,11 +492,11 @@ export default function AddReview() {
               </div>
 
               {/* Reviewer type */}
-              <div>
+              <div ref={reviewerTypeRef} tabIndex={-1} className="outline-none">
                 <label className="block text-sm font-semibold text-foreground-900 mb-2">
                   I am a<span className="text-red-500">*</span>
                 </label>
-                <div className="flex gap-3">
+                <div className={`flex gap-3 rounded-lg ${fieldErrors.reviewer_type ? "ring-1 ring-red-300" : ""}`}>
                   <label className="flex-1 flex items-center gap-3 p-4 bg-background-100 border border-background-200/70 rounded-lg cursor-pointer hover:border-primary-300 transition-colors has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50/50">
                     <input
                       type="radio"
@@ -407,6 +504,7 @@ export default function AddReview() {
                       value="learner"
                       className="w-4 h-4 text-primary-500 accent-primary-500"
                       required
+                      onChange={() => clearFieldError("reviewer_type")}
                     />
                     <div>
                       <span className="text-sm font-medium text-foreground-900">Learner / Apprentice</span>
@@ -420,6 +518,7 @@ export default function AddReview() {
                       value="employer"
                       className="w-4 h-4 text-primary-500 accent-primary-500"
                       required
+                      onChange={() => clearFieldError("reviewer_type")}
                     />
                     <div>
                       <span className="text-sm font-medium text-foreground-900">Employer</span>
@@ -427,6 +526,7 @@ export default function AddReview() {
                     </div>
                   </label>
                 </div>
+                {fieldErrors.reviewer_type && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.reviewer_type}</p>}
               </div>
 
               {/* Provider */}
@@ -445,12 +545,16 @@ export default function AddReview() {
                       setProviderSearch(e.target.value);
                       setProviderChoice("");
                       setProviderDropdownOpen(true);
+                      clearFieldError("provider_id");
                     }}
                     onFocus={() => setProviderDropdownOpen(true)}
                     placeholder="Search for your training provider..."
-                    className="w-full pl-9 pr-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 focus:outline-none focus:border-primary-400 transition-colors"
+                    className={`w-full pl-9 pr-4 py-2.5 text-sm bg-background-100 border rounded-lg text-foreground-900 focus:outline-none transition-colors ${
+                      fieldErrors.provider_id ? "border-red-300 focus:border-red-400" : "border-background-200/70 focus:border-primary-400"
+                    }`}
                   />
                 </div>
+                {fieldErrors.provider_id && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.provider_id}</p>}
                 <input type="hidden" name="provider_id" value={providerChoice} />
 
                 {providerDropdownOpen && (
@@ -534,14 +638,19 @@ export default function AddReview() {
                 <select
                   id="standard_id"
                   name="standard_id"
+                  ref={standardRef}
                   required
-                  className="w-full px-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 focus:outline-none focus:border-primary-400 transition-colors cursor-pointer"
+                  onChange={() => clearFieldError("standard_id")}
+                  className={`w-full px-4 py-2.5 text-sm bg-background-100 border rounded-lg text-foreground-900 focus:outline-none transition-colors cursor-pointer ${
+                    fieldErrors.standard_id ? "border-red-300 focus:border-red-400" : "border-background-200/70 focus:border-primary-400"
+                  }`}
                 >
                   <option value="">Select a standard...</option>
                   {standardOptions.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </select>
+                {fieldErrors.standard_id && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.standard_id}</p>}
               </div>
 
               {/* Completion status */}
@@ -552,14 +661,19 @@ export default function AddReview() {
                 <select
                   id="completion_status"
                   name="completion_status"
+                  ref={completionRef}
                   required
-                  className="w-full px-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 focus:outline-none focus:border-primary-400 transition-colors cursor-pointer"
+                  onChange={() => clearFieldError("completion_status")}
+                  className={`w-full px-4 py-2.5 text-sm bg-background-100 border rounded-lg text-foreground-900 focus:outline-none transition-colors cursor-pointer ${
+                    fieldErrors.completion_status ? "border-red-300 focus:border-red-400" : "border-background-200/70 focus:border-primary-400"
+                  }`}
                 >
                   <option value="">Select status...</option>
                   {completionOptions.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </select>
+                {fieldErrors.completion_status && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.completion_status}</p>}
               </div>
 
               {/* Rating */}
@@ -568,12 +682,19 @@ export default function AddReview() {
                   Overall Rating<span className="text-red-500">*</span>
                 </label>
                 <input type="hidden" name="rating" value={rating || ""} />
-                <div className="flex items-center gap-1">
+                <div
+                  ref={ratingRef}
+                  tabIndex={-1}
+                  className={`inline-flex items-center gap-1 rounded-lg outline-none ${fieldErrors.rating ? "ring-1 ring-red-300" : ""}`}
+                >
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       type="button"
-                      onClick={() => setRating(star)}
+                      onClick={() => {
+                        setRating(star);
+                        clearFieldError("rating");
+                      }}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
                       className="w-10 h-10 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
@@ -594,6 +715,7 @@ export default function AddReview() {
                     </span>
                   )}
                 </div>
+                {fieldErrors.rating && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.rating}</p>}
               </div>
 
               {/* Category ratings */}
@@ -633,11 +755,16 @@ export default function AddReview() {
                   type="text"
                   id="review_title"
                   name="review_title"
+                  ref={reviewTitleRef}
                   required
                   maxLength={120}
+                  onChange={() => clearFieldError("review_title")}
                   placeholder="e.g. Excellent marketing training programme"
-                  className="w-full px-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors"
+                  className={`w-full px-4 py-2.5 text-sm bg-background-100 border rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none transition-colors ${
+                    fieldErrors.review_title ? "border-red-300 focus:border-red-400" : "border-background-200/70 focus:border-primary-400"
+                  }`}
                 />
+                {fieldErrors.review_title && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.review_title}</p>}
               </div>
 
               {/* Review text */}
@@ -648,16 +775,27 @@ export default function AddReview() {
                 <textarea
                   id="review_text"
                   name="review_text"
+                  ref={reviewTextRef}
                   required
                   maxLength={500}
                   rows={5}
-                  onChange={(e) => setCharCount(e.target.value.length)}
+                  onChange={(e) => {
+                    setCharCount(e.target.value.length);
+                    clearFieldError("review_text");
+                  }}
                   placeholder="Share your experience — what was good? What could be improved? How was the tutor support, communication, and workload?"
-                  className="w-full px-4 py-3 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors resize-y"
+                  className={`w-full px-4 py-3 text-sm bg-background-100 border rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none transition-colors resize-y ${
+                    fieldErrors.review_text ? "border-red-300 focus:border-red-400" : "border-background-200/70 focus:border-primary-400"
+                  }`}
                 />
-                <p className={`text-xs mt-1 ${charCount > 450 ? "text-amber-600 font-medium" : "text-foreground-400"}`}>
-                  {charCount}/500 characters
-                </p>
+                <div className="flex items-center justify-between mt-1">
+                  {fieldErrors.review_text ? (
+                    <p className="text-xs text-red-600">{fieldErrors.review_text}</p>
+                  ) : <span />}
+                  <p className={`text-xs ${charCount > 450 ? "text-amber-600 font-medium" : "text-foreground-400"}`}>
+                    {charCount}/500 characters
+                  </p>
+                </div>
               </div>
 
               {/* Would recommend */}
@@ -698,9 +836,15 @@ export default function AddReview() {
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    ref={consentRef}
                     checked={consent}
-                    onChange={(e) => setConsent(e.target.checked)}
-                    className="mt-1 w-4 h-4 rounded border-background-300 text-primary-500 accent-primary-500 cursor-pointer"
+                    onChange={(e) => {
+                      setConsent(e.target.checked);
+                      clearFieldError("consent");
+                    }}
+                    className={`mt-1 w-4 h-4 rounded cursor-pointer text-primary-500 accent-primary-500 ${
+                      fieldErrors.consent ? "border-red-400 ring-1 ring-red-300" : "border-background-300"
+                    }`}
                   />
                   <span className="text-xs text-foreground-600 leading-relaxed">
                     I confirm that this is my genuine experience with this training provider. I understand
@@ -716,12 +860,13 @@ export default function AddReview() {
                     .<span className="text-red-500">*</span>
                   </span>
                 </label>
+                {fieldErrors.consent && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.consent}</p>}
               </div>
 
               {/* Submit */}
               <button
                 type="submit"
-                disabled={formStatus === "submitting" || formStatus === "success" || authLoading}
+                disabled={formStatus === "submitting" || authLoading}
                 className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
               >
                 {formStatus === "submitting" ? (
@@ -729,8 +874,6 @@ export default function AddReview() {
                     <i className="ri-loader-4-line animate-spin" />
                     Submitting...
                   </span>
-                ) : formStatus === "success" ? (
-                  "Review Submitted — Thank You!"
                 ) : (
                   "Submit Review"
                 )}
@@ -761,6 +904,8 @@ export default function AddReview() {
                 </div>
               </div>
             </div>
+            </>
+            )}
           </div>
         </div>
       </section>

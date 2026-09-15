@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/hooks/useTheme";
 import { getNotifications } from "@/services/notifications.service";
 import type { AppNotification } from "@/types/notification";
 
@@ -39,6 +40,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -235,6 +237,13 @@ export default function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              className="flex items-center justify-center w-8 h-8 text-white/70 hover:text-white transition-colors cursor-pointer"
+            >
+              <i className={`text-base ${theme === "dark" ? "ri-sun-line" : "ri-moon-line"}`} />
+            </button>
             {user ? (
               <>
                 <Link
@@ -370,6 +379,13 @@ export default function Navbar() {
                 )}
               </div>
             ))}
+            <button
+              onClick={toggleTheme}
+              className="px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-background-50/5 transition-colors flex items-center gap-1.5 text-left cursor-pointer"
+            >
+              <i className={`text-sm ${theme === "dark" ? "ri-sun-line" : "ri-moon-line"}`} />
+              {theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            </button>
             {user ? (
               <>
                 <Link
