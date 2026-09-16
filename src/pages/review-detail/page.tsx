@@ -207,21 +207,26 @@ export default function ReviewDetails() {
               </div>
             </div>
 
-            {/* Rating breakdown */}
-            <div className="mt-6 p-6 bg-background-100 border border-background-200/70 rounded-2xl">
-              <h2 className="font-heading text-base font-semibold text-foreground-900 mb-4">Rating breakdown</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                {ratingCategories.map((cat) => (
-                  <div key={cat.key} className="flex items-center justify-between gap-3">
-                    <span className="text-sm text-foreground-700">{cat.label}</span>
-                    <div className="flex items-center gap-2">
-                      <StarRating rating={categoryRatings[cat.key]} size="sm" />
-                      <span className="text-sm font-semibold text-foreground-900">{categoryRatings[cat.key].toFixed(1)}</span>
-                    </div>
-                  </div>
-                ))}
+            {/* Rating breakdown — only for categories this review actually rated; most
+                reviews don't rate every category, so a missing key here is normal, not an error. */}
+            {ratingCategories.some((cat) => categoryRatings[cat.key] != null) && (
+              <div className="mt-6 p-6 bg-background-100 border border-background-200/70 rounded-2xl">
+                <h2 className="font-heading text-base font-semibold text-foreground-900 mb-4">Rating breakdown</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                  {ratingCategories
+                    .filter((cat) => categoryRatings[cat.key] != null)
+                    .map((cat) => (
+                      <div key={cat.key} className="flex items-center justify-between gap-3">
+                        <span className="text-sm text-foreground-700">{cat.label}</span>
+                        <div className="flex items-center gap-2">
+                          <StarRating rating={categoryRatings[cat.key]} size="sm" />
+                          <span className="text-sm font-semibold text-foreground-900">{categoryRatings[cat.key].toFixed(1)}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Provider response */}
             {response && (

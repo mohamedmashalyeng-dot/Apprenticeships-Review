@@ -21,6 +21,7 @@ from reviews.serializers import (
     ReviewCreateSerializer,
     ReviewReportSerializer,
     ReviewSerializer,
+    ReviewUpdateSerializer,
 )
 
 
@@ -56,12 +57,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "create":
             return ReviewCreateSerializer
+        if self.action in ("update", "partial_update"):
+            return ReviewUpdateSerializer
         return ReviewSerializer
 
     def get_permissions(self):
         if self.action == "create":
             return [IsAuthenticated()]
-        if self.action in ("update", "partial_update", "destroy", "moderate", "respond"):
+        # This override replaces the @action decorator's own `permission_classes` kwarg
+        # entirely (DRF calls get_permissions(), not the decorator's stored value, once a
+        # ViewSet overrides it) — moderate must stay staff-only here or that decorator-level
+        # restriction is silently dead code and any authenticated user can moderate anyone's
+        # review. See reviews/tests.py::test_ordinary_user_cannot_moderate.
+        if self.action == "moderate":
+            return [IsAdminOrModerator()]
+        if self.action in ("update", "partial_update", "destroy", "respond"):
             return [IsAuthenticated()]
         return [AllowAny()]
 
@@ -126,6 +136,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         review = serializer.save()
         return Response(ReviewSerializer(review).data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        review = self.get_object()
+        serializer = self.get_serializer(review, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(ReviewSerializer(review).data)
 
     def check_object_permissions(self, request, obj):
         super().check_object_permissions(request, obj)

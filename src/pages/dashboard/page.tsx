@@ -7,13 +7,16 @@ import VerifiedBadge from "@/components/base/VerifiedBadge";
 import LoadingIndicator from "@/components/base/LoadingIndicator";
 import ReviewerAvatar from "@/components/base/ReviewerAvatar";
 import { useAuth } from "@/contexts/AuthContext";
-import { getMyReviews } from "@/services/reviews.service";
+import { getApiErrorMessage } from "@/lib/api/client";
+import { getMyReviews, updateReview } from "@/services/reviews.service";
 import { getCompanies } from "@/services/companies.service";
+import { getRatingCategories } from "@/services/ratings.service";
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from "@/services/notifications.service";
 import { getSavedProviderIds, unsaveProvider } from "@/services/saved-providers.service";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
 import type { Review } from "@/types/review";
 import type { Provider } from "@/types/provider";
+import type { RatingCategory } from "@/types/rating";
 import type { AppNotification, NotificationType } from "@/types/notification";
 
 type Tab = "reviews" | "saved" | "settings" | "notifications";
@@ -29,6 +32,213 @@ const notificationIcons: Record<NotificationType, { icon: string; color: string 
 
 const validTabs: Tab[] = ["reviews", "saved", "settings", "notifications"];
 
+function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => onChange(star)}
+          onMouseEnter={() => setHover(star)}
+          onMouseLeave={() => setHover(0)}
+          className="w-8 h-8 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
+          aria-label={`Rate ${star} out of 5`}
+        >
+          <i className={`text-xl ${star <= (hover || value) ? "ri-star-fill text-primary-500" : "ri-star-line text-foreground-300"}`} />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function EditReviewModal({
+  review,
+  ratingCategories,
+  onClose,
+  onSaved,
+}: {
+  review: Review;
+  ratingCategories: RatingCategory[];
+  onClose: () => void;
+  onSaved: (updated: Review) => void;
+}) {
+  const [rating, setRating] = useState(review.rating);
+  const [title, setTitle] = useState(review.review_title);
+  const [text, setText] = useState(review.review_text);
+  const [wouldRecommend, setWouldRecommend] = useState<"yes" | "no" | "">(
+    review.would_recommend === true ? "yes" : review.would_recommend === false ? "no" : ""
+  );
+  const [categoryRatings, setCategoryRatings] = useState<Record<string, number>>(review.category_ratings ?? {});
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSave = async () => {
+    setError("");
+    const trimmedTitle = title.trim();
+    const trimmedText = text.trim();
+    if (!rating) return setError("Please rate your experience from 1 to 5.");
+    if (!trimmedTitle) return setError("Please enter a review title.");
+    if (!trimmedText) return setError("Please write your review.");
+    if (trimmedText.length > 500) return setError("Review text must be 500 characters or fewer.");
+
+    setIsSaving(true);
+    try {
+      const updated = await updateReview(review.review_id, {
+        rating,
+        reviewTitle: trimmedTitle,
+        reviewText: trimmedText,
+        wouldRecommend: wouldRecommend ? wouldRecommend === "yes" : undefined,
+        categoryRatings,
+      });
+      onSaved(updated);
+      onClose();
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Couldn't save your changes. Please try again."));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8 overflow-y-auto">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-lg bg-background-50 border border-background-200/70 rounded-2xl p-6 md:p-7 my-auto">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-heading text-lg font-bold text-foreground-900">Edit your review</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-foreground-400 hover:bg-background-100 hover:text-foreground-700 cursor-pointer"
+          >
+            <i className="ri-close-line text-lg" />
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600">{error}</div>
+        )}
+
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-foreground-900 mb-2">Overall rating</label>
+            <StarPicker value={rating} onChange={setRating} />
+          </div>
+
+          {ratingCategories.filter((cat) => cat.key !== "overall_experience").length > 0 && (
+            <div>
+              <label className="block text-sm font-semibold text-foreground-900 mb-2">Rate your experience</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {ratingCategories
+                  .filter((cat) => cat.key !== "overall_experience")
+                  .map((cat) => (
+                    <div key={cat.key} className="p-3 bg-background-100 border border-background-200/70 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-foreground-700 flex items-center gap-1.5">
+                          <i className={`${cat.icon} text-primary-500 text-sm`} />
+                          {cat.label}
+                        </span>
+                        <span className="text-xs text-foreground-400">
+                          {categoryRatings[cat.key] ? `${categoryRatings[cat.key]}/5` : "—"}
+                        </span>
+                      </div>
+                      <StarPicker
+                        value={categoryRatings[cat.key] || 0}
+                        onChange={(v) => setCategoryRatings((prev) => ({ ...prev, [cat.key]: v }))}
+                      />
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="edit-review-title" className="block text-sm font-semibold text-foreground-900 mb-2">
+              Review title
+            </label>
+            <input
+              id="edit-review-title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={120}
+              className="w-full px-4 py-2.5 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 focus:outline-none focus:border-primary-400 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="edit-review-text" className="block text-sm font-semibold text-foreground-900 mb-2">
+              Your review
+            </label>
+            <textarea
+              id="edit-review-text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              maxLength={500}
+              rows={5}
+              className="w-full px-4 py-3 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 focus:outline-none focus:border-primary-400 transition-colors resize-y"
+            />
+            <p className={`text-xs mt-1 ${text.length > 450 ? "text-amber-600 font-medium" : "text-foreground-400"}`}>
+              {text.length}/500 characters
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-foreground-900 mb-2">Would you recommend this provider?</label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setWouldRecommend("yes")}
+                className={`flex-1 px-4 py-2.5 text-sm font-medium rounded-full border transition-colors cursor-pointer ${
+                  wouldRecommend === "yes"
+                    ? "bg-primary-50 border-primary-400 text-primary-800"
+                    : "bg-background-100 border-background-200/70 text-foreground-600 hover:border-primary-300"
+                }`}
+              >
+                <i className={`${wouldRecommend === "yes" ? "ri-thumb-up-fill" : "ri-thumb-up-line"} mr-1.5`} />
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => setWouldRecommend("no")}
+                className={`flex-1 px-4 py-2.5 text-sm font-medium rounded-full border transition-colors cursor-pointer ${
+                  wouldRecommend === "no"
+                    ? "bg-red-50 border-red-300 text-red-800"
+                    : "bg-background-100 border-background-200/70 text-foreground-600 hover:border-red-300"
+                }`}
+              >
+                <i className={`${wouldRecommend === "no" ? "ri-thumb-down-fill" : "ri-thumb-down-line"} mr-1.5`} />
+                No
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="flex-1 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 transition-colors cursor-pointer"
+            >
+              {isSaving ? "Saving..." : "Save changes"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSaving}
+              className="px-5 py-3 text-sm font-semibold text-foreground-600 hover:text-foreground-800 transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { user, updateProfile } = useAuth();
   const navigate = useNavigate();
@@ -41,22 +251,29 @@ export default function Dashboard() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [savedProviderIds, setSavedProviderIds] = useState<string[]>([]);
+  const [ratingCategories, setRatingCategories] = useState<RatingCategory[]>([]);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [displayName, setDisplayName] = useState(user?.displayName ?? "");
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
 
   useEffect(() => {
-    Promise.all([getMyReviews(), getCompanies(), getNotifications(), getSavedProviderIds()])
-      .then(([reviews, companies, notifs, savedIds]) => {
+    Promise.all([getMyReviews(), getCompanies(), getNotifications(), getSavedProviderIds(), getRatingCategories()])
+      .then(([reviews, companies, notifs, savedIds, categories]) => {
         setMyReviews(reviews);
         setProviders(companies);
         setNotifications(notifs);
         setSavedProviderIds(savedIds);
+        setRatingCategories(categories);
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
   }, []);
+
+  const handleReviewUpdated = (updated: Review) => {
+    setMyReviews((prev) => prev.map((r) => (r.review_id === updated.review_id ? updated : r)));
+  };
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -220,9 +437,16 @@ export default function Dashboard() {
                                   View
                                 </Link>
                               )}
-                              <button className="text-xs text-primary-600 hover:text-primary-700 font-medium cursor-pointer">
-                                Edit
-                              </button>
+                              {/* Editing only makes sense (and is only allowed by the backend) while a review
+                                  hasn't been moderated yet — once approved or rejected, it's a closed decision. */}
+                              {review.moderation_status === "pending" && (
+                                <button
+                                  onClick={() => setEditingReview(review)}
+                                  className="text-xs text-primary-600 hover:text-primary-700 font-medium cursor-pointer"
+                                >
+                                  Edit
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -382,6 +606,15 @@ export default function Dashboard() {
       </section>
 
       <Footer />
+
+      {editingReview && (
+        <EditReviewModal
+          review={editingReview}
+          ratingCategories={ratingCategories}
+          onClose={() => setEditingReview(null)}
+          onSaved={handleReviewUpdated}
+        />
+      )}
     </div>
   );
 }

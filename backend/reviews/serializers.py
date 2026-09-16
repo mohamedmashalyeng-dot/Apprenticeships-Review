@@ -169,6 +169,36 @@ class ReviewCreateSerializer(serializers.Serializer):
         return review
 
 
+class ReviewUpdateSerializer(serializers.Serializer):
+    """Powers PATCH/PUT /reviews/{id}/ — deliberately exposes only the content fields an
+    author (or moderator) may legitimately change. Unlike ReviewSerializer (used for reads),
+    this never accepts moderation_status, verification_status, or provider-response fields —
+    those go through the dedicated moderate/respond actions instead."""
+
+    rating = serializers.FloatField(min_value=1, max_value=5)
+    review_title = serializers.CharField(max_length=255)
+    review_text = serializers.CharField()
+    review_tags = serializers.ListField(child=serializers.CharField(), required=False, default=list)
+    would_recommend = serializers.BooleanField(required=False, allow_null=True, default=None)
+    completion_status = serializers.ChoiceField(
+        choices=Review.CompletionStatus.choices, required=False, allow_null=True, default=None
+    )
+    category_ratings = serializers.DictField(child=serializers.FloatField(), required=False)
+
+    def update(self, instance, validated_data):
+        for field in ("rating", "review_title", "review_text", "review_tags", "would_recommend", "completion_status"):
+            if field in validated_data:
+                setattr(instance, field, validated_data[field])
+        instance.save()
+
+        if "category_ratings" in validated_data:
+            instance.category_ratings.all().delete()
+            for key, value in validated_data["category_ratings"].items():
+                if RatingCategory.objects.filter(key=key).exists():
+                    ReviewCategoryRating.objects.create(review=instance, category_id=key, rating=value)
+        return instance
+
+
 class CompanyClaimSerializer(serializers.ModelSerializer):
     company_slug = serializers.SlugRelatedField(
         source="company", slug_field="slug", queryset=Company.objects.all(), required=False, allow_null=True

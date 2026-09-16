@@ -90,6 +90,30 @@ export async function getMyReviews(): Promise<Review[]> {
   return reviews;
 }
 
+export interface UpdateReviewInput {
+  rating: number;
+  reviewTitle: string;
+  reviewText: string;
+  reviewTags?: string[];
+  wouldRecommend?: boolean;
+  completionStatus?: "currently-enrolled" | "completed" | "withdrawn";
+  categoryRatings?: Record<string, number>;
+}
+
+/** Only works while the review is still pending — matches the backend's own rule that a
+ *  review can no longer be edited once it's been moderated. */
+export async function updateReview(reviewId: string, input: UpdateReviewInput): Promise<Review> {
+  return api.patch<Review>(`/reviews/${reviewId}/`, {
+    rating: input.rating,
+    review_title: input.reviewTitle,
+    review_text: input.reviewText,
+    review_tags: input.reviewTags ?? [],
+    would_recommend: input.wouldRecommend ?? null,
+    completion_status: input.completionStatus ?? null,
+    category_ratings: input.categoryRatings ?? {},
+  });
+}
+
 export async function submitReview(input: SubmitReviewInput): Promise<Review> {
   return api.post<Review>("/reviews/", {
     company_slug: input.companySlug,
