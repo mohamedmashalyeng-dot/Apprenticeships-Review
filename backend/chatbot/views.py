@@ -11,13 +11,12 @@ from chatbot.services import ChatbotUpstreamError, run_chat
 logger = logging.getLogger(__name__)
 
 MAX_MESSAGE_LENGTH = 2000
-MAX_HISTORY_TURNS = 8
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def chat_message(request):
-    if not settings.OPENROUTER_API_KEY:
+    if not settings.GEMINI_API_KEY:
         return Response(
             {"message": "The chat assistant isn't configured yet."},
             status=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -32,15 +31,14 @@ def chat_message(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    raw_history = request.data.get("history") or []
-    history = [
-        {"role": turn.get("role"), "content": str(turn.get("content", ""))[:MAX_MESSAGE_LENGTH]}
-        for turn in raw_history
-        if isinstance(turn, dict) and turn.get("role") in ("user", "assistant") and turn.get("content")
-    ][-MAX_HISTORY_TURNS:]
+    # Gemini's Interactions API is stateful on its own side — the client just carries the
+    # opaque interaction_id forward turn to turn, rather than resending a transcript.
+    interaction_id = request.data.get("interaction_id")
+    if interaction_id is not None and not isinstance(interaction_id, str):
+        interaction_id = None
 
     try:
-        result = run_chat(history, message)
+        result = run_chat(interaction_id, message)
     except ChatbotUpstreamError as exc:
         logger.warning("Chatbot upstream call failed: %s", exc)
         return Response(

@@ -1,10 +1,15 @@
 """AI concierge that helps visitors find apprenticeship training providers.
 
-Routed through OpenRouter's OpenAI-compatible chat-completions API (not the Anthropic
-SDK — this deployment authenticates with an OpenRouter key, not a first-party Anthropic
-key), calling a Claude model on the other end. Every provider the assistant names comes
-from `search_providers`, which queries the platform's own database — the model is never
-allowed to invent a provider.
+Routed through Google's Gemini Interactions API (raw HTTP — no Anthropic SDK, no
+OpenRouter; this deployment authenticates with a Gemini/AI Studio key). Every provider
+the assistant names comes from `search_providers`, which queries the platform's own
+database — the model is never allowed to invent a provider.
+
+Unlike a typical stateless chat-completions API, the Interactions API is stateful on
+Google's side: each call returns an `id`, and passing that back as
+`previous_interaction_id` on the next call carries the full conversation forward without
+resending any history — so this module (and the API contract in views.py) tracks an
+`interaction_id` instead of a client-side transcript.
 """
 import json
 
@@ -14,13 +19,13 @@ from django.db.models import Q
 
 from catalog.models import Company
 
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "anthropic/claude-opus-5"
-# Chat replies are a few sentences, not essays — capping this keeps each call cheap and
-# also keeps it working on a near-empty OpenRouter balance (an uncapped request defaults
-# to the model's full 64K+ output ceiling, which a low balance can't cover and OpenRouter
-# rejects outright with a 402 before any tokens are generated).
-MAX_TOKENS = 1024
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
+# Pinned to a specific dated release rather than the "-latest" alias: that alias currently
+# resolves to a newer preview-tier model whose free-tier quota is only 20 requests/minute
+# and was getting exhausted during normal use. gemini-2.5-flash (the previous pin) 404s for
+# this project ("no longer available to new users") — its own error response names
+# gemini-3.6-flash as the direct replacement, confirmed working below.
+MODEL = "gemini-3.6-flash"
 REQUEST_TIMEOUT = 60
 MAX_TOOL_ITERATIONS = 4
 RESULTS_LIMIT = 5
@@ -48,49 +53,47 @@ anything unrelated.
 
 SEARCH_PROVIDERS_TOOL = {
     "type": "function",
-    "function": {
-        "name": "search_providers",
-        "description": (
-            "Search the platform's database of apprenticeship training providers. Returns real "
-            "providers matching the given criteria, each with location, rating, review count, "
-            "delivered apprenticeship standards, and strengths. Always use this before naming a "
-            "provider — never invent one. Omit any field you have no evidence for."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "sector": {
-                    "type": "string",
-                    "description": (
-                        "Subject/sector/occupation keyword, e.g. 'software development', "
-                        "'engineering', 'health and social care'."
-                    ),
-                },
-                "level": {
-                    "type": "integer",
-                    "description": "Apprenticeship level, e.g. 3 for Level 3, 6 or 7 for a degree apprenticeship.",
-                },
-                "location": {
-                    "type": "string",
-                    "description": "City or region the visitor wants, e.g. 'London', 'Manchester'.",
-                },
-                "min_rating": {
-                    "type": "number",
-                    "description": "Minimum average rating out of 5 — only set this when the visitor asks for highly-rated providers.",
-                },
-                "keywords": {
-                    "type": "string",
-                    "description": "Free-text keywords to match against a provider's name or description, for anything the other fields don't cover.",
-                },
+    "name": "search_providers",
+    "description": (
+        "Search the platform's database of apprenticeship training providers. Returns real "
+        "providers matching the given criteria, each with location, rating, review count, "
+        "delivered apprenticeship standards, and strengths. Always use this before naming a "
+        "provider — never invent one. Omit any field you have no evidence for."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "sector": {
+                "type": "string",
+                "description": (
+                    "Subject/sector/occupation keyword, e.g. 'software development', "
+                    "'engineering', 'health and social care'."
+                ),
             },
-            "required": [],
+            "level": {
+                "type": "integer",
+                "description": "Apprenticeship level, e.g. 3 for Level 3, 6 or 7 for a degree apprenticeship.",
+            },
+            "location": {
+                "type": "string",
+                "description": "City or region the visitor wants, e.g. 'London', 'Manchester'.",
+            },
+            "min_rating": {
+                "type": "number",
+                "description": "Minimum average rating out of 5 — only set this when the visitor asks for highly-rated providers.",
+            },
+            "keywords": {
+                "type": "string",
+                "description": "Free-text keywords to match against a provider's name or description, for anything the other fields don't cover.",
+            },
         },
+        "required": [],
     },
 }
 
 
 class ChatbotUpstreamError(Exception):
-    """Raised when OpenRouter can't be reached or returns an error status."""
+    """Raised when Gemini can't be reached or returns an error status."""
 
 
 def search_providers(sector=None, level=None, location=None, min_rating=None, keywords=None):
@@ -142,74 +145,92 @@ def search_providers(sector=None, level=None, location=None, min_rating=None, ke
     return results
 
 
-def _call_openrouter(messages):
+def _call_gemini(payload):
     try:
         response = requests.post(
-            OPENROUTER_URL,
+            GEMINI_URL,
             headers={
-                "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+                "x-goog-api-key": settings.GEMINI_API_KEY,
                 "Content-Type": "application/json",
             },
-            json={
-                "model": MODEL,
-                "messages": messages,
-                "tools": [SEARCH_PROVIDERS_TOOL],
-                "max_tokens": MAX_TOKENS,
-            },
+            json=payload,
             timeout=REQUEST_TIMEOUT,
         )
     except requests.RequestException as exc:
-        raise ChatbotUpstreamError(f"Could not reach OpenRouter: {exc}") from exc
+        raise ChatbotUpstreamError(f"Could not reach Gemini: {exc}") from exc
 
     if response.status_code != 200:
-        raise ChatbotUpstreamError(f"OpenRouter returned {response.status_code}: {response.text[:500]}")
+        raise ChatbotUpstreamError(f"Gemini returned {response.status_code}: {response.text[:500]}")
 
-    data = response.json()
-    try:
-        return data["choices"][0]
-    except (KeyError, IndexError) as exc:
-        raise ChatbotUpstreamError(f"Unexpected OpenRouter response shape: {data}") from exc
+    return response.json()
 
 
-def run_chat(history, user_message):
+def run_chat(previous_interaction_id, user_message):
     """Run one turn of the concierge conversation.
 
-    `history` is a list of {"role": "user"|"assistant", "content": str} from prior turns
-    (plain text only — tool calls stay internal to each turn and aren't replayed). Returns
-    {"reply": str, "providers": [...]} where `providers` is every provider the tool
-    surfaced this turn, deduplicated, for the frontend to render as cards.
+    `previous_interaction_id` (or None for a fresh conversation) is the `interaction_id`
+    this function returned last turn — Gemini uses it to recall the conversation so far,
+    so nothing else needs to be resent. Returns {"reply": str, "providers": [...],
+    "interaction_id": str} where `providers` is every provider the tool surfaced this
+    turn, deduplicated, and `interaction_id` should be passed back in on the next turn.
     """
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    messages += [{"role": turn["role"], "content": turn["content"]} for turn in history]
-    messages.append({"role": "user", "content": user_message})
-
     matched_providers = {}
-    message = {}
+    interaction_id = previous_interaction_id
+    next_input = user_message
+    data = {}
 
     for _ in range(MAX_TOOL_ITERATIONS):
-        choice = _call_openrouter(messages)
-        message = choice["message"]
+        payload = {
+            "model": MODEL,
+            "system_instruction": SYSTEM_PROMPT,
+            "tools": [SEARCH_PROVIDERS_TOOL],
+            "generation_config": {"thinking_level": "low"},
+            "input": next_input,
+        }
+        if interaction_id:
+            payload["previous_interaction_id"] = interaction_id
 
-        if choice.get("finish_reason") != "tool_calls" or not message.get("tool_calls"):
+        data = _call_gemini(payload)
+        interaction_id = data.get("id") or interaction_id
+
+        if data.get("status") != "requires_action":
             break
 
-        messages.append(message)
-        for call in message["tool_calls"]:
-            if call["function"]["name"] == "search_providers":
-                try:
-                    args = json.loads(call["function"]["arguments"] or "{}")
-                except json.JSONDecodeError:
-                    args = {}
-                results = search_providers(**args)
+        function_calls = [step for step in data.get("steps", []) if step.get("type") == "function_call"]
+        if not function_calls:
+            break
+
+        function_results = []
+        for call in function_calls:
+            if call.get("name") == "search_providers":
+                results = search_providers(**(call.get("arguments") or {}))
                 for result in results:
                     matched_providers[result["provider_id"]] = result
-                tool_content = json.dumps(results)
+                result_value = json.dumps(results)
             else:
-                tool_content = f"Unknown tool: {call['function']['name']}"
-            messages.append({"role": "tool", "tool_call_id": call["id"], "content": tool_content})
+                result_value = f"Unknown tool: {call.get('name')}"
+            function_results.append(
+                {
+                    "type": "function_result",
+                    "name": call.get("name"),
+                    "call_id": call.get("id"),
+                    "result": result_value,
+                }
+            )
+        next_input = function_results
 
-    reply_text = (message.get("content") or "").strip()
+    reply_text = "".join(
+        part.get("text", "")
+        for step in data.get("steps", [])
+        if step.get("type") == "model_output"
+        for part in step.get("content", [])
+        if part.get("type") == "text"
+    ).strip()
     if not reply_text:
         reply_text = "Sorry, I couldn't put together a good answer for that — could you rephrase your question?"
 
-    return {"reply": reply_text, "providers": list(matched_providers.values())}
+    return {
+        "reply": reply_text,
+        "providers": list(matched_providers.values()),
+        "interaction_id": interaction_id,
+    }

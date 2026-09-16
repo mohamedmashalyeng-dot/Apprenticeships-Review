@@ -1,8 +1,13 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import StarRating from "@/components/base/StarRating";
 import { getApiErrorMessage } from "@/lib/api/client";
-import { sendChatMessage, type ChatProvider, type ChatTurn } from "@/services/chatbot.service";
+import { sendChatMessage, type ChatProvider } from "@/services/chatbot.service";
+
+// three.js (~600KB) has no business loading on every page for every visitor just because
+// the chat button sits in App.tsx — split it into its own chunk that only fetches once the
+// button actually renders, with the old icon glyph shown until it's ready.
+const RobotMascotIcon = lazy(() => import("@/components/feature/RobotMascotIcon"));
 
 interface DisplayMessage {
   role: "user" | "assistant";
@@ -41,6 +46,7 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState<DisplayMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [interactionId, setInteractionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,15 +58,12 @@ export default function ChatWidget() {
     const text = input.trim();
     if (!text || isSending) return;
 
-    const history: ChatTurn[] = messages
-      .filter((m) => !m.isError)
-      .map((m) => ({ role: m.role, content: m.content }));
-
     setMessages((prev) => [...prev, { role: "user", content: text }]);
     setInput("");
     setIsSending(true);
     try {
-      const res = await sendChatMessage(text, history);
+      const res = await sendChatMessage(text, interactionId);
+      setInteractionId(res.interactionId);
       setMessages((prev) => [...prev, { role: "assistant", content: res.reply, providers: res.providers }]);
     } catch (err) {
       setMessages((prev) => [
@@ -149,9 +152,11 @@ export default function ChatWidget() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close chat" : "Open chat"}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-600 text-white shadow-lg transition-transform hover:scale-105 cursor-pointer"
+        className="relative flex h-28 w-28 items-center justify-center transition-transform hover:scale-105 cursor-pointer"
       >
-        <i className={`text-2xl ${open ? "ri-close-line" : "ri-chat-3-line"}`} />
+        <Suspense fallback={<i className="text-4xl text-primary-600 ri-chat-3-line" />}>
+          <RobotMascotIcon />
+        </Suspense>
       </button>
     </div>
   );

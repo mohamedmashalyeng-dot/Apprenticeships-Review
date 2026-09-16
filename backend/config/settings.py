@@ -153,7 +153,7 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@apprenticeshi
 # Used to build the password-reset link emailed to users (the API doesn't know the SPA's origin).
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
-# ---- Chatbot (via OpenRouter, https://openrouter.ai) ----
+# ---- Chatbot (via Google Gemini / AI Studio) ----
 # Server-side only — never exposed to the frontend. Left blank the chatbot endpoint
 # responds 503 instead of erroring, so a missing key doesn't break the rest of the app.
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
