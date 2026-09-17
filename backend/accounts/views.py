@@ -50,9 +50,17 @@ class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        # `username` is set to the exact-case email at registration (see RegisterSerializer),
+        # but registration only enforces uniqueness case-insensitively — so a login attempt
+        # with different casing than what was typed at signup must resolve to that same
+        # stored username first, or Django's exact-match ModelBackend lookup fails and a
+        # correct password gets rejected as "Invalid email or password."
+        existing_user = User.objects.filter(email__iexact=email).first()
+        username = existing_user.username if existing_user else email
         user = authenticate(
             request,
-            username=serializer.validated_data["email"],
+            username=username,
             password=serializer.validated_data["password"],
         )
         if user is None:
