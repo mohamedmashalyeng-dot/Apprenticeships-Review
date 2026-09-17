@@ -23,3 +23,10 @@ services:
         sync: false # aistudio.google.com/apikey — without this the chatbot endpoint returns 503
       - key: PYTHON_VERSION
         value: "3.13.0"
+      # Render serves this API over HTTPS but the Hostinger frontend is a different domain
+      # (and currently plain http://) — cross-site cookies (session, csrf) are only sent by
+      # the browser when SameSite=None, which browsers in turn only honor when Secure is set.
+      - key: COOKIE_SAMESITE
+        value: "None"
+      - key: COOKIE_SECURE
+        value: "True"
