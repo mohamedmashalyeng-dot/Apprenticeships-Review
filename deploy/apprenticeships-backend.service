@@ -1,0 +1,16 @@
+[Unit]
+Description=ApprenticeshipsReviews Django backend (waitress)
+After=network.target
+
+[Service]
+# EDIT these two paths once to match where you clone the repo on the VPS.
+WorkingDirectory=/home/deploy/apprentice/backend
+ExecStart=/home/deploy/apprentice/backend/.venv/bin/python -m waitress --host=127.0.0.1 --port=8000 --threads=6 config.wsgi:application
+
+Restart=always
+RestartSec=3
+User=deploy
+Group=deploy
+
+[Install]
+WantedBy=multi-user.target
