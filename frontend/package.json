@@ -38,7 +38,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "dev:backend": "cd backend && .venv\\Scripts\\python.exe -m waitress --host=127.0.0.1 --port=8000 --threads=6 config.wsgi:application",
+    "dev:backend": "cd ../backend && .venv\\Scripts\\python.exe -m waitress --host=127.0.0.1 --port=8000 --threads=6 config.wsgi:application",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "type-check": "tsc --noEmit --project tsconfig.app.json"
