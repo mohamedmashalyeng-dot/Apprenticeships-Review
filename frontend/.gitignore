@@ -29,7 +29,6 @@ backend/runserver.log
 *scratchpad*full_diff*
 
 # Deployment artifacts (built locally per-session, not source)
-.env.production
 *.zip
 backend/cloudflared.log
 cookies_ft.txt

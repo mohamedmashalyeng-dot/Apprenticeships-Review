@@ -10,6 +10,11 @@ out
 .env.production
 .env.*.local
 
+# ...except the frontend's build-time API URL — it's not a secret (it ends up baked into
+# the public JS bundle anyway) and the Hostinger deploy does `git pull` + `npm run build`
+# directly on the server, so this needs to be tracked or the build silently loses it.
+!/frontend/.env.production
+
 # Python
 __pycache__/
 *.pyc
