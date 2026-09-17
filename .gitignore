@@ -1,0 +1,27 @@
+node_modules
+
+# Build output
+dist
+out
+
+# Environment secrets (real DB creds, Django secret key, API keys) — never commit these
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+backend/.venv/
+backend/staticfiles/
+backend/runserver.log
+
+# Database exports / dumps
+data-exports/
+
+# Editor / OS
+.DS_Store
+
+# Misc build/distribution zips
+*.zip
