@@ -44,10 +44,21 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   if (res.status === 204) return undefined as T;
 
   const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
+  // A response body isn't guaranteed to be JSON — an unhandled server error (500) renders
+  // Django's HTML debug/error page rather than the API's usual {message, errors} shape.
+  // Falling through to JSON.parse in that case would throw a SyntaxError that masks the
+  // real HTTP failure, so treat an unparsable body as "no structured error info" instead.
+  let data: { message?: string; errors?: unknown } | null = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
+  }
 
   if (!res.ok) {
-    throw new ApiError(res.status, data?.message ?? "Request failed.", data?.errors);
+    throw new ApiError(res.status, data?.message ?? `Request failed (${res.status}).`, data?.errors);
   }
   return data as T;
 }

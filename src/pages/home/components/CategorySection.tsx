@@ -1,12 +1,27 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getCompanies, getPlatformStats } from "@/services/companies.service";
+import { getStandards } from "@/services/standards.service";
+import { getReviewSources } from "@/services/sources.service";
 
-const categories = [
+type StatKey = "marketing" | "projectManagement" | "standards" | "employerReviews" | "learnerReviews" | "dataSources";
+
+const categories: {
+  label: string;
+  href: string;
+  icon: string;
+  description: string;
+  statKey: StatKey;
+  statIcon: string;
+  brandColor: string;
+  image: string;
+}[] = [
   {
     label: "Marketing Providers",
     href: "/compare",
     icon: "ri-megaphone-line",
     description: "Compare top marketing apprenticeship providers",
-    stat: "4 providers",
+    statKey: "marketing",
     statIcon: "ri-building-4-line",
     brandColor: "#0B5CFF",
     image:
@@ -17,7 +32,7 @@ const categories = [
     href: "/compare",
     icon: "ri-clipboard-line",
     description: "Find project management training providers",
-    stat: "4 providers",
+    statKey: "projectManagement",
     statIcon: "ri-building-4-line",
     brandColor: "#0891B2",
     image:
@@ -28,7 +43,7 @@ const categories = [
     href: "/standards",
     icon: "ri-graduation-cap-line",
     description: "Explore degree-level apprenticeship programmes",
-    stat: "6 standards",
+    statKey: "standards",
     statIcon: "ri-file-list-3-line",
     brandColor: "#7C3AED",
     image:
@@ -39,7 +54,7 @@ const categories = [
     href: "/reviews",
     icon: "ri-building-4-line",
     description: "Real employer feedback on training providers",
-    stat: "450+ reviews",
+    statKey: "employerReviews",
     statIcon: "ri-chat-3-line",
     brandColor: "#059669",
     image:
@@ -50,7 +65,7 @@ const categories = [
     href: "/reviews",
     icon: "ri-user-line",
     description: "Honest reviews from current and past apprentices",
-    stat: "620+ reviews",
+    statKey: "learnerReviews",
     statIcon: "ri-chat-3-line",
     brandColor: "#EA580C",
     image:
@@ -61,7 +76,7 @@ const categories = [
     href: "/data-sources",
     icon: "ri-bar-chart-2-line",
     description: "Official ratings and public data explained",
-    stat: "5 data sources",
+    statKey: "dataSources",
     statIcon: "ri-database-2-line",
     brandColor: "#475569",
     image:
@@ -69,7 +84,48 @@ const categories = [
   },
 ];
 
+function statLabel(key: StatKey, count: number): string {
+  switch (key) {
+    case "marketing":
+    case "projectManagement":
+      return `${count.toLocaleString()} ${count === 1 ? "provider" : "providers"}`;
+    case "standards":
+      return `${count.toLocaleString()} ${count === 1 ? "standard" : "standards"}`;
+    case "employerReviews":
+    case "learnerReviews":
+      return `${count.toLocaleString()} ${count === 1 ? "review" : "reviews"}`;
+    case "dataSources":
+      return `${count.toLocaleString()} data ${count === 1 ? "source" : "sources"}`;
+  }
+}
+
 export default function CategorySection() {
+  // Real counts pulled from the API — a category's stat line is only rendered once its count
+  // has loaded and is greater than zero, so we never show a number with nothing behind it.
+  const [counts, setCounts] = useState<Partial<Record<StatKey, number>>>({});
+
+  useEffect(() => {
+    let active = true;
+    Promise.allSettled([
+      getCompanies({ categoryId: "sales-marketing" }),
+      getCompanies({ categoryId: "leadership-management" }),
+      getStandards(),
+      getReviewSources(),
+      getPlatformStats(),
+    ]).then(([marketing, projectManagement, standards, sources, platformStats]) => {
+      if (!active) return;
+      setCounts({
+        marketing: marketing.status === "fulfilled" ? marketing.value.length : undefined,
+        projectManagement: projectManagement.status === "fulfilled" ? projectManagement.value.length : undefined,
+        standards: standards.status === "fulfilled" ? standards.value.length : undefined,
+        dataSources: sources.status === "fulfilled" ? sources.value.length : undefined,
+        employerReviews: platformStats.status === "fulfilled" ? platformStats.value.employerReviews : undefined,
+        learnerReviews: platformStats.status === "fulfilled" ? platformStats.value.learnerReviews : undefined,
+      });
+    });
+    return () => { active = false; };
+  }, []);
+
   return (
     <section className="relative w-full bg-background-50 overflow-hidden">
       <div className="w-full px-4 md:px-6 lg:px-8 py-14 md:py-20">
@@ -86,7 +142,9 @@ export default function CategorySection() {
 
           {/* Category grid — 3 cols on desktop, 2 on tablet, 1 on mobile */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-            {categories.map((cat, i) => (
+            {categories.map((cat, i) => {
+              const count = counts[cat.statKey];
+              return (
               <Link
                 key={cat.label}
                 to={cat.href}
@@ -130,21 +188,24 @@ export default function CategorySection() {
                     {cat.description}
                   </p>
 
-                  {/* Stat line */}
-                  <div className="flex items-center gap-2 pt-4 border-t border-background-200/60">
-                    <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-50/70 text-primary-500">
-                      <i className={`${cat.statIcon} text-xs`} />
+                  {/* Stat line — only shown once the real count has loaded and is non-zero */}
+                  {!!count && (
+                    <div className="flex items-center gap-2 pt-4 border-t border-background-200/60">
+                      <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-50/70 text-primary-500">
+                        <i className={`${cat.statIcon} text-xs`} />
+                      </div>
+                      <span className="text-sm font-semibold text-primary-600">
+                        {statLabel(cat.statKey, count)}
+                      </span>
+                      <div className="ml-auto w-7 h-7 flex items-center justify-center rounded-full bg-background-100 text-foreground-300 group-hover:bg-primary-50 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all duration-300 opacity-0 group-hover:opacity-100">
+                        <i className="ri-arrow-right-line text-sm" />
+                      </div>
                     </div>
-                    <span className="text-sm font-semibold text-primary-600">
-                      {cat.stat}
-                    </span>
-                    <div className="ml-auto w-7 h-7 flex items-center justify-center rounded-full bg-background-100 text-foreground-300 group-hover:bg-primary-50 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all duration-300 opacity-0 group-hover:opacity-100">
-                      <i className="ri-arrow-right-line text-sm" />
-                    </div>
-                  </div>
+                  )}
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

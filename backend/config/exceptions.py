@@ -15,7 +15,11 @@ def api_exception_handler(exc, context):
     response = exception_handler(exc, context)
     if response is None:
         return None
-    detail = response.data.get("detail", response.data)
+    # response.data is a dict for field/object-level validation errors (DRF normalizes those
+    # via as_serializer_error), but a bare list for a ValidationError raised with a plain
+    # string outside of validate() — e.g. from a serializer's create(). Calling .get() on
+    # that list would itself raise AttributeError, turning a clean 400 into an unhandled 500.
+    detail = response.data.get("detail", response.data) if isinstance(response.data, dict) else response.data
     response.data = {
         "message": _first_message(detail),
         "errors": response.data if isinstance(response.data, dict) else None,

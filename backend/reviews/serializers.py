@@ -118,6 +118,7 @@ class ReviewCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         import hashlib
 
+        from django.db import IntegrityError
         from django.utils import timezone
 
         request = self.context["request"]
@@ -145,24 +146,34 @@ class ReviewCreateSerializer(serializers.Serializer):
             f"{identity_key}|{request.user.id}|{validated_data['review_title']}|{validated_data['review_text']}".encode()
         ).hexdigest()
 
-        review = Review.objects.create(
-            company=company,
-            pending_claim=pending_claim,
-            standard=standard,
-            source=native_source,
-            reviewer_user=request.user,
-            reviewer_type=validated_data["reviewer_type"],
-            rating=validated_data["rating"],
-            review_title=validated_data["review_title"],
-            review_text=validated_data["review_text"],
-            review_tags=validated_data.get("review_tags") or [],
-            programme_studied=validated_data.get("programme_studied") or "",
-            employer_type=validated_data.get("employer_type") or "",
-            would_recommend=validated_data.get("would_recommend"),
-            completion_status=validated_data.get("completion_status") or None,
-            review_date=timezone.now().date(),
-            content_fingerprint=fingerprint,
-        )
+        try:
+            review = Review.objects.create(
+                company=company,
+                pending_claim=pending_claim,
+                standard=standard,
+                source=native_source,
+                reviewer_user=request.user,
+                reviewer_type=validated_data["reviewer_type"],
+                rating=validated_data["rating"],
+                review_title=validated_data["review_title"],
+                review_text=validated_data["review_text"],
+                review_tags=validated_data.get("review_tags") or [],
+                programme_studied=validated_data.get("programme_studied") or "",
+                employer_type=validated_data.get("employer_type") or "",
+                would_recommend=validated_data.get("would_recommend"),
+                completion_status=validated_data.get("completion_status") or None,
+                review_date=timezone.now().date(),
+                content_fingerprint=fingerprint,
+            )
+        except IntegrityError as exc:
+            # Same title+text already submitted for this provider by this user (a duplicate
+            # click, or a retry after the request appeared to hang) — surface a clear
+            # validation error instead of letting the raw DB constraint bubble up as a 500.
+            if "unique_source_company_fingerprint" in str(exc):
+                raise serializers.ValidationError(
+                    "You've already submitted a review with this title and text for this provider."
+                )
+            raise
         for key, value in category_ratings.items():
             if RatingCategory.objects.filter(key=key).exists():
                 ReviewCategoryRating.objects.create(review=review, category_id=key, rating=value)
