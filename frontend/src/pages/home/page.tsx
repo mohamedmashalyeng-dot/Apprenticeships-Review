@@ -34,16 +34,16 @@ interface TrackDef {
 
 const TRACKS: TrackDef[] = [
   {
-    label: "Marketing Track",
+    label: "Marketing apprenticeship providers",
     icon: "ri-bar-chart-grouped-line",
     categoryId: "sales-marketing",
     programme: "Marketing apprenticeship provider",
   },
   {
-    label: "Project Management & Controls",
+    label: "Project management and project controls providers",
     icon: "ri-kanban-view",
     categoryId: "leadership-management",
-    programme: "Project management apprenticeship provider",
+    programme: "Project management and project controls provider",
   },
 ];
 
@@ -115,8 +115,8 @@ export default function Home() {
       {tracks.some((t) => t.providers.length > 0) && (
         <AnimateOnScroll delay={150} duration={650}>
           <AllProvidersSection
-            title="Apprenticeship Providers"
-            subtitle="Compare providers across Marketing and Project Management & Controls, explore ratings, reviews, and programme details to find the right fit."
+            title="Explore apprenticeship training providers"
+            subtitle="Browse providers in our directory and compare their available apprenticeship programmes, review information and published provider data."
             tracks={tracks.filter((t) => t.providers.length > 0)}
             viewAllHref="/compare"
           />

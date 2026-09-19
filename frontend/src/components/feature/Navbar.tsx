@@ -16,11 +16,12 @@ interface NavLink {
 
 const mainLinks: NavLink[] = [
   { label: "Home", href: "/home" },
-  { label: "Find a Provider", href: "/providers" },
-  { label: "Compare", href: "/compare" },
-  { label: "Top Rated", href: "/top-rated" },
+  { label: "Find providers", href: "/providers" },
+  { label: "Compare providers", href: "/compare" },
+  { label: "Reviews", href: "/reviews" },
+  { label: "How it works", href: "/methodology" },
   {
-    label: "For Providers",
+    label: "For providers",
     href: "/claim-provider",
     hasDropdown: true,
     dropdownLinks: [

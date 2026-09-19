@@ -22,20 +22,20 @@ export default function BottomCTA() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-background-50/10 backdrop-blur-sm border border-background-50/20 rounded-full mb-6">
             <i className="ri-compass-3-line text-accent-400 text-sm" />
             <span className="text-sm font-medium text-white">
-              Your apprenticeship journey starts here
+              Build your shortlist
             </span>
           </div>
 
           {/* Headline */}
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-relaxed mb-5">
-            Find the right provider,
+            Compare providers.
             <br className="hidden sm:block" />
-            <span className="text-accent-400">make an informed choice</span>
+            <span className="text-accent-400">Make an informed choice.</span>
           </h2>
 
           {/* Body */}
           <p className="text-base md:text-lg text-white/85 max-w-xl mx-auto leading-relaxed mb-10">
-            Compare ratings, reviews, and programme details across every registered apprenticeship provider. No bias, no hidden agenda, just the facts you need to decide.
+            Bring your shortlist together, explore relevant reviews and compare the information available for each provider.
           </p>
 
           {/* CTA buttons */}
@@ -44,14 +44,14 @@ export default function BottomCTA() {
               to="/compare"
               className="w-full sm:w-auto px-8 py-3.5 bg-accent-500 text-white text-sm font-bold rounded-full hover:bg-accent-600 transition-colors whitespace-nowrap shadow-lg shadow-accent-500/20"
             >
-              Compare all providers
+              Compare providers
               <i className="ri-arrow-right-line ml-2" />
             </Link>
             <Link
               to="/reviews"
               className="w-full sm:w-auto px-8 py-3.5 bg-background-50/10 backdrop-blur-sm text-white text-sm font-bold rounded-full border border-background-50/30 hover:bg-background-50/20 transition-colors whitespace-nowrap"
             >
-              Read learner reviews
+              Read apprenticeship reviews
             </Link>
           </div>
 
@@ -59,11 +59,11 @@ export default function BottomCTA() {
           <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
             <div className="flex items-center gap-2 text-white/50">
               <i className="ri-shield-check-line text-accent-400" />
-              <span className="text-sm">Verified reviews</span>
+              <span className="text-sm">Review source and date shown</span>
             </div>
             <div className="flex items-center gap-2 text-white/50">
               <i className="ri-database-2-line text-accent-400" />
-              <span className="text-sm">Government data sources</span>
+              <span className="text-sm">Published provider data separated</span>
             </div>
             <div className="flex items-center gap-2 text-white/50">
               <i className="ri-equalizer-line text-accent-400" />

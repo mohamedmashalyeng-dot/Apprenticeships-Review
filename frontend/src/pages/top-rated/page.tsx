@@ -32,12 +32,24 @@ export default function TopRated() {
   }, [categoryFilter, levelFilter]);
 
   const rankedProviders = useMemo(() => {
-    return providers
+    const sorted = providers
       .filter((p) => p.total_reviews >= 5)
       .sort((a, b) => {
-        if (b.average_rating !== a.average_rating) return b.average_rating - a.average_rating;
-        return b.total_reviews - a.total_reviews;
+        const ratingDifference = Number(b.average_rating.toFixed(1)) - Number(a.average_rating.toFixed(1));
+        if (ratingDifference !== 0) return ratingDifference;
+        return a.trading_name.localeCompare(b.trading_name);
       });
+
+    let previousScore: number | null = null;
+    let rank = 0;
+    return sorted.map((provider, index) => {
+      const score = Number(provider.average_rating.toFixed(1));
+      if (score !== previousScore) {
+        rank = index + 1;
+        previousScore = score;
+      }
+      return { provider, rank };
+    });
   }, [providers]);
 
   const hasFilters = categoryFilter !== "all" || levelFilter !== "all";
@@ -59,10 +71,13 @@ export default function TopRated() {
         <div className="relative z-10 w-full px-4 md:px-6 lg:px-8 py-20 md:py-28">
           <div className="max-w-6xl mx-auto">
             <h1 className="font-heading text-3xl md:text-4xl font-bold text-white">
-              Top rated providers
+              Apprenticeship provider ratings
             </h1>
             <p className="mt-3 text-sm md:text-base text-white/90 max-w-2xl">
-              Rankings based on genuine apprentice and employer reviews. Providers with fewer than 5 reviews are not ranked to keep the list meaningful.
+              Compare apprenticeship training providers using published reviews. Providers need at least five eligible reviews to appear in this list.
+            </p>
+            <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/75">
+              Ratings reflect reviewers&apos; experiences. They are not inspection grades or a guarantee that a provider will meet your needs.
             </p>
           </div>
         </div>
@@ -72,16 +87,28 @@ export default function TopRated() {
       <section className="w-full bg-background-100 border-b border-background-200/70">
         <div className="w-full px-4 md:px-6 lg:px-8 py-4">
           <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-3">
-            <span className="text-sm font-medium text-foreground-700">Filter by:</span>
+            <span className="text-sm font-medium text-foreground-700">Apprenticeship subject</span>
             <select
+              aria-label="Apprenticeship subject"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="px-3 py-2 text-sm bg-background-50 border border-background-200/70 rounded-md text-foreground-900 focus:outline-none focus:border-primary-400 cursor-pointer"
             >
-              <option value="all">All categories</option>
+              <option value="all">All subjects</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
+            </select>
+            <label htmlFor="provider-level-filter" className="text-sm font-medium text-foreground-700">Level</label>
+            <select
+              id="provider-level-filter"
+              aria-label="Apprenticeship level"
+              value={levelFilter}
+              onChange={(e) => setLevelFilter(e.target.value)}
+              className="px-3 py-2 text-sm bg-background-50 border border-background-200/70 rounded-md text-foreground-900 focus:outline-none focus:border-primary-400 cursor-pointer"
+            >
+              <option value="all">All levels</option>
+              {[2, 3, 4, 5, 6, 7].map((level) => <option key={level} value={level}>Level {level}</option>)}
             </select>
             {hasFilters && (
               <button
@@ -102,34 +129,31 @@ export default function TopRated() {
       <section className="w-full bg-background-50">
         <div className="w-full px-4 md:px-6 lg:px-8 py-8 md:py-12">
           <div className="max-w-3xl mx-auto">
+            <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2 text-sm text-foreground-600">
+              <p><span className="font-semibold text-foreground-900">{rankedProviders.length}</span> providers meet the review threshold</p>
+              <p>Sorted by: <span className="font-semibold text-foreground-900">Highest rating first</span></p>
+            </div>
             {isLoading ? (
               <div className="py-16">
                 <LoadingIndicator />
               </div>
             ) : rankedProviders.length > 0 ? (
               <div className="flex flex-col gap-3">
-                {rankedProviders.map((p, idx) => (
-                  <Link
+                {rankedProviders.map(({ provider: p, rank }) => (
+                  <article
                     key={p.provider_id}
-                    to={`/provider/${p.provider_id}`}
-                    className="flex items-center gap-4 p-5 bg-background-50 border border-background-200/70 rounded-2xl hover:border-primary-200 hover:-translate-y-0.5 transition-all duration-200"
+                    className="flex items-center gap-4 rounded-2xl border border-background-200/70 bg-background-50 p-5 transition-colors hover:border-primary-200"
                   >
                     {/* Rank */}
-                    <div className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl font-heading text-lg font-bold ${
-                      idx === 0
-                        ? "bg-accent-500 text-white"
-                        : idx === 1
-                        ? "bg-secondary-200 text-secondary-800"
-                        : idx === 2
-                        ? "bg-primary-100 text-primary-700"
-                        : "bg-background-100 text-foreground-600"
-                    }`}>
-                      {idx + 1}
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-background-100 font-heading text-lg font-bold text-foreground-700">
+                      {rank}
                     </div>
 
                     {/* Provider info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-foreground-900 truncate">{p.trading_name}</h3>
+                      <h3 className="truncate text-sm font-semibold text-foreground-900">
+                        <Link to={`/provider/${p.provider_id}`} className="hover:text-primary-600">{p.trading_name}</Link>
+                      </h3>
                       <p className="text-xs text-foreground-500 mt-0.5 truncate">
                         {p.category_names.join(", ") || p.location}
                       </p>
@@ -142,11 +166,15 @@ export default function TopRated() {
                         <span className="text-sm font-bold text-foreground-900">{p.average_rating.toFixed(1)}</span>
                       </div>
                       <span className="text-xs text-foreground-500 mt-0.5">
-                        {p.total_reviews} reviews
+                        {p.total_reviews.toLocaleString()} eligible reviews
                         {p.recommendation_percent != null && ` · ${p.recommendation_percent}% recommend`}
                       </span>
                     </div>
-                  </Link>
+                    <div className="flex shrink-0 flex-col items-end gap-1 text-xs">
+                      <Link to={`/provider/${p.provider_id}#reviews`} className="font-semibold text-primary-600 hover:underline">Read reviews</Link>
+                      <Link to={`/provider/${p.provider_id}`} className="text-foreground-600 hover:text-primary-600 hover:underline">View provider</Link>
+                    </div>
+                  </article>
                 ))}
               </div>
             ) : (
@@ -154,8 +182,8 @@ export default function TopRated() {
                 <div className="w-14 h-14 mx-auto flex items-center justify-center rounded-2xl bg-background-100 text-foreground-400 mb-4">
                   <i className="ri-trophy-line text-xl" />
                 </div>
-                <p className="text-sm font-medium text-foreground-700 mb-1">No providers in this category yet</p>
-                <p className="text-xs text-foreground-500">Try a different category or clear the filters.</p>
+                <p className="mb-1 text-sm font-medium text-foreground-700">No providers meet the review threshold for these filters.</p>
+                <p className="text-xs text-foreground-500">Change your filters or browse all providers.</p>
               </div>
             )}
 
@@ -166,8 +194,7 @@ export default function TopRated() {
                   <i className="ri-information-line text-base" />
                 </div>
                 <p className="text-xs text-foreground-600 leading-relaxed">
-                  Rankings are based on genuine review data collected on our platform and are not paid placements.
-                  Review volume is currently growing, so rankings reflect a limited sample. Read our{" "}
+                  Ratings use eligible published reviews for the provider shown. Scores are rounded to one decimal place, and equal displayed scores share the same rank and are listed alphabetically. Read our{" "}
                   <Link to="/methodology" className="text-primary-600 hover:text-primary-700 font-medium">methodology</Link>{" "}
                   to understand how ratings are calculated.
                 </p>

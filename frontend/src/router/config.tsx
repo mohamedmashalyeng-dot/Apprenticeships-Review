@@ -6,7 +6,6 @@ import ProtectedRoute from "@/router/ProtectedRoute";
 // Each page is its own chunk, fetched only when its route is actually visited — keeps the
 // initial bundle to shared framework/layout code instead of all ~30 pages at once.
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const Landing = lazy(() => import("@/pages/landing/page"));
 const Home = lazy(() => import("@/pages/home/page"));
 const CompareProviders = lazy(() => import("@/pages/compare/page"));
 const ProviderProfile = lazy(() => import("@/pages/provider/page"));
@@ -40,7 +39,7 @@ const DataSources = lazy(() => import("@/pages/data-sources/page"));
 const TermsOfService = lazy(() => import("@/pages/terms/page"));
 
 const routes: RouteObject[] = [
-  { path: "/", element: <Landing /> },
+  { path: "/", element: <Home /> },
   { path: "/home", element: <Home /> },
   { path: "/landing", element: <Navigate to="/" replace /> },
   { path: "/providers", element: <FindProvider /> },

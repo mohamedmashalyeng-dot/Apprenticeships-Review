@@ -21,18 +21,18 @@ export default function ProviderCard({ provider: p }: { provider: Provider }) {
     </div>
     <div className="my-5 rounded-xl bg-background-100 p-3">
       {p.total_reviews > 0 ? <div className="flex flex-wrap items-center gap-2">
-        <span className="text-lg font-bold text-foreground-900">{p.average_rating.toFixed(1)}</span>
+        <span className="text-lg font-bold text-foreground-900">{p.average_rating.toFixed(1)} out of 5</span>
         <StarRating rating={p.average_rating} size="sm" />
-        <span className="text-xs text-foreground-600">{p.total_reviews.toLocaleString()} review{p.total_reviews !== 1 ? "s" : ""}</span>
-      </div> : <p className="text-sm text-foreground-500">No reviews yet</p>}
+        <span className="text-xs text-foreground-600">Apprentice reviews on this website: {p.total_reviews.toLocaleString()} review{p.total_reviews !== 1 ? "s" : ""}</span>
+      </div> : <p className="text-sm font-medium text-foreground-600">Not yet reviewed</p>}
     </div>
     <div className="mb-4 flex flex-wrap gap-2">{p.category_names.map((category) => <span key={category} className="rounded-lg bg-primary-50 px-2.5 py-1 text-xs text-primary-700">{category}</span>)}</div>
     {p.levels.length > 0 && <p className="mb-3 text-xs text-foreground-600">Apprenticeship levels: {[...p.levels].sort((a, b) => a - b).join(", ")}</p>}
     {p.recommendation_percent != null && <p className="mb-4 text-xs text-foreground-600"><span className="font-semibold text-foreground-900">{p.recommendation_percent}%</span> recommend among respondents</p>}
     <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-background-200 pt-4">
-      <Link to={`/provider/${p.provider_id}`} className="text-sm font-semibold text-primary-600 hover:underline">View provider →</Link>
+      <Link to={`/provider/${p.provider_id}`} className="text-sm font-semibold text-primary-600 hover:underline">View provider</Link>
       <button type="button" aria-pressed={selected} aria-label={`${selected ? "Remove" : "Add"} ${p.trading_name} ${selected ? "from" : "to"} comparison`} disabled={full} onClick={() => toggle({ id: p.provider_id, name: p.trading_name })} className={`rounded-lg border px-3 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${selected ? "border-primary-500 bg-primary-50 text-primary-700" : "border-background-200 text-foreground-700 hover:border-primary-400"}`}>
-        {selected ? "✓ Selected" : full ? "3 selected · limit reached" : "+ Compare"}
+        {selected ? "Selected" : full ? "3 selected - limit reached" : "Add to comparison"}
       </button>
     </div>
   </article>;

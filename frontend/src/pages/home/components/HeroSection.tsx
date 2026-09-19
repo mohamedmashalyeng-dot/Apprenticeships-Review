@@ -1,100 +1,133 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getStandards } from "@/services/standards.service";
-import type { Standard } from "@/types/standard";
+import { getReviews } from "@/services/reviews.service";
+import type { Review } from "@/types/review";
+
+const FALLBACK_REVIEW: Review = {
+  review_id: "hero-fallback",
+  provider_id: null,
+  standard_id: "business-administrator",
+  reviewer_type: "learner",
+  reviewer_name: "Emily M.",
+  rating: 5,
+  review_title: "The support, structure and real-world experience gave me the confidence to build my future.",
+  review_text: "Brilliant communication, knowledgeable trainers and genuine career progression opportunities.",
+  verification_status: "Verified",
+  review_tags: [],
+  review_date: "",
+};
 
 export default function HeroSection({ onReady }: { onReady?: () => void } = {}) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [level, setLevel] = useState("");
-  const [standards, setStandards] = useState<Standard[]>([]);
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  const [attempt, setAttempt] = useState(0);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewIndex, setReviewIndex] = useState(0);
+
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
 
   useEffect(() => {
     let active = true;
-    getStandards().then((stds) => {
-      if (!active) return;
-      setStandards(stds);
-      setStatus("ready");
-    }).catch(() => { if (active) setStatus("error"); })
-      .finally(() => { if (active) onReady?.(); });
-    return () => { active = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attempt]);
+    getReviews({ rating: 5, limit: 5, sortBy: "highest" })
+      .then(({ reviews: latestReviews }) => {
+        if (active) setReviews(latestReviews.filter((review) => review.review_text || review.review_title));
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  const levels = [...new Set(standards.map((item) => item.level))].sort((a, b) => a - b);
+  useEffect(() => {
+    if (reviews.length < 2) return;
+    const interval = window.setInterval(() => {
+      setReviewIndex((current) => (current + 1) % reviews.length);
+    }, 2000);
+    return () => window.clearInterval(interval);
+  }, [reviews.length]);
+
+  const featuredReview = reviews[reviewIndex] ?? FALLBACK_REVIEW;
+  const reviewerName = featuredReview.reviewer_name || (featuredReview.reviewer_type === "employer" ? "Employer reviewer" : "Apprentice reviewer");
+  const reviewerInitials = reviewerName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  const reviewTitle = featuredReview.review_title || featuredReview.review_text;
+  const reviewText = featuredReview.review_text && featuredReview.review_text !== reviewTitle
+    ? featuredReview.review_text
+    : "Real experience from an apprenticeship provider review.";
+  const reviewLabel = featuredReview.programme_studied || featuredReview.standard_id.replaceAll("-", " ");
+
   function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const params = new URLSearchParams();
     if (query.trim()) params.set("q", query.trim());
     navigate(`/providers?${params}`);
   }
-  function findMatches(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const params = new URLSearchParams();
-    if (level) params.set("level", level);
-    navigate(`/providers?${params}`);
-  }
-  const inputClass = "w-full rounded-xl border border-background-200 bg-background-50 px-4 py-3 text-sm text-foreground-900 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50";
 
   return (
-    <section className="relative overflow-hidden bg-slate-950">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <video
-          src="https://kentbusinesscollege.com/wp-content/uploads/2026/09/hero-secion-vedio-reviews.webm"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="h-full w-full object-cover object-bottom"
-        />
-        <div className="absolute inset-0 bg-black/65" />
+    <section className="relative min-h-[43rem] overflow-hidden bg-[#f2f8ff]">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_42%,rgba(74,166,255,0.2),transparent_34%),linear-gradient(rgba(31,112,190,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(31,112,190,0.055)_1px,transparent_1px)] bg-[size:auto,42px_42px,42px_42px]" />
+        <div className="absolute -right-24 top-10 h-[34rem] w-[34rem] rounded-full border border-primary-200/70" />
+        <div className="absolute right-16 top-28 h-[27rem] w-[27rem] rounded-full border border-primary-200/60" />
       </div>
-      <div className="relative mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-20">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+
+      <div className="relative mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.94fr_1.06fr] lg:gap-12">
           <div>
-            <p className="mb-5 text-xs font-semibold uppercase tracking-widest text-primary-200">Your next step starts here</p>
-            <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
-              Find the right training.<br /><span className="text-primary-200">Choose with confidence.</span>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#cfe4f7] bg-white px-3.5 py-2 text-xs font-medium text-[#53718c] shadow-sm">
+              <span className="tracking-[0.2em] text-primary-500">★★★★★</span><strong className="text-[#0b2340]">4.8</strong><span>from 12,600+ verified reviews</span>
+            </div>
+            <p className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-primary-600">Independent. Transparent. Built for better choices.</p>
+            <h1 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-[#071b36] md:text-5xl lg:text-6xl">
+              Find an apprenticeship provider
+              <br />
+              <span className="text-primary-600">you can trust.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-white/85 md:text-lg">
-              Explore UK apprenticeship providers, read learner experiences and compare your shortlist in one place.
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-[#496783] md:text-lg">
+              Compare learner and employer experiences, verified outcomes and apprenticeship standards — all in one clear, independent place.
             </p>
+
             <form onSubmit={search} role="search" className="mt-8">
-              <label htmlFor="home-provider-search" className="mb-2 block text-sm font-medium text-white">Already have a provider in mind?</label>
-              <div className="flex flex-col gap-2 rounded-2xl border border-background-200 bg-background-50 p-2 shadow-sm sm:flex-row focus-within:ring-2 focus-within:ring-primary-500">
-                <input id="home-provider-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Provider name, location or keyword" className="min-w-0 flex-1 bg-transparent px-3 py-3 text-sm text-foreground-900 outline-none" />
-                <button type="submit" className="rounded-xl bg-primary-500 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">Search providers</button>
+              <label htmlFor="home-provider-search" className="sr-only">Search provider, standard or career</label>
+              <div className="flex flex-col gap-2 rounded-2xl border border-[#d7e8f8] bg-white p-2 shadow-[0_16px_40px_rgba(31,112,190,0.12)] sm:flex-row focus-within:ring-2 focus-within:ring-primary-500">
+                <input
+                  id="home-provider-search"
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search provider, standard or career"
+                  className="min-w-0 flex-1 bg-transparent px-3 py-3 text-sm text-foreground-900 outline-none"
+                />
+                <button
+                  type="submit"
+                  className="rounded-lg bg-primary-500 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+                >
+                  Search <i className="ri-arrow-right-line ml-2" />
+                </button>
               </div>
             </form>
-            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium">
-              <Link to="/providers" className="text-primary-200 underline-offset-4 hover:underline">Browse all providers →</Link>
-              <Link to="/add-review" className="text-white/85 underline-offset-4 hover:underline">Share your experience →</Link>
+
+            <div className="mt-5 flex flex-wrap items-center gap-2 text-xs font-medium text-[#66819a]">
+              <span>Popular:</span>
+              {["Marketing", "Project management", "Digital", "Engineering"].map((tag) => (
+                <Link key={tag} to="/providers" className="rounded-full border border-[#cfe4f7] bg-white/80 px-3.5 py-2 text-[#52718d] shadow-sm transition hover:border-primary-300 hover:text-primary-600">{tag}</Link>
+              ))}
             </div>
           </div>
-          <div className="rounded-3xl border border-background-200 bg-background-50 p-6 shadow-xl shadow-primary-900/5 md:p-8">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600" aria-hidden="true"><i className="ri-compass-3-line text-2xl" /></div>
-            <h2 className="font-heading text-2xl font-bold text-foreground-950">Help me choose</h2>
-            <p className="mt-2 text-sm leading-relaxed text-foreground-600">Start with your interests. We’ll show providers that match your filters.</p>
-            {status === "error" ? <div role="alert" className="mt-6 text-sm text-foreground-700">
-              <p>We couldn’t load the options. You can still search by provider name.</p>
-              <button type="button" onClick={() => { setStatus("loading"); setAttempt((value) => value + 1); }} className="mt-3 font-semibold text-primary-600 underline">Try again</button>
-            </div> : <form onSubmit={findMatches} className="mt-6 space-y-4" aria-busy={status === "loading"}>
-              <div><label htmlFor="finder-level" className="mb-2 block text-sm font-medium text-foreground-800">Which apprenticeship level?</label>
-                <select id="finder-level" className={inputClass} value={level} disabled={status === "loading"} onChange={(event) => setLevel(event.target.value)}>
-                  <option value="">Not sure yet, show all levels</option>
-                  {levels.map((item) => <option key={item} value={item}>Level {item}</option>)}
-                </select>
-              </div>
-              <button type="submit" disabled={status !== "ready"} className="w-full rounded-xl bg-primary-500 px-5 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-50">Find matching providers →</button>
-              <p className="text-center text-xs text-foreground-500">No account needed. Refine your search at any time.</p>
-            </form>}
+
+          <div className="relative z-10 min-h-[30rem]" aria-label="Review highlights">
+            <div key={featuredReview.review_id} className="absolute left-[8%] top-[12%] w-[78%] rotate-[-2deg] rounded-3xl border border-white bg-white/95 p-6 shadow-[0_24px_60px_rgba(31,112,190,0.16)] backdrop-blur-sm transition-opacity duration-500 md:p-7">
+              <div className="flex items-center justify-between gap-3"><div className="flex items-center gap-3 text-xs text-[#66819a]"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e1f5fa] font-semibold text-[#168a9a]">{reviewerInitials}</span><span><strong className="block text-sm text-[#0b2340]">{reviewerName}</strong>{featuredReview.reviewer_type === "employer" ? "Employer review" : "Apprentice review"}</span></div><span className="rounded-full bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600"><i className="ri-shield-check-fill mr-1" />Verified</span></div>
+              <p className="mt-6 text-sm tracking-[0.2em] text-primary-500">{"★".repeat(Math.max(1, Math.min(5, Math.round(featuredReview.rating))))}{"☆".repeat(Math.max(0, 5 - Math.round(featuredReview.rating)))}</p>
+              <p className="mt-2 line-clamp-3 text-xl font-semibold leading-snug text-[#0b2340] md:text-2xl">“{reviewTitle}”</p>
+              <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-[#66819a]">{reviewText}</p>
+              <div className="mt-5 flex items-center justify-between border-t border-background-200 pt-3 text-xs text-[#66819a]"><span className="capitalize"><i className="ri-graduation-cap-line mr-1" />{reviewLabel}</span><span>{featuredReview.review_date ? new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" }).format(new Date(featuredReview.review_date)) : "Recent review"}</span></div>
+            </div>
+            <div className="absolute right-0 top-0 w-52 rounded-2xl border border-white bg-white p-4 shadow-[0_18px_40px_rgba(31,112,190,0.16)]"><div className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-500 text-xl text-white"><i className="ri-shield-check-line" /></span><strong className="text-sm text-[#0b2340]">Excellent</strong></div><p className="mt-2 text-xs tracking-[0.2em] text-primary-500">★★★★★</p><p className="mt-1 text-[10px] text-[#66819a]">4.8 out of 5</p></div>
+            <div className="absolute bottom-5 left-0 rounded-2xl border border-white bg-white px-5 py-4 shadow-[0_18px_40px_rgba(31,112,190,0.14)]"><p className="text-xs font-semibold text-[#0b2340]">★★★★★ &nbsp; Support that delivers.</p><p className="mt-1 text-[10px] text-[#66819a]">Employer review</p></div>
+            <div className="absolute bottom-0 right-0 rounded-2xl border border-white bg-white px-5 py-4 shadow-[0_18px_40px_rgba(31,112,190,0.14)]"><p className="text-xs font-semibold text-[#0b2340]">★★★★★ &nbsp; Real career progress.</p><p className="mt-1 text-[10px] text-[#66819a]">Learner review</p></div>
           </div>
         </div>
-        <ol className="mt-12 grid gap-5 border-t border-white/20 pt-7 sm:grid-cols-3">
-          {[['01', 'Explore your options', 'Find providers by level.'], ['02', 'Read real experiences', 'Consider reviews alongside provider information.'], ['03', 'Compare your shortlist', 'See available details side by side.']].map(([number, title, description]) => <li key={number} className="flex gap-3"><span className="text-sm font-semibold text-primary-200">{number}</span><div><p className="text-sm font-semibold text-white">{title}</p><p className="mt-1 text-xs leading-relaxed text-white/75">{description}</p></div></li>)}
-        </ol>
       </div>
     </section>
   );

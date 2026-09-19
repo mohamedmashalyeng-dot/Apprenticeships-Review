@@ -32,6 +32,12 @@ async function findProvider(rawId: string | undefined): Promise<Provider | null>
   return null;
 }
 
+function getProviderWebsiteUrl(website: string | undefined): string | null {
+  const value = website?.trim();
+  if (!value) return null;
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
 function ProviderNotFound({ attemptedId }: { attemptedId: string }) {
   const [search, setSearch] = useState("");
   const [allProviders, setAllProviders] = useState<Provider[]>([]);
@@ -265,9 +271,23 @@ export default function ProviderProfile() {
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-3">
-                  <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950">
-                    {provider.trading_name}
-                  </h1>
+                  <div className="flex items-center gap-2">
+                    <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950">
+                      {provider.trading_name}
+                    </h1>
+                    {getProviderWebsiteUrl(provider.website) && (
+                      <a
+                        href={getProviderWebsiteUrl(provider.website) ?? undefined}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Visit ${provider.trading_name} website`}
+                        title={`Visit ${provider.trading_name} website`}
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-background-200 text-foreground-500 transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-primary-600"
+                      >
+                        <i className="ri-external-link-line text-sm" />
+                      </a>
+                    )}
+                  </div>
                   {provider.verification_status === "Verified" && <VerifiedBadge size="md" />}
                 </div>
                 <p className="text-sm text-foreground-600">{provider.legal_name}</p>
