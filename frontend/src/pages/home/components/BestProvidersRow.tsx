@@ -74,7 +74,7 @@ export default function BestProvidersRow({
               ? (cards as CompetitorCard[]).map((c, idx) => (
                   <div
                     key={c.id}
-                    className="competitor-card group relative flex flex-col p-5 md:p-6 bg-background-50 border border-background-200/70 rounded-2xl hover:-translate-y-1.5 transition-all duration-400 ease-out cursor-default overflow-hidden"
+                    className="competitor-card group relative flex flex-col p-5 md:p-6 bg-white/70 border border-white/60 rounded-2xl shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md hover:-translate-y-1.5 transition-all duration-400 ease-out cursor-default overflow-hidden"
                     style={{
                       "--brand": c.brandColor,
                       animationDelay: `${idx * 80}ms`,
@@ -126,7 +126,7 @@ export default function BestProvidersRow({
                     </h3>
 
                     {/* Public Strength — visible always */}
-                    <p className="text-xs text-foreground-500 leading-relaxed mb-4 text-center line-clamp-3">
+                    <p className="text-sm text-foreground-500 leading-relaxed mb-4 text-center line-clamp-3">
                       {c.publicStrength}
                     </p>
 
@@ -139,7 +139,7 @@ export default function BestProvidersRow({
                         <div className="brand-icon-bg w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-lg bg-secondary-100 text-secondary-600 transition-colors duration-300 mt-0.5">
                           <i className="ri-error-warning-line text-xs" />
                         </div>
-                        <p className="text-xs text-foreground-500 leading-relaxed transition-colors duration-300 line-clamp-3">
+                        <p className="text-sm text-foreground-500 leading-relaxed transition-colors duration-300 line-clamp-3">
                           {c.strategicGap}
                         </p>
                       </div>
@@ -151,7 +151,7 @@ export default function BestProvidersRow({
                         <div className="brand-arrow w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-lg bg-primary-100 text-primary-600 transition-colors duration-300 mt-0.5">
                           <i className="ri-shield-check-line text-xs" />
                         </div>
-                        <p className="brand-text text-xs text-foreground-600 leading-relaxed font-medium transition-colors duration-300 line-clamp-3">
+                        <p className="brand-text text-sm text-foreground-600 leading-relaxed font-medium transition-colors duration-300 line-clamp-3">
                           {c.kbcResponse}
                         </p>
                       </div>
@@ -167,7 +167,7 @@ export default function BestProvidersRow({
                   <Link
                     key={p.id}
                     to={`/provider/${p.id}`}
-                    className="provider-card group relative flex flex-col p-5 md:p-6 bg-background-50 border border-background-200/70 rounded-2xl hover:-translate-y-1.5 transition-all duration-400 ease-out overflow-hidden"
+                    className="provider-card group relative flex flex-col p-5 md:p-6 bg-white/70 border border-white/60 rounded-2xl shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md hover:-translate-y-1.5 transition-all duration-400 ease-out overflow-hidden"
                     style={{
                       "--brand": p.brandColor,
                       animationDelay: `${idx * 80}ms`,
@@ -225,7 +225,7 @@ export default function BestProvidersRow({
                     </h3>
 
                     {/* Programme type */}
-                    <p className="text-xs text-foreground-400 mb-3 text-center">
+                    <p className="text-sm text-foreground-400 mb-3 text-center">
                       {p.programme}
                     </p>
 

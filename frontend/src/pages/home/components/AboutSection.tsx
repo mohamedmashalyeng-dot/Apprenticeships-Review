@@ -46,13 +46,6 @@ export default function AboutSection() {
                   <i className="ri-arrow-right-line" />
                 </Link>
                 <Link
-                  to="/data-sources"
-                  className="inline-flex items-center gap-1 rounded-lg bg-background-100 px-5 py-2.5 text-sm font-medium text-foreground-700 transition-colors hover:bg-background-200"
-                >
-                  Data sources
-                  <i className="ri-arrow-right-line" />
-                </Link>
-                <Link
                   to="/about"
                   className="inline-flex items-center gap-1 rounded-lg bg-background-100 px-5 py-2.5 text-sm font-medium text-foreground-700 transition-colors hover:bg-background-200"
                 >

@@ -35,8 +35,8 @@ function ProviderCard({ provider, idx }: { provider: MiniProvider; idx: number }
 
   return (
     <article
-      className={`provider-card group relative flex flex-col overflow-hidden rounded-2xl border bg-background-50 p-5 transition-all duration-300 ease-out hover:-translate-y-1 md:p-6 ${
-        selected ? "border-primary-500 ring-1 ring-primary-500" : "border-background-200/70"
+      className={`provider-card group relative flex flex-col overflow-hidden rounded-2xl border bg-white/70 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-1 md:p-6 ${
+        selected ? "border-primary-500 ring-1 ring-primary-500" : "border-white/60"
       }`}
       style={{
         "--brand": provider.brandColor,

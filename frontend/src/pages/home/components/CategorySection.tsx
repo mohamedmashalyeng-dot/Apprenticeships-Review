@@ -113,7 +113,7 @@ function CategoryGrid({ items, counts }: { items: CategoryCard[]; counts: Partia
           <Link
             key={cat.label}
             to={cat.href}
-            className="group relative flex flex-col overflow-hidden rounded-2xl border border-background-200/70 bg-background-50 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(11,92,255,0.12)]"
+            className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-background-200/70 bg-background-50 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(11,92,255,0.12)]"
             style={{
               animationDelay: `${i * 60}ms`,
               animation: "categoryFadeIn 0.5s ease-out both",
@@ -131,13 +131,13 @@ function CategoryGrid({ items, counts }: { items: CategoryCard[]; counts: Partia
               </div>
             </div>
 
-            <div className="flex flex-1 flex-col p-5 pt-3 md:p-6">
+            <div className="flex h-full flex-1 flex-col p-5 pt-3 md:p-6">
               <h3 className="mb-1.5 font-heading text-lg font-bold text-foreground-900 transition-colors duration-200 group-hover:text-primary-600">
                 {cat.label}
               </h3>
               <p className="mb-4 flex-1 text-sm leading-relaxed text-foreground-500">{cat.description}</p>
 
-              <div className="border-t border-background-200/60 pt-4">
+              <div className="mt-auto border-t border-background-200/60 pt-4">
                 {!!count && (
                   <div className="mb-3 flex items-center gap-2">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary-50/70 text-primary-500">
