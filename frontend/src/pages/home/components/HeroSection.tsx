@@ -64,14 +64,14 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
   }
 
   return (
-    <section className="relative min-h-[43rem] overflow-hidden bg-[#f2f8ff]">
+    <section className="relative isolate min-h-[43rem] overflow-hidden bg-[#f2f8ff]">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_42%,rgba(74,166,255,0.2),transparent_34%),linear-gradient(rgba(31,112,190,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(31,112,190,0.055)_1px,transparent_1px)] bg-[size:auto,42px_42px,42px_42px]" />
         <div className="absolute -right-24 top-10 h-[34rem] w-[34rem] rounded-full border border-primary-200/70" />
         <div className="absolute right-16 top-28 h-[27rem] w-[27rem] rounded-full border border-primary-200/60" />
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
         <div className="grid items-center gap-12 lg:grid-cols-[0.94fr_1.06fr] lg:gap-12">
           <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#cfe4f7] bg-white px-3.5 py-2 text-xs font-medium text-[#53718c] shadow-sm">
@@ -84,7 +84,7 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
               <span className="text-primary-600">you can trust.</span>
             </h1>
             <p className="mt-5 max-w-lg text-base leading-relaxed text-[#496783] md:text-lg">
-              Compare learner and employer experiences, verified outcomes and apprenticeship standards — all in one clear, independent place.
+              Compare learner and employer experiences, verified outcomes and apprenticeship standards, all in one clear, independent place.
             </p>
 
             <form onSubmit={search} role="search" className="mt-8">
@@ -116,16 +116,28 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
           </div>
 
           <div className="relative z-10 min-h-[30rem]" aria-label="Review highlights">
-            <div key={featuredReview.review_id} className="absolute left-[8%] top-[12%] w-[78%] rotate-[-2deg] rounded-3xl border border-white bg-white/95 p-6 shadow-[0_24px_60px_rgba(31,112,190,0.16)] backdrop-blur-sm transition-opacity duration-500 md:p-7">
-              <div className="flex items-center justify-between gap-3"><div className="flex items-center gap-3 text-xs text-[#66819a]"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e1f5fa] font-semibold text-[#168a9a]">{reviewerInitials}</span><span><strong className="block text-sm text-[#0b2340]">{reviewerName}</strong>{featuredReview.reviewer_type === "employer" ? "Employer review" : "Apprentice review"}</span></div><span className="rounded-full bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-600"><i className="ri-shield-check-fill mr-1" />Verified</span></div>
+            <div className="pointer-events-none absolute -left-14 top-36 hidden flex-col items-center text-center text-[11px] font-semibold leading-[1.35] tracking-wide text-primary-600 sm:flex">
+              <img src="/better-choices-callout.svg" alt="Better choices. Brighter futures." className="h-auto w-32" />
+            </div>
+            <div className="pointer-events-none absolute right-2 bottom-20 hidden flex-col items-center text-center text-[11px] font-semibold leading-[1.35] tracking-wide text-[#58739e] sm:flex">
+              <span className="rounded-xl border border-primary-100 bg-white/75 px-3 py-2 shadow-sm">Real people.<br />Real progress.</span>
+              <i className="ri-arrow-down-line mt-1 rotate-[35deg] text-xl text-primary-400" />
+            </div>
+            <div className="absolute -left-2 top-10 hidden h-12 w-12 items-center justify-center rounded-2xl border border-white/90 bg-white/90 text-xl text-[#53718c] shadow-[0_12px_28px_rgba(31,112,190,0.12)] backdrop-blur-sm sm:flex">
+              <i className="ri-group-line" aria-hidden="true" />
+            </div>
+            <div className="absolute right-8 bottom-2 hidden h-12 w-12 items-center justify-center rounded-2xl border border-white/90 bg-white/90 text-xl text-primary-500 shadow-[0_12px_28px_rgba(31,112,190,0.12)] backdrop-blur-sm sm:flex">
+              <i className="ri-bar-chart-fill" aria-hidden="true" />
+            </div>
+            <span className="absolute right-[16%] top-5 hidden h-2.5 w-2.5 rounded-full border-2 border-white bg-primary-400 shadow-[0_0_0_3px_rgba(74,166,255,0.16)] sm:block" />
+            <div key={featuredReview.review_id} className="absolute left-[12%] top-[12%] z-10 flex h-[20rem] w-[68%] flex-col overflow-hidden rounded-3xl border border-white bg-white/95 p-6 shadow-[0_24px_60px_rgba(31,112,190,0.16)] backdrop-blur-sm transition-opacity duration-500 md:p-7">
+              <div className="flex items-center gap-3 text-xs text-[#66819a]"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e1f5fa] font-semibold text-[#168a9a]">{reviewerInitials}</span><span><strong className="block text-sm text-[#0b2340]">{reviewerName}</strong>{featuredReview.reviewer_type === "employer" ? "Employer review" : "Apprentice review"}</span></div>
               <p className="mt-6 text-sm tracking-[0.2em] text-primary-500">{"★".repeat(Math.max(1, Math.min(5, Math.round(featuredReview.rating))))}{"☆".repeat(Math.max(0, 5 - Math.round(featuredReview.rating)))}</p>
               <p className="mt-2 line-clamp-3 text-xl font-semibold leading-snug text-[#0b2340] md:text-2xl">“{reviewTitle}”</p>
               <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-[#66819a]">{reviewText}</p>
-              <div className="mt-5 flex items-center justify-between border-t border-background-200 pt-3 text-xs text-[#66819a]"><span className="capitalize"><i className="ri-graduation-cap-line mr-1" />{reviewLabel}</span><span>{featuredReview.review_date ? new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" }).format(new Date(featuredReview.review_date)) : "Recent review"}</span></div>
+              <div className="mt-auto flex items-center justify-between border-t border-background-200 pt-3 text-xs text-[#66819a]"><span className="capitalize"><i className="ri-graduation-cap-line mr-1" />{reviewLabel}</span><span>{featuredReview.review_date ? new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" }).format(new Date(featuredReview.review_date)) : "Recent review"}</span></div>
             </div>
-            <div className="absolute right-0 top-0 w-52 rounded-2xl border border-white bg-white p-4 shadow-[0_18px_40px_rgba(31,112,190,0.16)]"><div className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-500 text-xl text-white"><i className="ri-shield-check-line" /></span><strong className="text-sm text-[#0b2340]">Excellent</strong></div><p className="mt-2 text-xs tracking-[0.2em] text-primary-500">★★★★★</p><p className="mt-1 text-[10px] text-[#66819a]">4.8 out of 5</p></div>
-            <div className="absolute bottom-5 left-0 rounded-2xl border border-white bg-white px-5 py-4 shadow-[0_18px_40px_rgba(31,112,190,0.14)]"><p className="text-xs font-semibold text-[#0b2340]">★★★★★ &nbsp; Support that delivers.</p><p className="mt-1 text-[10px] text-[#66819a]">Employer review</p></div>
-            <div className="absolute bottom-0 right-0 rounded-2xl border border-white bg-white px-5 py-4 shadow-[0_18px_40px_rgba(31,112,190,0.14)]"><p className="text-xs font-semibold text-[#0b2340]">★★★★★ &nbsp; Real career progress.</p><p className="mt-1 text-[10px] text-[#66819a]">Learner review</p></div>
+            <div className="absolute -right-8 top-0 z-20 w-52 rounded-2xl border border-white bg-white p-4 shadow-[0_18px_40px_rgba(31,112,190,0.16)]"><div className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-500 text-xl text-white"><i className="ri-shield-check-line" /></span><strong className="text-sm text-[#0b2340]">Excellent</strong></div><p className="mt-2 text-xs tracking-[0.2em] text-primary-500">★★★★★</p><p className="mt-1 text-[10px] text-[#66819a]">4.8 out of 5</p></div>
           </div>
         </div>
       </div>

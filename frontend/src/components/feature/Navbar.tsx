@@ -167,10 +167,10 @@ export default function Navbar() {
             to="/home"
             className="flex items-center gap-2 whitespace-nowrap flex-shrink-0"
           >
-            <div className="w-7 h-7 flex items-center justify-center rounded-md bg-primary-500 text-white">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary-500 text-white">
               <i className="ri-star-fill text-sm" />
             </div>
-            <span className="font-heading text-base md:text-lg font-bold tracking-tight">
+            <span className="font-heading text-base font-bold tracking-tight md:text-lg">
               <span className="text-white">Apprenticeships</span>{" "}
               <span className="text-primary-400">Reviews</span>
             </span>

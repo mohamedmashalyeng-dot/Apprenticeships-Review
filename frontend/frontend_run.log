@@ -1,0 +1,121 @@
+
+> react@0.0.0 dev
+> vite
+
+Port 3000 is in use, trying another one...
+
+  [32m[1mVITE[22m v8.2.2[39m  [2mready in [0m[1m2243[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3001[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.9:[1m3001[22m/[39m  [2mEthernet[22m
+[2m4:06:39 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/HeroSection.tsx[22m
+[2m4:06:39 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/HeroSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:06:39 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/HeroSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:07:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/home/components/HeroSection.tsx[22m
+[2m4:07:13 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/CategorySection.tsx[22m
+[2m4:07:13 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/CategorySection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:07:39 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/pages/home/components/CategorySection.tsx (resolved id: C:/apprentice/frontend/src/pages/home/components/CategorySection.tsx) in C:/apprentice/frontend/src/pages/home/page.tsx. Does the file exist?
+[2m4:07:39 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mTypeError[22m: Failed to fetch dynamically imported module: http://localhost:3001/src/pages/home/page.tsx?t=1789823233312
+[39m
+[2m4:07:39 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mAn error occurred in the <Route> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+[2m4:07:46 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mTypeError[22m: Failed to fetch dynamically imported module: http://localhost:3001/src/pages/landing/page.tsx?t=1789823233312
+[39m
+[2m4:07:46 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mAn error occurred in one of your React components.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+[2m4:07:54 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mTypeError[22m: Failed to fetch dynamically imported module: http://localhost:3001/src/pages/landing/page.tsx?t=1789823233312
+[39m
+[2m4:07:54 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mAn error occurred in one of your React components.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+[2m4:07:57 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/home/components/CategorySection.tsx[22m
+[2m4:07:59 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mFailed to load robot mascot model: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:3001/node_modules/.vite/deps/three.module-C8VTlC94.js?v=0d99d914:30803:3)
+    at GLTFLoader.load (http://localhost:3001/node_modules/.vite/deps/three_examples_jsm_loaders_GLTFLoader__js.js?v=0d99d914:201:10)
+    at http://localhost:3001/src/components/feature/RobotMascotIcon.tsx:60:10
+    at Object.react_stack_bottom_frame (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:12902:13)
+    at runWithFiberInDEV (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:851:66)
+    at commitHookEffectListMount (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:6617:153)
+    at commitHookPassiveMountEffects (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:6652:55)
+    at reconnectPassiveEffects (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:7688:5)
+    at commitPassiveMountOnFiber (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:7665:604)
+[2m4:07:59 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mFailed to load robot mascot model: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:3001/node_modules/.vite/deps/three.module-C8VTlC94.js?v=0d99d914:30803:3)
+    at GLTFLoader.load (http://localhost:3001/node_modules/.vite/deps/three_examples_jsm_loaders_GLTFLoader__js.js?v=0d99d914:201:10)
+    at http://localhost:3001/src/components/feature/RobotMascotIcon.tsx:60:10
+    at Object.react_stack_bottom_frame (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:12902:13)
+    at runWithFiberInDEV (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:851:66)
+    at commitHookEffectListMount (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:6617:153)
+    at commitHookPassiveMountEffects (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:6652:55)
+    at reconnectPassiveEffects (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:7688:5)
+    at commitPassiveMountOnFiber (http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=0d99d914:7665:604)
+[2m4:08:02 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/AllProvidersSection.tsx[22m
+[2m4:08:02 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/AllProvidersSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:08:02 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/AllProvidersSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/home/components/AllProvidersSection.tsx[22m
+[2m4:08:40 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/page.tsx[22m
+[2m4:08:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/RecentReviewsSection.tsx[22m
+[2m4:08:46 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/RecentReviewsSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:08:46 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/RecentReviewsSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:09:18 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/home/components/RecentReviewsSection.tsx[22m
+[2m4:09:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/AboutSection.tsx[22m
+[2m4:09:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/AboutSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:09:24 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/AboutSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:09:35 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/pages/home/components/AboutSection.tsx (resolved id: C:/apprentice/frontend/src/pages/home/components/AboutSection.tsx) in C:/apprentice/frontend/src/pages/home/page.tsx. Does the file exist?
+[2m4:09:35 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mTypeError[22m: Failed to fetch dynamically imported module: http://localhost:3001/src/pages/landing/page.tsx?t=1789823363862
+[39m
+[2m4:09:35 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mAn error occurred in one of your React components.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+[2m4:09:40 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/home/components/AboutSection.tsx[22m
+[2m4:09:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/CalloutBanner.tsx[22m
+[2m4:09:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/BottomCTA.tsx[22m
+[2m4:10:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/home/components/CompetitorsSection.tsx[22m
+[2m4:10:07 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/CompetitorsSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:10:07 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/home/components/CompetitorsSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:10:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/home/components/CompetitorsSection.tsx[22m
+[2m4:10:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/feature/Navbar.tsx[22m
+[2m4:10:37 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/feature/Footer.tsx[22m
+[2m4:10:37 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/feature/Footer.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:10:37 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/feature/Footer.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m4:10:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/feature/Footer.tsx[22m
+[2m4:11:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/feature/ProviderCard.tsx[22m
+[2m4:11:13 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/base/StarRating.tsx[22m
+[2m4:11:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/providers/page.tsx[22m
+[2m4:13:37 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m4:13:49 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+node:internal/fs/watchers:323
+    const error = new UVException({
+                  ^
+
+Error: EBUSY: resource busy or locked, watch 'C:\apprentice\frontend\.chrome-home-check\GPUPersistentCache\DawnGraphiteCache\C4LYSEKRQPAHFGXS5Y5GXEPG4SFB3SL3\cache.db'
+    at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+    at Object.watch (node:fs:2609:36)
+    at createFsWatchInstance (file:///C:/apprentice/frontend/node_modules/vite/dist/node/chunks/node.js:9429:16)
+    at setFsWatchListener (file:///C:/apprentice/frontend/node_modules/vite/dist/node/chunks/node.js:9471:14)
+    at NodeFsHandler._watchWithNodeFs (file:///C:/apprentice/frontend/node_modules/vite/dist/node/chunks/node.js:9586:20)
+    at NodeFsHandler._handleFile (file:///C:/apprentice/frontend/node_modules/vite/dist/node/chunks/node.js:9630:24)
+    at NodeFsHandler._addToNodeFs (file:///C:/apprentice/frontend/node_modules/vite/dist/node/chunks/node.js:9804:26)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///C:/apprentice/frontend/node_modules/vite/dist/node/chunks/node.js:10606:146)
+    at NodeFsHandler._addToNodeFs (file:///C:/apprentice/frontend/node_modules/vite/dist/node/chunks/node.js:9809:18) {
+  errno: -4082,
+  syscall: 'watch',
+  code: 'EBUSY',
+  path: 'C:\\apprentice\\frontend\\.chrome-home-check\\GPUPersistentCache\\DawnGraphiteCache\\C4LYSEKRQPAHFGXS5Y5GXEPG4SFB3SL3\\cache.db',
+  filename: 'C:\\apprentice\\frontend\\.chrome-home-check\\GPUPersistentCache\\DawnGraphiteCache\\C4LYSEKRQPAHFGXS5Y5GXEPG4SFB3SL3\\cache.db'
+}
+
+Node.js v24.19.0

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="118" viewBox="0 0 150 118" fill="none">
+  <text x="10" y="17" fill="#1678D4" font-family="Arial, sans-serif" font-size="13" font-style="italic" font-weight="600">Better</text>
+  <text x="10" y="34" fill="#1678D4" font-family="Arial, sans-serif" font-size="13" font-style="italic" font-weight="600">choices.</text>
+  <text x="10" y="51" fill="#1678D4" font-family="Arial, sans-serif" font-size="13" font-style="italic" font-weight="600">Brighter</text>
+  <text x="10" y="68" fill="#1678D4" font-family="Arial, sans-serif" font-size="13" font-style="italic" font-weight="600">futures.</text>
+  <path d="M66 83C78 94 95 96 115 87" stroke="#63A9EC" stroke-width="2" stroke-linecap="round"/>
+  <path d="M106 80L116 87L106 91" stroke="#63A9EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
