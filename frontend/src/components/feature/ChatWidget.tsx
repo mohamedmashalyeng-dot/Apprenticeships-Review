@@ -189,7 +189,7 @@ export default function ChatWidget() {
             <i className="ri-close-line text-lg" />
           </button>
 
-          <div className="mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-[#f5f2ee] shadow-[0_10px_30px_rgba(13,29,50,0.12)]">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-[#f5f2ee] shadow-[0_10px_30px_rgba(13,29,50,0.12)]">
             <img src={BOT_IMAGE_URL} alt="Apprenticeships Reviews AI assistant" className="h-full w-full object-contain" />
           </div>
 
@@ -245,10 +245,10 @@ export default function ChatWidget() {
             setOpen((v) => !v);
           }}
           aria-label={open ? "Close chat" : "Open chat"}
-          className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-[#0d1d32] shadow-[0_18px_40px_rgba(13,29,50,0.35)] transition-transform hover:scale-105"
+          className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#0d1d32] shadow-[0_18px_40px_rgba(13,29,50,0.35)] transition-transform hover:scale-105"
         >
-          <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#ff4d4f] text-[10px] font-bold text-white">AI</span>
-          <img src={BOT_IMAGE_URL} alt="Open AI assistant" className="h-14 w-14 object-contain" />
+          <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#ff4d4f] text-[8px] font-bold text-white">AI</span>
+          <img src={BOT_IMAGE_URL} alt="Open AI assistant" className="h-9 w-9 object-contain" />
         </button>
       </div>
     </div>

@@ -115,7 +115,7 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
             </div>
           </div>
 
-          <div className="relative z-10 order-1 min-h-[30rem] lg:order-2" aria-label="Review highlights">
+          <div className="relative z-10 order-1 hidden min-h-[30rem] md:block lg:order-2" aria-label="Review highlights">
             <div className="pointer-events-none absolute -left-14 top-36 hidden flex-col items-center text-center text-[11px] font-semibold leading-[1.35] tracking-wide text-primary-600 sm:flex">
               <img src="/better-choices-callout.svg" alt="Better choices. Brighter futures." className="h-auto w-32" />
             </div>
