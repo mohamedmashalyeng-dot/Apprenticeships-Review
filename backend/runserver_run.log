@@ -3377,3 +3377,5 @@ Not Found: /
 [20/Sep/2026 14:55:29] "GET /api/notifications/ HTTP/1.1" 200 847
 [20/Sep/2026 14:55:30] "GET /api/companies/ HTTP/1.1" 200 118361
 [20/Sep/2026 14:55:30] "GET /api/reviews/?sort_by=newest&limit=9 HTTP/1.1" 200 11215
+[20/Sep/2026 14:55:31] "GET /api/notifications/ HTTP/1.1" 200 847
+[20/Sep/2026 14:55:31] "GET /api/competitors/ HTTP/1.1" 200 206293
