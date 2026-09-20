@@ -73,7 +73,7 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
         <div className="grid items-center gap-12 lg:grid-cols-[0.94fr_1.06fr] lg:gap-12">
-          <div>
+          <div className="order-2 lg:order-1">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#cfe4f7] bg-white px-3.5 py-2 text-xs font-medium text-[#53718c] shadow-sm">
               <span className="tracking-[0.2em] text-primary-500">★★★★★</span><strong className="text-[#0b2340]">4.8</strong><span>from 12,600+ verified reviews</span>
             </div>
@@ -115,7 +115,7 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
             </div>
           </div>
 
-          <div className="relative z-10 min-h-[30rem]" aria-label="Review highlights">
+          <div className="relative z-10 order-1 min-h-[30rem] lg:order-2" aria-label="Review highlights">
             <div className="pointer-events-none absolute -left-14 top-36 hidden flex-col items-center text-center text-[11px] font-semibold leading-[1.35] tracking-wide text-primary-600 sm:flex">
               <img src="/better-choices-callout.svg" alt="Better choices. Brighter futures." className="h-auto w-32" />
             </div>
@@ -131,13 +131,12 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
             </div>
             <span className="absolute right-[16%] top-5 hidden h-2.5 w-2.5 rounded-full border-2 border-white bg-primary-400 shadow-[0_0_0_3px_rgba(74,166,255,0.16)] sm:block" />
             <div key={featuredReview.review_id} className="absolute left-[12%] top-[12%] z-10 flex h-[20rem] w-[68%] flex-col overflow-hidden rounded-3xl border border-white bg-white/95 p-6 shadow-[0_24px_60px_rgba(31,112,190,0.16)] backdrop-blur-sm transition-opacity duration-500 md:p-7">
-              <div className="flex items-center gap-3 text-xs text-[#66819a]"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e1f5fa] font-semibold text-[#168a9a]">{reviewerInitials}</span><span><strong className="block text-sm text-[#0b2340]">{reviewerName}</strong>{featuredReview.reviewer_type === "employer" ? "Employer review" : "Apprentice review"}</span></div>
+              <div className="flex items-center justify-between gap-3 text-xs text-[#66819a]"><div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e1f5fa] font-semibold text-[#168a9a]">{reviewerInitials}</span><span><strong className="block text-sm text-[#0b2340]">{reviewerName}</strong>{featuredReview.reviewer_type === "employer" ? "Employer review" : "Apprentice review"}</span></div><span className="rounded-full bg-[#e8f4ff] px-3 py-1 text-[11px] font-medium text-primary-600"><i className="ri-checkbox-circle-fill mr-1" aria-hidden="true" />Verified</span></div>
               <p className="mt-6 text-sm tracking-[0.2em] text-primary-500">{"★".repeat(Math.max(1, Math.min(5, Math.round(featuredReview.rating))))}{"☆".repeat(Math.max(0, 5 - Math.round(featuredReview.rating)))}</p>
               <p className="mt-2 line-clamp-3 text-xl font-semibold leading-snug text-[#0b2340] md:text-2xl">“{reviewTitle}”</p>
               <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-[#66819a]">{reviewText}</p>
               <div className="mt-auto flex items-center justify-between border-t border-background-200 pt-3 text-xs text-[#66819a]"><span className="capitalize"><i className="ri-graduation-cap-line mr-1" />{reviewLabel}</span><span>{featuredReview.review_date ? new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" }).format(new Date(featuredReview.review_date)) : "Recent review"}</span></div>
             </div>
-            <div className="absolute -right-8 top-0 z-20 w-52 rounded-2xl border border-white bg-white p-4 shadow-[0_18px_40px_rgba(31,112,190,0.16)]"><div className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-500 text-xl text-white"><i className="ri-shield-check-line" /></span><strong className="text-sm text-[#0b2340]">Excellent</strong></div><p className="mt-2 text-xs tracking-[0.2em] text-primary-500">★★★★★</p><p className="mt-1 text-[10px] text-[#66819a]">4.8 out of 5</p></div>
           </div>
         </div>
       </div>
