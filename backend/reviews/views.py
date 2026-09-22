@@ -71,7 +71,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # review. See reviews/tests.py::test_ordinary_user_cannot_moderate.
         if self.action == "moderate":
             return [IsAdminOrModerator()]
-        if self.action in ("update", "partial_update", "destroy", "respond"):
+        if self.action in ("update", "partial_update", "destroy", "respond", "helpful"):
             return [IsAuthenticated()]
         return [AllowAny()]
 
@@ -168,7 +168,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def response(self, request, id=None):
-        review = get_object_or_404(Review, id=id)
+        review = self.get_object()
         if not review.response_text:
             return Response(None)
         return Response(ProviderResponseSerializer(review).data)

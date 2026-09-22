@@ -139,7 +139,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def standards(self, request, slug=None):
-        company = get_object_or_404(Company, slug=slug)
+        company = self.get_object()
         links = CompanyStandard.objects.filter(company=company)
         return Response(_company_standard_links(links))
 
@@ -147,7 +147,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
     def all_standards(self, request):
         # Bulk equivalent of the per-company `standards` action above — lets a page needing
         # every company's standard links do it in one request instead of one per company.
-        links = CompanyStandard.objects.select_related("company", "standard").all()
+        links = CompanyStandard.objects.filter(company__status=Company.Status.ACTIVE).select_related("company", "standard")
         return Response(_company_standard_links(links))
 
     @action(detail=True, methods=["get"], permission_classes=[IsAdmin])
@@ -193,7 +193,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def score(self, request, slug=None):
-        company = get_object_or_404(Company, slug=slug)
+        company = self.get_object()
         return Response(
             {
                 "provider_id": company.slug,
@@ -211,7 +211,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
     def rating_summary(self, request, slug=None):
         from reviews.models import Review, ReviewCategoryRating
 
-        company = get_object_or_404(Company, slug=slug)
+        company = self.get_object()
         approved = Review.objects.filter(company=company, moderation_status=Review.ModerationStatus.APPROVED)
         agg = approved.aggregate(overall=Avg("rating"), review_count=Count("id"))
         recommend_total = approved.filter(would_recommend__isnull=False).count()

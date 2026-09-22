@@ -36,3 +36,7 @@ services:
         value: "None"
       - key: COOKIE_SECURE
         value: "True"
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: SECURE_HSTS_SECONDS
+        value: "31536000"

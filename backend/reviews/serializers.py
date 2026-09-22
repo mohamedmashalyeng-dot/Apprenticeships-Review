@@ -127,7 +127,11 @@ class ReviewCreateSerializer(serializers.Serializer):
         identity_key = ""
 
         if validated_data.get("company_slug"):
-            company = get_object_or_404(Company, slug=validated_data["company_slug"])
+            company = get_object_or_404(
+                Company,
+                slug=validated_data["company_slug"],
+                status=Company.Status.ACTIVE,
+            )
             identity_key = str(company.id)
         else:
             pending_claim = get_object_or_404(
@@ -242,7 +246,11 @@ class ReviewReportSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         review_ref = validated_data.pop("review")
-        review = get_object_or_404(Review, id=review_ref["id"])
+        review = get_object_or_404(
+            Review,
+            id=review_ref["id"],
+            moderation_status=Review.ModerationStatus.APPROVED,
+        )
         return ReviewReport.objects.create(review=review, **validated_data)
 
 

@@ -87,6 +87,49 @@ class ReviewAuthorizationTests(APITestCase):
         ids = [r["review_id"] for r in listing.data["reviews"]]
         self.assertNotIn(review["review_id"], ids)
 
+    def test_anonymous_cannot_mark_review_helpful(self):
+        review = self._submit_review(self.learner)
+        self.client.force_authenticate(user=self.moderator)
+        self.client.patch(
+            f"/api/reviews/{review['review_id']}/moderate/", {"moderation_status": "approved"}, format="json"
+        )
+
+        self.client.force_authenticate(user=None)
+        response = self.client.post(f"/api/reviews/{review['review_id']}/helpful/", {"delta": 1}, format="json")
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+    def test_pending_review_cannot_be_reported_publicly(self):
+        review = self._submit_review(self.learner)
+        self.client.force_authenticate(user=None)
+
+        response = self.client.post(
+            "/api/review-reports/",
+            {"review_id": review["review_id"], "reason": "spam", "details": "not visible yet"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_review_cannot_target_inactive_provider(self):
+        inactive = Company.objects.create(
+            slug="inactive-provider",
+            trading_name="Inactive Provider",
+            status=Company.Status.SUSPENDED,
+        )
+        self.client.force_authenticate(user=self.learner)
+
+        response = self.client.post(
+            "/api/reviews/",
+            {
+                "company_slug": inactive.slug,
+                "reviewer_type": "learner",
+                "rating": 4,
+                "review_title": "Should not attach",
+                "review_text": "Inactive provider should not accept public reviews.",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_staff_does_not_see_pending_review_without_explicit_moderation_context(self):
         """A staff account browsing an ordinary page (no ?moderation_status=) must see
         exactly what a real visitor sees. Regression test for the bug where an

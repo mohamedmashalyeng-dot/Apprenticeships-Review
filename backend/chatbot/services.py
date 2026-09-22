@@ -21,6 +21,7 @@ OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
 REQUEST_TIMEOUT = 60
 MAX_TOOL_ITERATIONS = 4
 RESULTS_LIMIT = 5
+TOOL_ARGUMENT_KEYS = {"sector", "level", "location", "min_rating", "keywords"}
 
 SYSTEM_PROMPT = """You are the AI concierge for ApprenticeshipsReviews, a platform where \
 people research and review UK apprenticeship training providers, colleges, and employers.
@@ -181,7 +182,27 @@ def _parse_arguments(call):
         parsed = json.loads(raw_arguments)
     except json.JSONDecodeError:
         return {}
-    return parsed if isinstance(parsed, dict) else {}
+    if not isinstance(parsed, dict):
+        return {}
+
+    cleaned = {key: parsed[key] for key in TOOL_ARGUMENT_KEYS if key in parsed}
+    for key in ("sector", "location", "keywords"):
+        if cleaned.get(key) is not None:
+            cleaned[key] = str(cleaned[key])[:120]
+
+    if cleaned.get("level") is not None:
+        try:
+            cleaned["level"] = int(cleaned["level"])
+        except (TypeError, ValueError):
+            cleaned.pop("level", None)
+
+    if cleaned.get("min_rating") is not None:
+        try:
+            cleaned["min_rating"] = min(max(float(cleaned["min_rating"]), 0), 5)
+        except (TypeError, ValueError):
+            cleaned.pop("min_rating", None)
+
+    return cleaned
 
 
 def run_chat(previous_interaction_id, user_message):
