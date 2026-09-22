@@ -6,7 +6,7 @@ export default function CalloutBanner() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="https://readdy.ai/api/search-image?query=Two%20professionals%20comparing%20documents%20and%20data%20charts%20side%20by%20side%20on%20a%20wooden%20table%20in%20a%20warm%20modern%20office%2C%20one%20pointing%20at%20a%20screen%20showing%20comparison%20graphs%2C%20natural%20window%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20realistic%20professional%20atmosphere%20with%20soft%20depth%20of%20field%20and%20clean%20composition&width=1600&height=700&seq=callout-compare-01&orientation=landscape"
+          src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/1c1703ae55514886acc5d4c542c7cdd2.png"
           alt="Professionals comparing apprenticeship providers side by side"
           className="w-full h-full object-cover object-center"
         />

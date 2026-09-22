@@ -187,7 +187,7 @@ export default function FindProvider() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=A%20team%20of%20professionals%20collaborating%20around%20a%20large%20table%20reviewing%20provider%20directories%20and%20listings%20on%20laptops%20in%20a%20bright%20modern%20office%2C%20warm%20natural%20light%2C%20soft%20cream%20and%20amber%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20high%20detail%2C%20realistic%20collaborative%20professional%20atmosphere&width=1800&height=700&seq=providers-hero&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/85711c50ec3243f4aa70edc84b7cfd69.png"
             alt=""
             className="h-full w-full object-cover object-top"
           />

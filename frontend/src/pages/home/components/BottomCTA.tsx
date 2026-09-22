@@ -6,7 +6,7 @@ export default function BottomCTA() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="https://readdy.ai/api/search-image?query=Modern%20bright%20co-working%20space%20with%20warm%20sunlight%20streaming%20through%20large%20windows%2C%20young%20professionals%20collaborating%20around%20laptops%2C%20minimal%20interior%20design%2C%20soft%20beige%20and%20cream%20tones%2C%20natural%20wood%20accents%2C%20depth%20of%20field%20blur%20in%20background%2C%20editorial%20photography%20style%2C%20high%20detail%20warm%20atmosphere%2C%20diverse%20team%20working%20together&width=1600&height=700&seq=bottom-cta-bg-2026-01&orientation=landscape"
+          src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/18ffc658772040df8cb1bc14b3144739.png"
           alt="Young professionals collaborating in a modern workspace"
           className="w-full h-full object-cover object-center"
         />

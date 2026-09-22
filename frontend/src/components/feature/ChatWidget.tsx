@@ -4,7 +4,7 @@ import StarRating from "@/components/base/StarRating";
 import { getApiErrorMessage } from "@/lib/api/client";
 import { sendChatMessage, type ChatProvider } from "@/services/chatbot.service";
 
-const BOT_IMAGE_URL = "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/0026483606334415a725302d8abec5f9.png";
+const BOT_IMAGE_URL = "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/1c1703ae55514886acc5d4c542c7cdd2.png";
 
 interface DisplayMessage {
   role: "user" | "assistant";

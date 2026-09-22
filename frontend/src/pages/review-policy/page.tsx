@@ -124,7 +124,7 @@ export default function ReviewPolicy() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=Professionals%20discussing%20and%20reviewing%20policy%20documents%20together%20at%20a%20meeting%20table%20in%20a%20warm%20modern%20office%2C%20trust%20and%20verification%2C%20soft%20natural%20light%2C%20beige%20and%20amber%20tones%20with%20subtle%20sage%20teal%20accents%2C%20editorial%20photography%2C%20high%20detail%2C%20realistic%20trustworthy%20professional%20atmosphere&width=1600&height=700&seq=review-policy-hero-01&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19ea4b1b1d944b5697a6bbab1fdf9439.png"
             alt="Abstract composition representing trust, verification, and review authenticity"
             className="w-full h-full object-cover object-top"
           />

@@ -115,7 +115,7 @@ export default function DataSources() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=Professionals%20collaborating%20over%20a%20wall%20of%20data%20charts%20and%20analytics%20on%20large%20screens%20in%20a%20modern%20workspace%2C%20pointing%20and%20discussing%20insights%20together%2C%20warm%20natural%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20teal%20accents%2C%20editorial%20photography%2C%20high%20detail%2C%20realistic%20analytical%20teamwork%20atmosphere&width=1600&height=650&seq=datasources-hero-01&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/85711c50ec3243f4aa70edc84b7cfd69.png"
             alt="Abstract composition representing interconnected data sources"
             className="w-full h-full object-cover object-top"
           />

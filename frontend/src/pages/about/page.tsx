@@ -40,7 +40,7 @@ export default function About() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://readdy.ai/api/search-image?query=A%20diverse%20team%20of%20professionals%20collaborating%20around%20a%20long%20wooden%20table%20in%20a%20bright%20modern%20office%2C%20sharing%20ideas%20and%20reviewing%20documents%20together%2C%20warm%20golden%20sunlight%20streaming%20through%20large%20windows%2C%20soft%20beige%20and%20cream%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20photography%20style%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20warm%20and%20trustworthy%20professional%20atmosphere&width=1800&height=1000&seq=about-hero-01&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png"
             alt="Abstract warm artwork representing the apprenticeship community"
             title="ApprenticeshipsReviews community"
             className="w-full h-full object-cover object-top"
@@ -97,7 +97,7 @@ export default function About() {
               <div className="relative overflow-hidden rounded-2xl border border-background-200/70">
                 <div className="w-full h-[300px] md:h-[420px]">
                   <img
-                    src="https://readdy.ai/api/search-image?query=Two%20colleagues%20collaborating%20closely%20at%20a%20desk%20reviewing%20notes%20and%20charts%20together%20in%20a%20warm%20modern%20workspace%2C%20natural%20window%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20muted%20teal%20accents%2C%20genuine%20teamwork%20and%20connection%2C%20editorial%20portrait%20photography%2C%20high%20detail%2C%20realistic%20professional%20atmosphere&width=900&height=1000&seq=about-mission-01&orientation=portrait&nocache=true"
+                    src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/7289fb622bb442f7a9599033ab74fc34.png"
                     alt="Abstract illustration of apprentices and employers collaborating"
                     title="ApprenticeshipsReviews community collaboration"
                     className="w-full h-full object-cover object-top"
@@ -191,7 +191,7 @@ export default function About() {
                 <div className="relative overflow-hidden rounded-2xl border border-background-200/70 sticky top-24">
                   <div className="w-full h-[360px] md:h-[480px]">
                     <img
-                      src="https://readdy.ai/api/search-image?query=A%20small%20group%20of%20professionals%20in%20a%20bright%20meeting%20room%20collaborating%20over%20a%20whiteboard%20full%20of%20ideas%20and%20sticky%20notes%2C%20warm%20natural%20light%2C%20soft%20cream%20and%20amber%20tones%20with%20teal%20accents%2C%20candid%20teamwork%20moment%2C%20editorial%20photography%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20inspiring%20professional%20atmosphere&width=900&height=1000&seq=about-story-01&orientation=portrait&nocache=true"
+                      src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c4781afb684442319f89a98947780f95.png"
                       alt="Abstract illustration of growth and progress"
                       title="ApprenticeshipsReviews journey"
                       className="w-full h-full object-cover object-top"
@@ -235,7 +235,7 @@ export default function About() {
       <section className="relative w-full bg-primary-600 overflow-hidden">
         <div className="absolute inset-0 opacity-15">
           <img
-            src="https://readdy.ai/api/search-image?query=A%20wide%20view%20of%20a%20modern%20open%20office%20where%20diverse%20professionals%20collaborate%20at%20desks%20and%20around%20a%20shared%20table%2C%20warm%20sunlight%20and%20soft%20shadows%2C%20beige%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20photography%2C%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20collaborative%20and%20inviting%20professional%20atmosphere&width=1800&height=600&seq=about-cta-01&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/60bc4d1d155345738ce2f2540307cba9.png"
             alt=""
             aria-hidden="true"
             className="w-full h-full object-cover object-top"

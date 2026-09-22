@@ -110,7 +110,7 @@ export default function Contact() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=A%20friendly%20team%20member%20smiling%20and%20shaking%20hands%20with%20a%20colleague%20in%20a%20warm%20modern%20office%20lobby%2C%20welcoming%20and%20collaborative%2C%20soft%20natural%20light%2C%20cream%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20photography%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20approachable%20professional%20atmosphere&width=1600&height=650&seq=contact-hero-01&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/3b4c46c741794d28851b2d3f6aa67155.png"
             alt="Abstract composition suggesting communication and connection"
             className="w-full h-full object-cover object-top"
           />

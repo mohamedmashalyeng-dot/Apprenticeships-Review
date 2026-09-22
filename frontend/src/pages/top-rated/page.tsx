@@ -62,7 +62,7 @@ export default function TopRated() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=A%20team%20of%20professionals%20celebrating%20success%20and%20collaboration%20with%20a%20high%20five%20and%20smiles%20in%20a%20bright%20modern%20office%2C%20warm%20natural%20light%2C%20soft%20cream%20and%20amber%20tones%20with%20golden%20accents%2C%20editorial%20photography%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20joyful%20professional%20atmosphere&width=1800&height=700&seq=top-rated-hero&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png"
             alt="Abstract background representing top rated providers"
             className="w-full h-full object-cover object-top"
           />

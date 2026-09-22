@@ -410,7 +410,7 @@ export default function AddReview() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=A%20smiling%20professional%20typing%20a%20review%20on%20a%20laptop%20while%20colleagues%20collaborate%20in%20the%20background%20of%20a%20bright%20modern%20office%2C%20warm%20natural%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20teal%20accents%2C%20candid%20teamwork%20moment%2C%20editorial%20photography%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20trustworthy%20professional%20atmosphere&width=1800&height=900&seq=add-review-hero&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/cdf613646b1346258a83f38d9d397e5d.png"
             alt="Abstract background representing sharing reviews"
             className="w-full h-full object-cover object-top"
           />

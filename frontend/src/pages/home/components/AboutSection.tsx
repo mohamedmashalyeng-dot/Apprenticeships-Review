@@ -10,7 +10,7 @@ export default function AboutSection() {
             <div className="relative overflow-hidden rounded-2xl border border-background-200/70">
               <div className="h-[300px] w-full md:h-[420px]">
                 <img
-                  src="https://readdy.ai/api/search-image?query=Two%20colleagues%20collaborating%20closely%20at%20a%20desk%20reviewing%20notes%20and%20charts%20together%20in%20a%20warm%20modern%20workspace%2C%20natural%20window%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20muted%20teal%20accents%2C%20genuine%20teamwork%20and%20connection%2C%20editorial%20portrait%20photography%2C%20high%20detail%2C%20realistic%20professional%20atmosphere&width=900&height=1000&seq=home-about-mission-01&orientation=portrait&nocache=true"
+                  src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/5b93059c10cf4de5b8e51447636fc3f9.png"
                   alt=""
                   className="h-full w-full object-cover object-top"
                 />

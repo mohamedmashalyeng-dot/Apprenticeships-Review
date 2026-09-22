@@ -150,7 +150,7 @@ export default function TermsOfService() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=Two%20professionals%20reviewing%20a%20contract%20together%20at%20a%20desk%20in%20a%20calm%20modern%20office%2C%20thoughtful%20collaboration%20over%20paperwork%2C%20warm%20natural%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20photography%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20professional%20atmosphere&width=1600&height=650&seq=terms-hero-01&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/1c1703ae55514886acc5d4c542c7cdd2.png"
             alt="Abstract composition representing legal frameworks and structured agreements"
             className="w-full h-full object-cover object-top"
           />

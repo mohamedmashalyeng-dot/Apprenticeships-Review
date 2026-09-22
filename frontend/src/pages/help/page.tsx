@@ -89,7 +89,7 @@ export default function Help() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=A%20helpful%20colleague%20leaning%20over%20a%20desk%20explaining%20something%20on%20a%20laptop%20screen%20to%20another%20team%20member%20in%20a%20bright%20modern%20office%2C%20supportive%20collaboration%2C%20warm%20natural%20light%2C%20soft%20cream%20and%20amber%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20realistic%20supportive%20professional%20atmosphere&width=1800&height=700&seq=help-hero&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19ea4b1b1d944b5697a6bbab1fdf9439.png"
             alt="Abstract background representing help and support"
             className="w-full h-full object-cover object-top"
           />

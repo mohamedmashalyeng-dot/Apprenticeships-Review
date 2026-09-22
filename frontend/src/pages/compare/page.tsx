@@ -190,7 +190,7 @@ export default function CompareProviders() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=Two%20professionals%20side%20by%20side%20comparing%20charts%20and%20data%20on%20two%20monitors%20in%20a%20bright%20modern%20workspace%2C%20thoughtful%20collaboration%2C%20warm%20natural%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20high%20detail%2C%20realistic%20analytical%20professional%20atmosphere&width=1800&height=700&seq=compare-hero&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/8f0368341e2a461ea10e651faa89251e.png"
             alt="Abstract background representing provider comparison"
             className="w-full h-full object-cover object-top"
           />

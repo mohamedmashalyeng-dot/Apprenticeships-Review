@@ -36,7 +36,7 @@ export default function Categories() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=Professionals%20organizing%20documents%20and%20browsing%20categories%20together%20on%20a%20large%20screen%20in%20a%20modern%20office%2C%20collaborative%20and%20focused%2C%20warm%20natural%20light%2C%20soft%20cream%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20photography%2C%20high%20detail%2C%20realistic%20organized%20professional%20atmosphere&width=1800&height=700&seq=categories-hero&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19242baa2d6c494eb4d72730fd98a04a.png"
             alt="Abstract background representing apprenticeship categories"
             className="w-full h-full object-cover object-top"
           />

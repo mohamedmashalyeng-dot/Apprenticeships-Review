@@ -157,7 +157,7 @@ export default function Methodology() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://readdy.ai/api/search-image?query=Professionals%20collaborating%20around%20a%20table%20analyzing%20data%20and%20methodology%20charts%20printed%20on%20paper%20in%20a%20bright%20modern%20office%2C%20warm%20natural%20light%2C%20soft%20cream%20and%20amber%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20high%20detail%2C%20realistic%20thoughtful%20teamwork%20atmosphere&width=1600&height=700&seq=methodology-hero-01&orientation=landscape&nocache=true"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/8f0368341e2a461ea10e651faa89251e.png"
             alt="Abstract data visualisation representing evidence-based methodology"
             className="w-full h-full object-cover object-top"
           />

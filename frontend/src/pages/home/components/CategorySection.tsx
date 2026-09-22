@@ -27,7 +27,7 @@ const trainingOptions: CategoryCard[] = [
     statIcon: "ri-building-4-line",
     cta: "Explore marketing",
     image:
-      "https://readdy.ai/api/search-image?query=Marketing%20team%20brainstorming%20around%20a%20whiteboard%20covered%20with%20colorful%20sticky%20notes%20and%20campaign%20ideas%20in%20a%20bright%20modern%20agency%20office%2C%20natural%20window%20light%2C%20warm%20beige%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20genuine%20collaboration%2C%20editorial%20photography%2C%20realistic%20professional%20workspace%20with%20soft%20shadows%20and%20organic%20composition&width=800&height=500&seq=cat-marketing-01&orientation=landscape",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png",
   },
   {
     label: "Project management and project controls",
@@ -38,7 +38,7 @@ const trainingOptions: CategoryCard[] = [
     statIcon: "ri-building-4-line",
     cta: "Explore project providers",
     image:
-      "https://readdy.ai/api/search-image?query=Project%20managers%20reviewing%20a%20kanban%20board%20and%20planning%20charts%20on%20a%20large%20screen%20during%20a%20planning%20meeting%20in%20a%20modern%20office%2C%20focused%20discussion%2C%20warm%20natural%20light%2C%20soft%20beige%20and%20cream%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20realistic%20professional%20atmosphere%20with%20soft%20shadows%20and%20clean%20composition&width=800&height=500&seq=cat-project-mgmt-01&orientation=landscape",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/7289fb622bb442f7a9599033ab74fc34.png",
   },
   {
     label: "Degree apprenticeships",
@@ -49,7 +49,7 @@ const trainingOptions: CategoryCard[] = [
     statIcon: "ri-file-list-3-line",
     cta: "Browse programmes",
     image:
-      "https://readdy.ai/api/search-image?query=Young%20graduate%20apprentice%20wearing%20a%20cap%20and%20gown%20holding%20a%20diploma%20and%20smiling%20in%20front%20of%20a%20modern%20university%20building%2C%20golden%20hour%20sunlight%2C%20warm%20beige%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20portrait%20photography%2C%20realistic%20high%20detail%20with%20soft%20depth%20of%20field&width=800&height=500&seq=cat-degree-01&orientation=landscape",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c4781afb684442319f89a98947780f95.png",
   },
 ];
 
@@ -63,7 +63,7 @@ const providerInformation: CategoryCard[] = [
     statIcon: "ri-chat-3-line",
     cta: "Read reviews",
     image:
-      "https://readdy.ai/api/search-image?query=Young%20apprentice%20studying%20with%20a%20laptop%20and%20notebooks%20at%20a%20clean%20modern%20desk%20wearing%20headphones%2C%20focused%20and%20engaged%2C%20warm%20natural%20light%2C%20soft%20beige%20and%20amber%20tones%20with%20subtle%20teal%20accents%2C%20editorial%20lifestyle%20photography%2C%20realistic%20high%20detail%20with%20soft%20depth%20of%20field&width=800&height=500&seq=cat-learner-01&orientation=landscape",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/60bc4d1d155345738ce2f2540307cba9.png",
   },
   {
     label: "Employer reviews",
@@ -74,7 +74,7 @@ const providerInformation: CategoryCard[] = [
     statIcon: "ri-chat-3-line",
     cta: "Read employer feedback",
     image:
-      "https://readdy.ai/api/search-image?query=Business%20owner%20and%20manager%20shaking%20hands%20across%20a%20desk%20in%20a%20bright%20modern%20office%20discussing%20a%20training%20partnership%2C%20warm%20natural%20window%20light%2C%20soft%20beige%20and%20cream%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20realistic%20professional%20atmosphere%20with%20soft%20shadows%20and%20clean%20composition&width=800&height=500&seq=cat-employer-01&orientation=landscape",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/cdf613646b1346258a83f38d9d397e5d.png",
   },
   {
     label: "Ofsted reports and data sources",
@@ -85,7 +85,7 @@ const providerInformation: CategoryCard[] = [
     statIcon: "ri-database-2-line",
     cta: "Understand the data",
     image:
-      "https://readdy.ai/api/search-image?query=Analyst%20viewing%20official%20performance%20charts%20and%20data%20dashboards%20on%20dual%20monitors%20in%20a%20modern%20office%2C%20clean%20minimal%20workspace%2C%20warm%20natural%20light%2C%20soft%20beige%20and%20cream%20tones%20with%20muted%20teal%20accents%2C%20editorial%20photography%2C%20realistic%20professional%20atmosphere%20with%20soft%20shadows%20and%20clean%20composition&width=800&height=500&seq=cat-data-01&orientation=landscape",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19242baa2d6c494eb4d72730fd98a04a.png",
   },
 ];
 
