@@ -19,8 +19,14 @@ services:
         sync: false # your Hostinger domain, e.g. https://apprenticeshipsreviews.com
       - key: FRONTEND_URL
         sync: false # same as above, used to build password-reset links
-      - key: GEMINI_API_KEY
-        sync: false # aistudio.google.com/apikey — without this the chatbot endpoint returns 503
+      - key: OPENAI_API_KEY
+        sync: false # platform.openai.com/api-keys - without this the chatbot endpoint returns 503
+      - key: OPENAI_MODEL
+        value: "gpt-5-mini"
+      - key: OPENAI_MAX_OUTPUT_TOKENS
+        value: "500"
+      - key: CHATBOT_THROTTLE_RATE
+        value: "20/hour"
       - key: PYTHON_VERSION
         value: "3.13.0"
       # Render serves this API over HTTPS but the Hostinger frontend is a different domain

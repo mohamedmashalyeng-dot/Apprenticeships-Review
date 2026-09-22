@@ -1,16 +1,14 @@
 """AI concierge that helps visitors find apprenticeship training providers.
 
-Routed through Google's Gemini Interactions API (raw HTTP — no Anthropic SDK, no
-OpenRouter; this deployment authenticates with a Gemini/AI Studio key). Every provider
-the assistant names comes from `search_providers`, which queries the platform's own
-database — the model is never allowed to invent a provider.
+Routed through OpenAI's Responses API over raw HTTP. Every provider the assistant names
+comes from `search_providers`, which queries the platform's own database; the model is
+never allowed to invent a provider.
 
-Unlike a typical stateless chat-completions API, the Interactions API is stateful on
-Google's side: each call returns an `id`, and passing that back as
-`previous_interaction_id` on the next call carries the full conversation forward without
-resending any history — so this module (and the API contract in views.py) tracks an
-`interaction_id` instead of a client-side transcript.
+The frontend still calls the opaque value `interaction_id`, but it is now the previous
+OpenAI response id. Passing it back as `previous_response_id` lets OpenAI carry the
+conversation forward without the browser resending the whole transcript.
 """
+
 import json
 
 import requests
@@ -19,13 +17,7 @@ from django.db.models import Q
 
 from catalog.models import Company
 
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
-# Pinned to a specific dated release rather than the "-latest" alias: that alias currently
-# resolves to a newer preview-tier model whose free-tier quota is only 20 requests/minute
-# and was getting exhausted during normal use. gemini-2.5-flash (the previous pin) 404s for
-# this project ("no longer available to new users") — its own error response names
-# gemini-3.6-flash as the direct replacement, confirmed working below.
-MODEL = "gemini-3.6-flash"
+OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
 REQUEST_TIMEOUT = 60
 MAX_TOOL_ITERATIONS = 4
 RESULTS_LIMIT = 5
@@ -35,11 +27,11 @@ people research and review UK apprenticeship training providers, colleges, and e
 
 Your job is to help visitors find providers that fit what they're looking for, using the \
 `search_providers` tool. Never name or describe a specific provider unless it came back from \
-that tool — you have no other source of truth about which providers exist or how good they are.
+that tool - you have no other source of truth about which providers exist or how good they are.
 
 Guidelines:
 - If the visitor's request already gives you something to search on (a subject, sector, \
-location, or level), call the tool right away with your best interpretation — don't \
+location, or level), call the tool right away with your best interpretation - don't \
 interrogate them with clarifying questions first.
 - Only ask a short clarifying question when the request is too vague to search at all \
 (e.g. just "hi" or "help me").
@@ -49,7 +41,7 @@ returns nothing, say so honestly and suggest broadening the search (a different 
 or level) instead of guessing.
 - Stay on topic: apprenticeships, training providers, and this platform. Politely decline \
 anything unrelated.
-- Keep replies short — this is a chat widget, not an essay."""
+- Keep replies short - this is a chat widget, not an essay."""
 
 SEARCH_PROVIDERS_TOOL = {
     "type": "function",
@@ -58,7 +50,7 @@ SEARCH_PROVIDERS_TOOL = {
         "Search the platform's database of apprenticeship training providers. Returns real "
         "providers matching the given criteria, each with location, rating, review count, "
         "delivered apprenticeship standards, and strengths. Always use this before naming a "
-        "provider — never invent one. Omit any field you have no evidence for."
+        "provider - never invent one. Omit any field you have no evidence for."
     ),
     "parameters": {
         "type": "object",
@@ -80,7 +72,7 @@ SEARCH_PROVIDERS_TOOL = {
             },
             "min_rating": {
                 "type": "number",
-                "description": "Minimum average rating out of 5 — only set this when the visitor asks for highly-rated providers.",
+                "description": "Minimum average rating out of 5 - only set this when the visitor asks for highly-rated providers.",
             },
             "keywords": {
                 "type": "string",
@@ -93,7 +85,7 @@ SEARCH_PROVIDERS_TOOL = {
 
 
 class ChatbotUpstreamError(Exception):
-    """Raised when Gemini can't be reached or returns an error status."""
+    """Raised when OpenAI can't be reached or returns an error status."""
 
 
 def search_providers(sector=None, level=None, location=None, min_rating=None, keywords=None):
@@ -104,9 +96,6 @@ def search_providers(sector=None, level=None, location=None, min_rating=None, ke
     if min_rating is not None:
         qs = qs.filter(average_rating__gte=min_rating)
 
-    # Combined into one Q so sector and level are matched against the *same* joined
-    # Standard row (two separate .filter() calls would each open their own join, so a
-    # provider could match on an unrelated standard for each half).
     standard_filters = []
     if sector:
         standard_filters.append(
@@ -145,65 +134,94 @@ def search_providers(sector=None, level=None, location=None, min_rating=None, ke
     return results
 
 
-def _call_gemini(payload):
+def _call_openai(payload):
     try:
         response = requests.post(
-            GEMINI_URL,
+            OPENAI_RESPONSES_URL,
             headers={
-                "x-goog-api-key": settings.GEMINI_API_KEY,
+                "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
                 "Content-Type": "application/json",
             },
             json=payload,
             timeout=REQUEST_TIMEOUT,
         )
     except requests.RequestException as exc:
-        raise ChatbotUpstreamError(f"Could not reach Gemini: {exc}") from exc
+        raise ChatbotUpstreamError(f"Could not reach OpenAI: {exc}") from exc
 
     if response.status_code != 200:
-        raise ChatbotUpstreamError(f"Gemini returned {response.status_code}: {response.text[:500]}")
+        raise ChatbotUpstreamError(f"OpenAI returned {response.status_code}: {response.text[:500]}")
 
-    return response.json()
+    data = response.json()
+    if data.get("error"):
+        raise ChatbotUpstreamError(f"OpenAI returned an error: {data['error']}")
+    return data
+
+
+def _extract_text(response_data):
+    if response_data.get("output_text"):
+        return response_data["output_text"].strip()
+
+    chunks = []
+    for item in response_data.get("output", []):
+        if item.get("type") != "message":
+            continue
+        for part in item.get("content", []):
+            if part.get("type") == "output_text":
+                chunks.append(part.get("text", ""))
+    return "".join(chunks).strip()
+
+
+def _function_calls(response_data):
+    return [item for item in response_data.get("output", []) if item.get("type") == "function_call"]
+
+
+def _parse_arguments(call):
+    raw_arguments = call.get("arguments") or "{}"
+    try:
+        parsed = json.loads(raw_arguments)
+    except json.JSONDecodeError:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def run_chat(previous_interaction_id, user_message):
     """Run one turn of the concierge conversation.
 
-    `previous_interaction_id` (or None for a fresh conversation) is the `interaction_id`
-    this function returned last turn — Gemini uses it to recall the conversation so far,
-    so nothing else needs to be resent. Returns {"reply": str, "providers": [...],
-    "interaction_id": str} where `providers` is every provider the tool surfaced this
-    turn, deduplicated, and `interaction_id` should be passed back in on the next turn.
+    `previous_interaction_id` (or None for a fresh conversation) is the response id this
+    function returned last turn. OpenAI uses it to recall the conversation so far, so
+    nothing else needs to be resent. Returns {"reply": str, "providers": [...],
+    "interaction_id": str} where `providers` is every provider the tool surfaced this turn,
+    deduplicated, and `interaction_id` should be passed back in on the next turn.
     """
+
     matched_providers = {}
-    interaction_id = previous_interaction_id
-    next_input = user_message
+    previous_response_id = previous_interaction_id
+    next_input = [{"role": "user", "content": user_message}]
     data = {}
 
     for _ in range(MAX_TOOL_ITERATIONS):
         payload = {
-            "model": MODEL,
-            "system_instruction": SYSTEM_PROMPT,
+            "model": settings.OPENAI_MODEL,
+            "instructions": SYSTEM_PROMPT,
             "tools": [SEARCH_PROVIDERS_TOOL],
-            "generation_config": {"thinking_level": "low"},
             "input": next_input,
+            "max_output_tokens": settings.OPENAI_MAX_OUTPUT_TOKENS,
+            "store": True,
         }
-        if interaction_id:
-            payload["previous_interaction_id"] = interaction_id
+        if previous_response_id:
+            payload["previous_response_id"] = previous_response_id
 
-        data = _call_gemini(payload)
-        interaction_id = data.get("id") or interaction_id
+        data = _call_openai(payload)
+        previous_response_id = data.get("id") or previous_response_id
 
-        if data.get("status") != "requires_action":
-            break
-
-        function_calls = [step for step in data.get("steps", []) if step.get("type") == "function_call"]
-        if not function_calls:
+        calls = _function_calls(data)
+        if not calls:
             break
 
         function_results = []
-        for call in function_calls:
+        for call in calls:
             if call.get("name") == "search_providers":
-                results = search_providers(**(call.get("arguments") or {}))
+                results = search_providers(**_parse_arguments(call))
                 for result in results:
                     matched_providers[result["provider_id"]] = result
                 result_value = json.dumps(results)
@@ -211,26 +229,19 @@ def run_chat(previous_interaction_id, user_message):
                 result_value = f"Unknown tool: {call.get('name')}"
             function_results.append(
                 {
-                    "type": "function_result",
-                    "name": call.get("name"),
-                    "call_id": call.get("id"),
-                    "result": result_value,
+                    "type": "function_call_output",
+                    "call_id": call.get("call_id"),
+                    "output": result_value,
                 }
             )
         next_input = function_results
 
-    reply_text = "".join(
-        part.get("text", "")
-        for step in data.get("steps", [])
-        if step.get("type") == "model_output"
-        for part in step.get("content", [])
-        if part.get("type") == "text"
-    ).strip()
+    reply_text = _extract_text(data)
     if not reply_text:
-        reply_text = "Sorry, I couldn't put together a good answer for that — could you rephrase your question?"
+        reply_text = "Sorry, I couldn't put together a good answer for that - could you rephrase your question?"
 
     return {
         "reply": reply_text,
         "providers": list(matched_providers.values()),
-        "interaction_id": interaction_id,
+        "interaction_id": previous_response_id,
     }

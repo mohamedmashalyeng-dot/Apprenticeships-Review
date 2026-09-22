@@ -25,9 +25,8 @@ interface ChatMessageApiResponse {
   interaction_id: string | null;
 }
 
-/** The backend's AI provider (Gemini) keeps conversation state server-side — pass back
- *  whatever `interactionId` the previous call returned (or null for a fresh chat) instead
- *  of resending the whole transcript. */
+/** The backend keeps conversation state server-side - pass back whatever `interactionId`
+ *  the previous call returned (or null for a fresh chat) instead of resending the transcript. */
 export async function sendChatMessage(message: string, interactionId: string | null): Promise<ChatResponse> {
   const data = await api.post<ChatMessageApiResponse>("/chatbot/message/", {
     message,

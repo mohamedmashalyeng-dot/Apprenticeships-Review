@@ -105,6 +105,9 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ] + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
+    "DEFAULT_THROTTLE_RATES": {
+        "chatbot": os.environ.get("CHATBOT_THROTTLE_RATE", "20/hour"),
+    },
     "EXCEPTION_HANDLER": "config.exceptions.api_exception_handler",
 }
 
@@ -153,7 +156,9 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@apprenticeshi
 # Used to build the password-reset link emailed to users (the API doesn't know the SPA's origin).
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
-# ---- Chatbot (via Google Gemini / AI Studio) ----
+# ---- Chatbot (via OpenAI Responses API) ----
 # Server-side only — never exposed to the frontend. Left blank the chatbot endpoint
 # responds 503 instead of erroring, so a missing key doesn't break the rest of the app.
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5-mini")
+OPENAI_MAX_OUTPUT_TOKENS = int(os.environ.get("OPENAI_MAX_OUTPUT_TOKENS", "500"))
