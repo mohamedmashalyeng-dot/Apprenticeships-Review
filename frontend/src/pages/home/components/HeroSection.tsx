@@ -49,10 +49,10 @@ const searchShellStyle: CSSProperties = {
 const reviewCardStyle: CSSProperties = {
   borderRadius: "1.35rem",
   boxShadow: "0 24px 60px rgba(31,112,190,0.16)",
-  height: "20.5rem",
+  height: "23rem",
   left: "18%",
   maxWidth: "72%",
-  top: "12%",
+  top: "8%",
   width: "25rem",
 };
 
@@ -213,7 +213,7 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
 
           <span className="absolute top-2 h-2.5 w-2.5 rounded-full border-2 border-white bg-primary-400" style={{ boxShadow: "0 0 0 3px rgba(74,166,255,0.16)", right: "17%" }} />
 
-          <div className="absolute z-10 flex flex-col overflow-hidden border border-white bg-white/95 p-6 backdrop-blur-sm" style={reviewCardStyle}>
+          <div className="absolute z-10 flex flex-col overflow-hidden border border-white bg-white/95 p-7 backdrop-blur-sm" style={reviewCardStyle}>
             <div className="flex items-center justify-between gap-3 text-xs" style={{ color: "#66819a" }}>
               <div className="flex min-w-0 items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold" style={{ backgroundColor: "#dff4f8", color: "#168a9a" }}>
@@ -230,14 +230,14 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
               </span>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-7">
               <RatingStars rating={featuredReview.rating} />
             </div>
 
-            <p className="mt-3 line-clamp-3 text-2xl font-bold leading-tight" style={{ color: "#0b2340" }}>"{reviewTitle}"</p>
-            <p className="mt-4 line-clamp-2 text-sm font-medium leading-relaxed" style={{ color: "#66819a" }}>{reviewText}</p>
+            <p className="mt-4 line-clamp-3 text-2xl font-bold leading-snug" style={{ color: "#0b2340" }}>"{reviewTitle}"</p>
+            <p className="mt-5 line-clamp-2 text-sm font-medium leading-relaxed" style={{ color: "#66819a" }}>{reviewText}</p>
 
-            <div className="mt-auto flex items-center justify-between gap-3 border-t border-background-200 pt-3 text-xs font-semibold" style={{ color: "#66819a" }}>
+            <div className="mt-auto flex items-center justify-between gap-3 border-t border-background-200 pt-4 text-xs font-semibold" style={{ color: "#66819a" }}>
               <span className="min-w-0 truncate capitalize">
                 <i className="ri-graduation-cap-line mr-1" aria-hidden="true" />
                 {reviewLabel}
