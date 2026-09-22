@@ -8,7 +8,7 @@ export default function BottomCTA() {
         <img
           src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/18ffc658772040df8cb1bc14b3144739.png"
           alt="Young professionals collaborating in a modern workspace"
-          className="w-full h-full object-cover object-center"
+          className="site-image-bg"
         />
         {/* Dark overlay for readability */}
         <div className="absolute inset-0 bg-black/70" />

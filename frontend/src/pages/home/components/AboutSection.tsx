@@ -12,7 +12,7 @@ export default function AboutSection() {
                 <img
                   src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/5b93059c10cf4de5b8e51447636fc3f9.png"
                   alt=""
-                  className="h-full w-full object-cover object-top"
+                  className="site-image-portrait"
                 />
               </div>
             </div>

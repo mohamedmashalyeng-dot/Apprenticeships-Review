@@ -161,6 +161,43 @@ body {
   width: min(36rem, calc(100vw - 2rem));
 }
 
+.site-image-cover,
+.site-image-hero,
+.site-image-card,
+.site-image-portrait,
+.site-image-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.site-image-hero {
+  object-position: center 42%;
+}
+
+.site-image-card {
+  object-position: center 38%;
+}
+
+.site-image-portrait {
+  object-position: center 34%;
+}
+
+.site-image-bg {
+  object-position: center;
+}
+
+@media (max-width: 640px) {
+  .site-image-hero {
+    object-position: center 36%;
+  }
+
+  .site-image-card,
+  .site-image-portrait {
+    object-position: center 30%;
+  }
+}
+
 @media (max-width: 640px) {
   .hero-copy {
     width: min(22.5rem, calc(100vw - 2rem)) !important;

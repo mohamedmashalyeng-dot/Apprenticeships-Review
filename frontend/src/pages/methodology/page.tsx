@@ -159,7 +159,7 @@ export default function Methodology() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/8f0368341e2a461ea10e651faa89251e.png"
             alt="Abstract data visualisation representing evidence-based methodology"
-            className="w-full h-full object-cover object-top"
+            className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>

@@ -159,7 +159,7 @@ export default function Reviews() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/5b93059c10cf4de5b8e51447636fc3f9.png"
             alt="Abstract background representing reviews"
-            className="w-full h-full object-cover object-top"
+            className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>

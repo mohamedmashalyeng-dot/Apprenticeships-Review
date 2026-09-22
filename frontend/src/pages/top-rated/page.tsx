@@ -64,7 +64,7 @@ export default function TopRated() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png"
             alt="Abstract background representing top rated providers"
-            className="w-full h-full object-cover object-top"
+            className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>

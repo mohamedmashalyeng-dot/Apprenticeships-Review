@@ -43,7 +43,7 @@ export default function About() {
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png"
             alt="Abstract warm artwork representing the apprenticeship community"
             title="ApprenticeshipsReviews community"
-            className="w-full h-full object-cover object-top"
+            className="site-image-hero"
           />
         </div>
         <div className="absolute inset-0 bg-black/60" />
@@ -100,7 +100,7 @@ export default function About() {
                     src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/7289fb622bb442f7a9599033ab74fc34.png"
                     alt="Abstract illustration of apprentices and employers collaborating"
                     title="ApprenticeshipsReviews community collaboration"
-                    className="w-full h-full object-cover object-top"
+                    className="site-image-portrait"
                   />
                 </div>
               </div>
@@ -194,7 +194,7 @@ export default function About() {
                       src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c4781afb684442319f89a98947780f95.png"
                       alt="Abstract illustration of growth and progress"
                       title="ApprenticeshipsReviews journey"
-                      className="w-full h-full object-cover object-top"
+                      className="site-image-portrait"
                     />
                   </div>
                 </div>
@@ -238,7 +238,7 @@ export default function About() {
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/60bc4d1d155345738ce2f2540307cba9.png"
             alt=""
             aria-hidden="true"
-            className="w-full h-full object-cover object-top"
+            className="site-image-bg"
           />
         </div>
         <div className="relative w-full px-4 md:px-6 lg:px-8 py-14 md:py-16">

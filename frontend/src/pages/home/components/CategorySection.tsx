@@ -123,7 +123,7 @@ function CategoryGrid({ items, counts }: { items: CategoryCard[]; counts: Partia
               <img
                 src={cat.image}
                 alt=""
-                className="h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
+                className="site-image-card transition-transform duration-500 ease-out group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background-50/95 via-background-50/10 to-transparent" />
               <div className="absolute bottom-3 left-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary-500 text-white shadow-[0_4px_14px_rgba(11,92,255,0.35)]">

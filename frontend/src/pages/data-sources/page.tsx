@@ -117,7 +117,7 @@ export default function DataSources() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/85711c50ec3243f4aa70edc84b7cfd69.png"
             alt="Abstract composition representing interconnected data sources"
-            className="w-full h-full object-cover object-top"
+            className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>

@@ -112,7 +112,7 @@ export default function Contact() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/3b4c46c741794d28851b2d3f6aa67155.png"
             alt="Abstract composition suggesting communication and connection"
-            className="w-full h-full object-cover object-top"
+            className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>

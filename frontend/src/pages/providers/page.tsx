@@ -189,7 +189,7 @@ export default function FindProvider() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/85711c50ec3243f4aa70edc84b7cfd69.png"
             alt=""
-            className="h-full w-full object-cover object-top"
+            className="site-image-hero"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/30" />
         </div>
