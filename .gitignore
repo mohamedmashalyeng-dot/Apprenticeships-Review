@@ -21,6 +21,7 @@ __pycache__/
 backend/.venv/
 backend/staticfiles/
 backend/runserver.log
+*.log
 
 # Database exports / dumps
 data-exports/
