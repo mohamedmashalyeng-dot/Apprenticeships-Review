@@ -187,6 +187,21 @@ body {
   object-position: center;
 }
 
+.site-footer {
+  background-color: #f3f9ff;
+  background-image:
+    radial-gradient(circle at 65% 40%, rgba(62,154,255,0.16), transparent 34%),
+    radial-gradient(circle at 24% 65%, rgba(255,255,255,0.9), transparent 38%),
+    linear-gradient(rgba(43,117,191,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43,117,191,0.055) 1px, transparent 1px);
+  background-size: auto, auto, 40px 40px, 40px 40px;
+}
+
+:root.dark .site-footer {
+  background-color: #05122b;
+  background-image: none;
+}
+
 @media (max-width: 640px) {
   .site-image-hero {
     object-position: center 36%;

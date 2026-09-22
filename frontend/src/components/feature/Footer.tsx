@@ -56,8 +56,8 @@ export default function Footer() {
         <i className="ri-arrow-up-line text-lg" />
       </button>
 
-      <footer className="w-full overflow-hidden bg-[#05122b]">
-        <div className="border-t border-white/10">
+      <footer className="site-footer w-full overflow-hidden">
+        <div className="border-t border-primary-100/70 dark:border-white/10">
           <div className="mx-auto max-w-6xl px-4 pb-10 pt-14 md:px-6 lg:px-8">
             <div className="grid gap-10 lg:grid-cols-[1.2fr_2fr]">
               <div>
@@ -65,25 +65,25 @@ export default function Footer() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-white">
                     <i className="ri-star-fill text-base" />
                   </div>
-                  <span className="font-heading text-lg font-bold tracking-tight text-white">
+                  <span className="font-heading text-lg font-bold tracking-tight text-[#071b36] dark:text-white">
                     Apprenticeships <span className="text-primary-400">Reviews</span>
                   </span>
                 </Link>
-                <p className="max-w-md text-sm leading-relaxed text-white/65">
+                <p className="max-w-md text-sm leading-relaxed text-[#496783] dark:text-white/65">
                   Apprenticeships Reviews helps apprentices and employers explore training providers, review feedback and published provider information.
                 </p>
-                <p className="mt-4 max-w-md text-xs leading-relaxed text-white/45">
+                <p className="mt-4 max-w-md text-xs leading-relaxed text-[#66819a] dark:text-white/45">
                   Ownership disclosure should be confirmed before publication. If Kent Business College Ltd is the operator, state that relationship clearly on the linked ownership page.
                 </p>
               </div>
 
               <div className="grid gap-8 sm:grid-cols-3">
                 <div>
-                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/45">Explore</h4>
+                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#66819a] dark:text-white/45">Explore</h4>
                   <ul className="flex flex-col gap-2">
                     {exploreLinks.map((link) => (
                       <li key={link.href}>
-                        <Link to={link.href} className="text-sm text-white/70 transition-colors duration-200 hover:text-primary-400">
+                        <Link to={link.href} className="text-sm text-[#496783] transition-colors duration-200 hover:text-primary-600 dark:text-white/70 dark:hover:text-primary-400">
                           {link.label}
                         </Link>
                       </li>
@@ -92,11 +92,11 @@ export default function Footer() {
                 </div>
 
                 <div>
-                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/45">About the service</h4>
+                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#66819a] dark:text-white/45">About the service</h4>
                   <ul className="flex flex-col gap-2">
                     {serviceLinks.map((link) => (
                       <li key={link.href}>
-                        <Link to={link.href} className="text-sm text-white/70 transition-colors duration-200 hover:text-primary-400">
+                        <Link to={link.href} className="text-sm text-[#496783] transition-colors duration-200 hover:text-primary-600 dark:text-white/70 dark:hover:text-primary-400">
                           {link.label}
                         </Link>
                       </li>
@@ -105,11 +105,11 @@ export default function Footer() {
                 </div>
 
                 <div>
-                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/45">Policies</h4>
+                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#66819a] dark:text-white/45">Policies</h4>
                   <ul className="flex flex-col gap-2">
                     {policyLinks.map((link) => (
                       <li key={link.href}>
-                        <Link to={link.href} className="text-sm text-white/70 transition-colors duration-200 hover:text-primary-400">
+                        <Link to={link.href} className="text-sm text-[#496783] transition-colors duration-200 hover:text-primary-600 dark:text-white/70 dark:hover:text-primary-400">
                           {link.label}
                         </Link>
                       </li>
@@ -120,17 +120,17 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 px-4 py-5 md:px-6 lg:px-8">
+          <div className="border-t border-primary-100/70 px-4 py-5 dark:border-white/10 md:px-6 lg:px-8">
             <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
-              <p className="text-xs text-white/40">&copy; {new Date().getFullYear()} Apprenticeships Reviews</p>
+              <p className="text-xs text-[#66819a] dark:text-white/40">&copy; {new Date().getFullYear()} Apprenticeships Reviews</p>
               <div className="flex items-center gap-5">
-                <Link to="/privacy-policy" className="text-xs text-white/40 transition-colors hover:text-white">
+                <Link to="/privacy-policy" className="text-xs text-[#66819a] transition-colors hover:text-primary-600 dark:text-white/40 dark:hover:text-white">
                   Privacy
                 </Link>
-                <Link to="/terms" className="text-xs text-white/40 transition-colors hover:text-white">
+                <Link to="/terms" className="text-xs text-[#66819a] transition-colors hover:text-primary-600 dark:text-white/40 dark:hover:text-white">
                   Terms
                 </Link>
-                <Link to="/review-policy" className="text-xs text-white/40 transition-colors hover:text-white">
+                <Link to="/review-policy" className="text-xs text-[#66819a] transition-colors hover:text-primary-600 dark:text-white/40 dark:hover:text-white">
                   Review policy
                 </Link>
               </div>
