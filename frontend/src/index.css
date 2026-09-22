@@ -157,6 +157,16 @@ body {
   pointer-events: none;
 }
 
+.hero-copy {
+  width: min(36rem, calc(100vw - 2rem));
+}
+
+@media (max-width: 640px) {
+  .hero-copy {
+    width: min(22.5rem, calc(100vw - 2rem)) !important;
+  }
+}
+
 @keyframes star-fill-sweep {
   0% {
     clip-path: inset(0 100% 0 0);
