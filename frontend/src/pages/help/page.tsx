@@ -91,6 +91,8 @@ export default function Help() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19ea4b1b1d944b5697a6bbab1fdf9439.png"
             alt="Abstract background representing help and support"
+            width={707}
+            height={333}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />

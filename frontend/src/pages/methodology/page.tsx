@@ -157,8 +157,10 @@ export default function Methodology() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/8f0368341e2a461ea10e651faa89251e.png"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/1c1703ae55514886acc5d4c542c7cdd2.png"
             alt="Abstract data visualisation representing evidence-based methodology"
+            width={445}
+            height={315}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />

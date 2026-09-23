@@ -74,7 +74,7 @@ export default function BestProvidersRow({
               ? (cards as CompetitorCard[]).map((c, idx) => (
                   <div
                     key={c.id}
-                    className="competitor-card group relative flex flex-col p-5 md:p-6 bg-white/70 border border-white/60 rounded-2xl shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md hover:-translate-y-1.5 transition-all duration-400 ease-out cursor-default overflow-hidden"
+                    className="competitor-card group relative flex flex-col p-5 md:p-6 bg-white/70 border border-white/60 rounded-2xl shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md hover:-translate-y-1.5 transition-all duration-400 ease-out cursor-default overflow-hidden dark:border-white/10 dark:bg-white/10 dark:shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
                     style={{
                       "--brand": c.brandColor,
                       animationDelay: `${idx * 80}ms`,
@@ -167,7 +167,7 @@ export default function BestProvidersRow({
                   <Link
                     key={p.id}
                     to={`/provider/${p.id}`}
-                    className="provider-card group relative flex flex-col p-5 md:p-6 bg-white/70 border border-white/60 rounded-2xl shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md hover:-translate-y-1.5 transition-all duration-400 ease-out overflow-hidden"
+                    className="provider-card group relative flex flex-col p-5 md:p-6 bg-white/70 border border-white/60 rounded-2xl shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md hover:-translate-y-1.5 transition-all duration-400 ease-out overflow-hidden dark:border-white/10 dark:bg-white/10 dark:shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
                     style={{
                       "--brand": p.brandColor,
                       animationDelay: `${idx * 80}ms`,

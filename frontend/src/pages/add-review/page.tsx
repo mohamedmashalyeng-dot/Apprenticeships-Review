@@ -412,6 +412,8 @@ export default function AddReview() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/cdf613646b1346258a83f38d9d397e5d.png"
             alt="Abstract background representing sharing reviews"
+            width={447}
+            height={230}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />

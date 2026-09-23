@@ -8,11 +8,13 @@ export default function AboutSection() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
           <AnimateOnScroll direction="left">
             <div className="relative overflow-hidden rounded-2xl border border-background-200/70">
-              <div className="h-[300px] w-full md:h-[420px]">
+              <div className="aspect-[447/230] w-full">
                 <img
-                  src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/5b93059c10cf4de5b8e51447636fc3f9.png"
+                  src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/cdf613646b1346258a83f38d9d397e5d.png"
                   alt=""
-                  className="site-image-portrait"
+                  width={447}
+                  height={230}
+                  className="site-image-cover"
                 />
               </div>
             </div>

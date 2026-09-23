@@ -14,6 +14,8 @@ interface CategoryCard {
   statKey: StatKey;
   statIcon: string;
   image: string;
+  imageWidth: number;
+  imageHeight: number;
   cta: string;
 }
 
@@ -27,7 +29,9 @@ const trainingOptions: CategoryCard[] = [
     statIcon: "ri-building-4-line",
     cta: "Explore marketing",
     image:
-      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/18ffc658772040df8cb1bc14b3144739.png",
+    imageWidth: 821,
+    imageHeight: 387,
   },
   {
     label: "Project management and project controls",
@@ -38,7 +42,9 @@ const trainingOptions: CategoryCard[] = [
     statIcon: "ri-building-4-line",
     cta: "Explore project providers",
     image:
-      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/7289fb622bb442f7a9599033ab74fc34.png",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/5b93059c10cf4de5b8e51447636fc3f9.png",
+    imageWidth: 578,
+    imageHeight: 272,
   },
   {
     label: "Degree apprenticeships",
@@ -49,7 +55,9 @@ const trainingOptions: CategoryCard[] = [
     statIcon: "ri-file-list-3-line",
     cta: "Browse programmes",
     image:
-      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c4781afb684442319f89a98947780f95.png",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19ea4b1b1d944b5697a6bbab1fdf9439.png",
+    imageWidth: 707,
+    imageHeight: 333,
   },
 ];
 
@@ -63,7 +71,9 @@ const providerInformation: CategoryCard[] = [
     statIcon: "ri-chat-3-line",
     cta: "Read reviews",
     image:
-      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/60bc4d1d155345738ce2f2540307cba9.png",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/85711c50ec3243f4aa70edc84b7cfd69.png",
+    imageWidth: 821,
+    imageHeight: 386,
   },
   {
     label: "Employer reviews",
@@ -74,7 +84,9 @@ const providerInformation: CategoryCard[] = [
     statIcon: "ri-chat-3-line",
     cta: "Read employer feedback",
     image:
-      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/cdf613646b1346258a83f38d9d397e5d.png",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/3b4c46c741794d28851b2d3f6aa67155.png",
+    imageWidth: 604,
+    imageHeight: 285,
   },
   {
     label: "Ofsted reports and data sources",
@@ -85,7 +97,9 @@ const providerInformation: CategoryCard[] = [
     statIcon: "ri-database-2-line",
     cta: "Understand the data",
     image:
-      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19242baa2d6c494eb4d72730fd98a04a.png",
+      "https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/8f0368341e2a461ea10e651faa89251e.png",
+    imageWidth: 674,
+    imageHeight: 317,
   },
 ];
 
@@ -119,10 +133,12 @@ function CategoryGrid({ items, counts }: { items: CategoryCard[]; counts: Partia
               animation: "categoryFadeIn 0.5s ease-out both",
             }}
           >
-            <div className="relative h-40 overflow-hidden md:h-44">
+            <div className="relative aspect-[16/10] overflow-hidden">
               <img
                 src={cat.image}
                 alt=""
+                width={cat.imageWidth}
+                height={cat.imageHeight}
                 className="site-image-card transition-transform duration-500 ease-out group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background-50/95 via-background-50/10 to-transparent" />

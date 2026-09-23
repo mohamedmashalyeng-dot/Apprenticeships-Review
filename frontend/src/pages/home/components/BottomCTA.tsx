@@ -6,8 +6,10 @@ export default function BottomCTA() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/18ffc658772040df8cb1bc14b3144739.png"
+          src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/60bc4d1d155345738ce2f2540307cba9.png"
           alt="Young professionals collaborating in a modern workspace"
+          width={448}
+          height={328}
           className="site-image-bg"
         />
         {/* Dark overlay for readability */}

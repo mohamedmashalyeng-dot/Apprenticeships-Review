@@ -157,8 +157,10 @@ export default function Reviews() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/5b93059c10cf4de5b8e51447636fc3f9.png"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png"
             alt="Abstract background representing reviews"
+            width={467}
+            height={313}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />

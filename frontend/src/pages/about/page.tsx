@@ -43,6 +43,8 @@ export default function About() {
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c48fd67eb7fb4d3d8ee0b39bb8f6ee2c.png"
             alt="Abstract warm artwork representing the apprenticeship community"
             title="ApprenticeshipsReviews community"
+            width={467}
+            height={313}
             className="site-image-hero"
           />
         </div>
@@ -95,12 +97,14 @@ export default function About() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <AnimateOnScroll direction="left">
               <div className="relative overflow-hidden rounded-2xl border border-background-200/70">
-                <div className="w-full h-[300px] md:h-[420px]">
+                <div className="aspect-[821/325] w-full">
                   <img
                     src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/7289fb622bb442f7a9599033ab74fc34.png"
                     alt="Abstract illustration of apprentices and employers collaborating"
                     title="ApprenticeshipsReviews community collaboration"
-                    className="site-image-portrait"
+                    width={821}
+                    height={325}
+                    className="site-image-cover"
                   />
                 </div>
               </div>
@@ -189,12 +193,14 @@ export default function About() {
 
               <AnimateOnScroll direction="right">
                 <div className="relative overflow-hidden rounded-2xl border border-background-200/70 sticky top-24">
-                  <div className="w-full h-[360px] md:h-[480px]">
+                  <div className="aspect-[822/478] w-full">
                     <img
                       src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c4781afb684442319f89a98947780f95.png"
                       alt="Abstract illustration of growth and progress"
                       title="ApprenticeshipsReviews journey"
-                      className="site-image-portrait"
+                      width={822}
+                      height={478}
+                      className="site-image-cover"
                     />
                   </div>
                 </div>
@@ -238,6 +244,8 @@ export default function About() {
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/60bc4d1d155345738ce2f2540307cba9.png"
             alt=""
             aria-hidden="true"
+            width={448}
+            height={328}
             className="site-image-bg"
           />
         </div>

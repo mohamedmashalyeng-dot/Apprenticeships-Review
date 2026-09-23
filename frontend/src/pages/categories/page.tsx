@@ -38,6 +38,8 @@ export default function Categories() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/19242baa2d6c494eb4d72730fd98a04a.png"
             alt="Abstract background representing apprenticeship categories"
+            width={567}
+            height={278}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />

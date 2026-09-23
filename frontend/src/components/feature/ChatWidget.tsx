@@ -135,7 +135,7 @@ export default function ChatWidget() {
             {isSending && (
               <div className="flex justify-start">
                 <div className="flex items-center gap-2 rounded-2xl bg-background-100 px-3 py-2 text-sm text-foreground-500">
-                  <img src={BOT_IMAGE_URL} alt="" aria-hidden="true" className="h-6 w-6 object-contain" />
+                  <img src={BOT_IMAGE_URL} alt="" aria-hidden="true" width={1485} height={1059} className="h-6 w-6 object-contain" />
                   <span>Thinking…</span>
                 </div>
               </div>
@@ -190,7 +190,7 @@ export default function ChatWidget() {
           </button>
 
           <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-[#f5f2ee] shadow-[0_10px_30px_rgba(13,29,50,0.12)]">
-            <img src={BOT_IMAGE_URL} alt="Apprenticeships Reviews AI assistant" className="h-full w-full object-contain" />
+            <img src={BOT_IMAGE_URL} alt="Apprenticeships Reviews AI assistant" width={1485} height={1059} className="h-full w-full object-contain" />
           </div>
 
           <h3 className="text-3xl font-black leading-tight text-[#111827]">Need help?<br />I'm here for you!</h3>
@@ -248,7 +248,7 @@ export default function ChatWidget() {
           className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#0d1d32] shadow-[0_18px_40px_rgba(13,29,50,0.35)] transition-transform hover:scale-105"
         >
           <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#ff4d4f] text-[8px] font-bold text-white">AI</span>
-          <img src={BOT_IMAGE_URL} alt="Open AI assistant" className="h-9 w-9 object-contain" />
+          <img src={BOT_IMAGE_URL} alt="Open AI assistant" width={1485} height={1059} className="h-9 w-9 object-contain" />
         </button>
       </div>
     </div>

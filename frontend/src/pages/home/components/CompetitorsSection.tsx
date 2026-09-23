@@ -58,7 +58,7 @@ export default function CompetitorsSection({ active = true, onReady }: { active?
               <Link
                 key={c.competitor_id}
                 to={`/competitors/${c.competitor_id}`}
-                className="flex flex-col rounded-2xl border border-white/60 bg-white/75 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                className="flex flex-col rounded-2xl border border-white/60 bg-white/75 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-white/10 dark:shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
               >
                 <h3 className="line-clamp-2 font-heading text-base font-bold leading-snug text-foreground-900">{c.name}</h3>
                 <p className="mt-0.5 text-sm text-foreground-400">

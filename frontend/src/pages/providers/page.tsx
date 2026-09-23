@@ -187,8 +187,10 @@ export default function FindProvider() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/85711c50ec3243f4aa70edc84b7cfd69.png"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/c4781afb684442319f89a98947780f95.png"
             alt=""
+            width={822}
+            height={478}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/30" />

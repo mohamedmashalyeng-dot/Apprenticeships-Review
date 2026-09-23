@@ -97,6 +97,8 @@ export default function Standards() {
           <img
             src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/18ffc658772040df8cb1bc14b3144739.png"
             alt="Abstract background representing apprenticeship standards"
+            width={821}
+            height={387}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />

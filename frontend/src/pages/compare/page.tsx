@@ -190,8 +190,10 @@ export default function CompareProviders() {
       <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/8f0368341e2a461ea10e651faa89251e.png"
+            src="https://jokdxsdbxorzciulkdyl.supabase.co/storage/v1/object/public/images/7289fb622bb442f7a9599033ab74fc34.png"
             alt="Abstract background representing provider comparison"
+            width={821}
+            height={325}
             className="site-image-hero"
           />
           <div className="absolute inset-0 bg-black/60" />
