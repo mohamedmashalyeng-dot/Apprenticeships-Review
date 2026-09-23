@@ -13,7 +13,7 @@ load_dotenv(BASE_DIR.parent / ".env.local")
 
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if h.strip()]
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "Apprenticeships-Review.kentbusinesscollege.net").split(",") if h.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
