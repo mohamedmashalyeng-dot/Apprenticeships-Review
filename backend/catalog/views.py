@@ -20,6 +20,28 @@ from catalog.serializers import (
 )
 
 
+PLACEHOLDER_COMPANY_TERMS = ("demo", "test", "sample", "placeholder", "waf")
+PLACEHOLDER_COMPANY_SLUGS = {"glp", "wafwafwaf"}
+
+
+def _placeholder_company_query() -> Q:
+    query = Q(slug__in=PLACEHOLDER_COMPANY_SLUGS) | Q(website__icontains="example.com")
+    for term in PLACEHOLDER_COMPANY_TERMS:
+        query |= Q(slug=term)
+        query |= Q(slug__startswith=f"{term}-")
+        query |= Q(slug__endswith=f"-{term}")
+        query |= Q(slug__contains=f"-{term}-")
+        query |= Q(trading_name__iexact=term)
+        query |= Q(trading_name__istartswith=f"{term} ")
+        query |= Q(trading_name__iendswith=f" {term}")
+        query |= Q(trading_name__icontains=f" {term} ")
+    return query
+
+
+def _exclude_placeholder_companies(qs):
+    return qs.exclude(_placeholder_company_query())
+
+
 def _company_standard_links(qs):
     return [
         {
@@ -87,6 +109,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
             qs = qs.filter(Q(status=Company.Status.ACTIVE) | Q(id=user.managed_company_id))
         else:
             qs = qs.filter(status=Company.Status.ACTIVE)
+            qs = _exclude_placeholder_companies(qs)
 
         params = self.request.query_params
         if params.get("search"):
@@ -147,7 +170,9 @@ class CompanyViewSet(viewsets.ModelViewSet):
     def all_standards(self, request):
         # Bulk equivalent of the per-company `standards` action above — lets a page needing
         # every company's standard links do it in one request instead of one per company.
-        links = CompanyStandard.objects.filter(company__status=Company.Status.ACTIVE).select_related("company", "standard")
+        links = CompanyStandard.objects.filter(
+            company__in=_exclude_placeholder_companies(Company.objects.filter(status=Company.Status.ACTIVE))
+        ).select_related("company", "standard")
         return Response(_company_standard_links(links))
 
     @action(detail=True, methods=["get"], permission_classes=[IsAdmin])
@@ -259,7 +284,10 @@ class StandardViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def providers(self, request, standard_id=None):
         standard = get_object_or_404(Standard, standard_id=standard_id)
-        links = CompanyStandard.objects.filter(standard=standard, company__status=Company.Status.ACTIVE)
+        links = CompanyStandard.objects.filter(
+            standard=standard,
+            company__in=_exclude_placeholder_companies(Company.objects.filter(status=Company.Status.ACTIVE)),
+        )
         return Response(_company_standard_links(links))
 
 
@@ -312,7 +340,9 @@ def platform_stats(request):
     agg = approved.aggregate(avg=Avg("rating"), count=Count("id"))
     return Response(
         {
-            "totalCompanies": Company.objects.filter(status=Company.Status.ACTIVE).count(),
+            "totalCompanies": _exclude_placeholder_companies(
+                Company.objects.filter(status=Company.Status.ACTIVE)
+            ).count(),
             "totalReviews": agg["count"] or 0,
             "averageRating": round(float(agg["avg"] or 0), 1),
             "learnerReviews": approved.filter(reviewer_type=Review.ReviewerType.LEARNER).count(),

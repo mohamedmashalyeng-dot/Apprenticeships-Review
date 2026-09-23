@@ -1,6 +1,10 @@
 import { api, apiFetch, getOrNull, buildQueryString } from "@/lib/api/client";
 import type { Provider } from "@/types/provider";
 
+const providerDisplayNameOverrides: Record<string, string> = {
+  "transworld-publications-services-limited": "Protocol Consultancy Services",
+};
+
 export interface CompanyFilters {
   search?: string;
   location?: string;
@@ -39,12 +43,19 @@ function buildQuery(filters: CompanyFilters): string {
   });
 }
 
+function withDisplayOverrides(provider: Provider): Provider {
+  const tradingName = providerDisplayNameOverrides[provider.provider_id];
+  return tradingName ? { ...provider, trading_name: tradingName } : provider;
+}
+
 export async function getCompanies(filters: CompanyFilters = {}, signal?: AbortSignal): Promise<Provider[]> {
-  return apiFetch<Provider[]>(`/companies/${buildQuery(filters)}`, { signal });
+  const providers = await apiFetch<Provider[]>(`/companies/${buildQuery(filters)}`, { signal });
+  return providers.map(withDisplayOverrides);
 }
 
 export async function getCompanyBySlug(slug: string): Promise<Provider | null> {
-  return getOrNull<Provider>(`/companies/${slug}/`);
+  const provider = await getOrNull<Provider>(`/companies/${slug}/`);
+  return provider ? withDisplayOverrides(provider) : null;
 }
 
 export async function createCompany(input: NewCompanyInput): Promise<Provider> {

@@ -31,3 +31,4 @@ data-exports/
 
 # Misc build/distribution zips
 *.zip
+tmp/

@@ -5,6 +5,7 @@ export interface Provider {
   UKPRN: string;
   website: string;
   location: string;
+  locationUrl?: string;
   Ofsted_status: string;
   verification_status: string;
   data_last_updated: string;
