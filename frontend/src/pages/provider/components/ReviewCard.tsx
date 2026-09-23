@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import StarRating from "@/components/base/StarRating";
 import VerifiedBadge from "@/components/base/VerifiedBadge";
 import ReviewerAvatar from "@/components/base/ReviewerAvatar";

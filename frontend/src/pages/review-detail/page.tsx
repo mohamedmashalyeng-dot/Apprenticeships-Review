@@ -53,7 +53,7 @@ export default function ReviewDetails() {
           return;
         }
         const [providerResult, standardResult, responseResult, categoriesResult] = await Promise.all([
-          getCompanyBySlug(r.provider_id),
+          r.provider_id ? getCompanyBySlug(r.provider_id) : Promise.resolve(null),
           getStandardBySlug(r.standard_id),
           getProviderResponseForReview(r.review_id),
           getRatingCategories(),
