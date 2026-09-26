@@ -1,4 +1,5 @@
 import { api, apiFetch, getOrNull, buildQueryString } from "@/lib/api/client";
+import { getProviderLogoOverride } from "@/data/providerLogoOverrides";
 import type { Provider } from "@/types/provider";
 
 const providerDisplayNameOverrides: Record<string, string> = {
@@ -45,7 +46,13 @@ function buildQuery(filters: CompanyFilters): string {
 
 function withDisplayOverrides(provider: Provider): Provider {
   const tradingName = providerDisplayNameOverrides[provider.provider_id];
-  return tradingName ? { ...provider, trading_name: tradingName } : provider;
+  const logoUrl = getProviderLogoOverride(provider.provider_id);
+  if (!tradingName && !logoUrl) return provider;
+  return {
+    ...provider,
+    ...(tradingName ? { trading_name: tradingName } : {}),
+    ...(logoUrl ? { logoUrl } : {}),
+  };
 }
 
 export async function getCompanies(filters: CompanyFilters = {}, signal?: AbortSignal): Promise<Provider[]> {

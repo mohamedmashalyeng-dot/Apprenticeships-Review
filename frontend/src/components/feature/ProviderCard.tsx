@@ -3,11 +3,8 @@ import { Link } from "react-router-dom";
 import StarRating from "@/components/base/StarRating";
 import { useComparison } from "@/contexts/ComparisonContext";
 import { providerExternalLinks } from "@/data/providerExternalLinks";
+import { getProviderLogoOverride } from "@/data/providerLogoOverrides";
 import type { Provider } from "@/types/provider";
-
-const providerLogoOverrides: Record<string, string> = {
-  "lift-schools": "https://cdn.prod.website-files.com/668f964276953a8d446956f4/66d1b773f3c61b3747b91000_L1.png",
-};
 
 function getProviderMapUrl(provider: Provider): string | null {
   const sheetMapUrl = providerExternalLinks[provider.provider_id]?.map;
@@ -21,7 +18,7 @@ function getProviderMapUrl(provider: Provider): string | null {
 }
 
 function getProviderLogoUrl(provider: Provider): string | null {
-  const logoOverride = providerLogoOverrides[provider.provider_id];
+  const logoOverride = getProviderLogoOverride(provider.provider_id);
   if (logoOverride) return logoOverride;
   if (provider.logoUrl) return provider.logoUrl;
 
