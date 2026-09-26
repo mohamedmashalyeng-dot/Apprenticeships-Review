@@ -130,7 +130,7 @@ export default function Admin() {
               </div>
               <Link
                 to="/competitors"
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-primary-100 transition-colors whitespace-nowrap"
+                className="btn btn-md btn-soft"
               >
                 <i className="ri-building-4-line" />
                 Provider Intelligence
@@ -194,14 +194,14 @@ export default function Admin() {
                           <button
                             onClick={() => handleClaim(claim.id, "approve")}
                             disabled={busyId === claim.id}
-                            className="px-4 py-2 bg-primary-500 text-white text-xs font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                            className="btn btn-sm btn-primary"
                           >
                             Approve
                           </button>
                           <button
                             onClick={() => handleClaim(claim.id, "reject")}
                             disabled={busyId === claim.id}
-                            className="px-4 py-2 bg-background-100 text-foreground-700 text-xs font-semibold rounded-full hover:bg-background-200 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                            className="btn btn-sm btn-secondary"
                           >
                             Reject
                           </button>
@@ -255,14 +255,14 @@ export default function Admin() {
                           <button
                             onClick={() => handleReview(review.review_id, "approved")}
                             disabled={busyId === review.review_id}
-                            className="px-4 py-2 bg-primary-500 text-white text-xs font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                            className="btn btn-sm btn-primary"
                           >
                             Approve
                           </button>
                           <button
                             onClick={() => handleReview(review.review_id, "rejected")}
                             disabled={busyId === review.review_id}
-                            className="px-4 py-2 bg-background-100 text-foreground-700 text-xs font-semibold rounded-full hover:bg-background-200 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                            className="btn btn-sm btn-secondary"
                           >
                             Reject
                           </button>
@@ -330,7 +330,7 @@ export default function Admin() {
                             <button
                               onClick={() => handleRemoveReportedReview(report)}
                               disabled={busyId === report.id}
-                              className="px-4 py-2 bg-red-500 text-white text-xs font-semibold rounded-full hover:bg-red-600 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                              className="btn btn-sm btn-danger"
                             >
                               Remove review
                             </button>
@@ -338,7 +338,7 @@ export default function Admin() {
                           <button
                             onClick={() => handleReport(report.id, "dismiss")}
                             disabled={busyId === report.id}
-                            className="px-4 py-2 bg-background-100 text-foreground-700 text-xs font-semibold rounded-full hover:bg-background-200 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                            className="btn btn-sm btn-secondary"
                           >
                             Dismiss
                           </button>
@@ -399,7 +399,7 @@ export default function Admin() {
                             <button
                               onClick={() => setReviewPendingDelete(review)}
                               disabled={busyId === review.review_id}
-                              className="px-4 py-2 bg-red-500 text-white text-xs font-semibold rounded-full hover:bg-red-600 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                              className="btn btn-sm btn-danger"
                             >
                               Delete
                             </button>
@@ -424,7 +424,7 @@ export default function Admin() {
                       <button
                         onClick={() => setReviewsPage((p) => Math.min(reviewsTotalPages, p + 1))}
                         disabled={reviewsPage >= reviewsTotalPages}
-                        className="px-4 py-2 bg-background-100 text-foreground-700 text-xs font-semibold rounded-full hover:bg-background-200 disabled:opacity-40 transition-colors cursor-pointer whitespace-nowrap"
+                        className="btn btn-sm btn-secondary"
                       >
                         Next
                       </button>
@@ -463,14 +463,14 @@ export default function Admin() {
               <button
                 onClick={() => setReviewPendingDelete(null)}
                 disabled={busyId === reviewPendingDelete.review_id}
-                className="px-4 py-2 bg-background-100 text-foreground-700 text-sm font-semibold rounded-full hover:bg-background-200 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                className="btn btn-sm btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteReview}
                 disabled={busyId === reviewPendingDelete.review_id}
-                className="px-4 py-2 bg-red-500 text-white text-sm font-semibold rounded-full hover:bg-red-600 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                className="btn btn-sm btn-danger"
               >
                 {busyId === reviewPendingDelete.review_id ? "Deleting…" : "Delete"}
               </button>

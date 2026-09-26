@@ -27,7 +27,7 @@ export default function WhySection() {
               </p>
               <Link
                 to="/methodology"
-                className="inline-flex items-center gap-1 mt-5 px-5 py-2.5 bg-background-100 text-foreground-700 text-sm font-medium rounded-full hover:bg-background-200 transition-colors"
+                className="btn btn-md btn-secondary mt-5"
               >
                 About our mission
               </Link>
@@ -54,7 +54,7 @@ export default function WhySection() {
               </p>
               <Link
                 to="/methodology"
-                className="inline-flex items-center gap-1 mt-5 px-5 py-2.5 bg-background-100 text-foreground-700 text-sm font-medium rounded-full hover:bg-background-200 transition-colors"
+                className="btn btn-md btn-secondary mt-5"
               >
                 How we score providers
               </Link>

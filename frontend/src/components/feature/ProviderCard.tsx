@@ -77,7 +77,7 @@ export default function ProviderCard({ provider: p }: { provider: Provider }) {
     {p.recommendation_percent != null && <p className="mb-4 text-xs text-foreground-600"><span className="font-semibold text-foreground-900">{p.recommendation_percent}%</span> recommend among respondents</p>}
     <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-background-200 pt-4">
       <Link to={`/provider/${p.provider_id}`} className="text-sm font-semibold text-primary-600 hover:underline">View provider</Link>
-      <button type="button" aria-pressed={selected} aria-label={`${selected ? "Remove" : "Add"} ${p.trading_name} ${selected ? "from" : "to"} comparison`} disabled={full} onClick={() => toggle({ id: p.provider_id, name: p.trading_name })} className={`rounded-lg border px-3 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${selected ? "border-primary-500 bg-primary-50 text-primary-700" : "border-background-200 text-foreground-700 hover:border-primary-400"}`}>
+      <button type="button" aria-pressed={selected} aria-label={`${selected ? "Remove" : "Add"} ${p.trading_name} ${selected ? "from" : "to"} comparison`} disabled={full} onClick={() => toggle({ id: p.provider_id, name: p.trading_name })} className={`btn btn-sm ${selected ? "btn-soft" : "btn-outline"}`}>
         {selected ? "Selected" : full ? "3 selected - limit reached" : "Add to comparison"}
       </button>
     </div>

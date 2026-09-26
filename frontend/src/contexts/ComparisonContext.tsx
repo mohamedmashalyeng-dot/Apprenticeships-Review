@@ -53,7 +53,7 @@ export function ComparisonProvider({ children }: { children: ReactNode }) {
           </div>
           <div className="flex shrink-0 items-center gap-4">
             <button type="button" onClick={() => setChoices([])} className="text-sm text-foreground-600 underline underline-offset-4">Clear all</button>
-            {choices.length >= 2 ? <Link to={`/compare?${query}`} className="rounded-xl bg-primary-500 px-5 py-3 text-sm font-semibold text-white hover:bg-primary-600">Compare providers →</Link> : <button disabled className="rounded-xl bg-background-200 px-5 py-3 text-sm text-foreground-500">Compare providers</button>}
+            {choices.length >= 2 ? <Link to={`/compare?${query}`} className="btn btn-lg btn-primary">Compare providers →</Link> : <button disabled className="btn btn-lg btn-secondary">Compare providers</button>}
           </div>
         </div>
       </aside>

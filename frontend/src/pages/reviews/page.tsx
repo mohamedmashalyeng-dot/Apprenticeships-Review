@@ -61,7 +61,7 @@ function ReviewGroup({ title, reviews, emptyMessage }: { title: string; reviews:
               <button
                 type="button"
                 onClick={() => setVisibleCount((count) => count + REVIEWS_PAGE_SIZE)}
-                className="px-5 py-2.5 bg-background-50 border border-background-200/70 text-sm font-semibold text-primary-500 rounded-full hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 transition-all duration-200 cursor-pointer"
+                className="btn btn-md btn-outline"
               >
                 Load more ({reviews.length - visibleCount} more)
               </button>
@@ -182,7 +182,7 @@ export default function Reviews() {
               </div>
               <Link
                 to="/add-review"
-                className="inline-flex items-center gap-2 whitespace-nowrap px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors"
+                className="btn btn-md btn-primary"
               >
                 <i className="ri-pencil-line text-base" />
                 Add a Review
@@ -342,7 +342,7 @@ export default function Reviews() {
                   setRatingFilter("all");
                   setSortBy("newest");
                 }}
-                className="mt-4 px-4 py-2 text-xs font-medium bg-background-100 text-foreground-600 rounded-full hover:bg-background-200 transition-colors cursor-pointer"
+                className="btn btn-sm btn-secondary mt-4"
               >
                 Clear All Filters
               </button>
@@ -392,7 +392,7 @@ export default function Reviews() {
             </p>
             <Link
               to="/add-review"
-              className="mt-6 inline-flex items-center gap-2 whitespace-nowrap px-6 py-3 bg-background-50 text-primary-600 text-sm font-semibold rounded-full hover:bg-background-100 transition-colors cursor-pointer"
+              className="btn btn-lg btn-inverse mt-6"
             >
               <i className="ri-pencil-line text-base" />
               Add a Review

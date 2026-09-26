@@ -20,7 +20,7 @@ export default function NotFound() {
           </p>
           <Link
             to="/home"
-            className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap"
+            className="btn btn-lg btn-primary mt-8"
           >
             <i className="ri-home-line" />
             Back to home

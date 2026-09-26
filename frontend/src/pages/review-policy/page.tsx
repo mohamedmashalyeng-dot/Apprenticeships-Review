@@ -147,13 +147,13 @@ export default function ReviewPolicy() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/add-review"
-                className="w-full sm:w-auto px-8 py-3.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-primary w-full sm:w-auto"
               >
                 Add a Review
               </Link>
               <Link
                 to="/reviews"
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50/15 backdrop-blur-sm text-white text-sm font-semibold rounded-lg border border-background-50/25 hover:bg-background-50/25 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Browse reviews
               </Link>
@@ -384,13 +384,13 @@ export default function ReviewPolicy() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/add-review"
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50 text-primary-700 text-sm font-semibold rounded-lg hover:bg-background-100 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-inverse w-full sm:w-auto"
               >
                 Add a Review
               </Link>
               <Link
                 to="/reviews"
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-lg border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Read Reviews
               </Link>

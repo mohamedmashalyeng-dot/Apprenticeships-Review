@@ -44,14 +44,14 @@ export default function BottomCTA() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/compare"
-              className="w-full sm:w-auto px-8 py-3.5 bg-accent-500 text-white text-sm font-bold rounded-full hover:bg-accent-600 transition-colors whitespace-nowrap shadow-lg shadow-accent-500/20"
+              className="btn btn-lg btn-primary w-full sm:w-auto shadow-lg shadow-primary-500/20"
             >
               Compare providers
               <i className="ri-arrow-right-line ml-2" />
             </Link>
             <Link
               to="/reviews"
-              className="w-full sm:w-auto px-8 py-3.5 bg-background-50/10 backdrop-blur-sm text-white text-sm font-bold rounded-full border border-background-50/30 hover:bg-background-50/20 transition-colors whitespace-nowrap"
+              className="btn btn-lg btn-glass w-full sm:w-auto"
             >
               Read apprenticeship reviews
             </Link>

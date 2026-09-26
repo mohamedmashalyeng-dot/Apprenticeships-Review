@@ -46,7 +46,7 @@ export default function CompetitorsSection({ active = true, onReady }: { active?
             </div>
             <Link
               to="/competitors"
-              className="inline-flex items-center gap-2 self-start rounded-lg border border-background-200/70 bg-background-50 px-5 py-2.5 text-sm font-semibold text-primary-500 transition-all duration-200 hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 sm:self-auto"
+              className="btn btn-md btn-outline self-start sm:self-auto"
             >
               Understand the data
               <i className="ri-arrow-right-line text-sm" />

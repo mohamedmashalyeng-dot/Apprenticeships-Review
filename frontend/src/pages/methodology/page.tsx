@@ -180,13 +180,13 @@ export default function Methodology() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/compare"
-                className="w-full sm:w-auto px-8 py-3.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-primary w-full sm:w-auto"
               >
                 See methodology in action
               </Link>
               <a
                 href="#evidence-categories"
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50/15 backdrop-blur-sm text-white text-sm font-semibold rounded-full border border-background-50/25 hover:bg-background-50/25 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 How scores work
               </a>
@@ -213,14 +213,14 @@ export default function Methodology() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link
                     to="/compare"
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-primary-100 transition-colors"
+                    className="btn btn-md btn-soft"
                   >
                     <i className="ri-arrow-left-right-line text-sm" />
                     Compare providers
                   </Link>
                   <Link
                     to="/reviews"
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-background-100 text-foreground-700 text-sm font-semibold rounded-full hover:bg-background-200 transition-colors"
+                    className="btn btn-md btn-secondary"
                   >
                     <i className="ri-chat-quote-line text-sm" />
                     Read reviews
@@ -423,19 +423,19 @@ export default function Methodology() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/compare"
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-background-100 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-inverse w-full sm:w-auto"
               >
                 Compare Providers
               </Link>
               <Link
                 to="/standards"
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-full border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Browse Standards
               </Link>
               <Link
                 to="/help"
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-full border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 For Learners
               </Link>

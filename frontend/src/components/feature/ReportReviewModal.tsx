@@ -53,7 +53,7 @@ export default function ReportReviewModal({ reviewId, reviewTitle, onClose }: Re
             </p>
             <button
               onClick={onClose}
-              className="mt-6 px-6 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap"
+              className="btn btn-md btn-primary mt-6"
             >
               Done
             </button>
@@ -113,7 +113,7 @@ export default function ReportReviewModal({ reviewId, reviewTitle, onClose }: Re
               <button
                 onClick={handleSubmit}
                 disabled={!selectedReason || isSubmitting}
-                className="mt-5 w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
+                className="btn btn-lg btn-primary mt-5 w-full"
               >
                 {isSubmitting ? "Submitting..." : "Submit report"}
               </button>

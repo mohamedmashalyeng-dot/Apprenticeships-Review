@@ -89,7 +89,7 @@ export default function ReviewDetails() {
             </div>
             <h1 className="font-heading text-xl font-bold text-foreground-950 mb-2">Review not found</h1>
             <p className="text-sm text-foreground-600 mb-6">We couldn't find the review you were looking for.</p>
-            <Link to="/providers" className="px-6 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap">
+            <Link to="/providers" className="btn btn-md btn-primary">
               Browse providers
             </Link>
           </div>
@@ -199,7 +199,7 @@ export default function ReviewDetails() {
                 </button>
                 <button
                   onClick={() => setShowReport(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-background-200/70 text-sm font-medium text-foreground-600 hover:border-red-300 hover:text-red-600 transition-colors cursor-pointer whitespace-nowrap"
+                  className="btn btn-sm btn-outline hover:border-red-300 hover:text-red-600"
                 >
                   <i className="ri-flag-line" />
                   Report
@@ -253,7 +253,7 @@ export default function ReviewDetails() {
               <p className="text-primary-100 text-sm mb-4">Share your own review to help other apprentices choose better.</p>
               <Link
                 to="/add-review"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-background-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-background-100 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-inverse"
               >
                 Write a Review
                 <i className="ri-arrow-right-line" />

@@ -195,14 +195,14 @@ export default function TermsOfService() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link
                     to="/privacy-policy"
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-primary-100 transition-colors"
+                    className="btn btn-md btn-soft"
                   >
                     <i className="ri-lock-line text-sm" />
                     Privacy Policy
                   </Link>
                   <Link
                     to="/review-policy"
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-background-100 text-foreground-700 text-sm font-semibold rounded-lg hover:bg-background-200 transition-colors"
+                    className="btn btn-md btn-secondary"
                   >
                     <i className="ri-shield-check-line text-sm" />
                     Review Policy
@@ -463,19 +463,19 @@ export default function TermsOfService() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/contact"
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50 text-primary-700 text-sm font-semibold rounded-lg hover:bg-background-100 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-inverse w-full sm:w-auto"
               >
                 Contact us
               </Link>
               <Link
                 to="/privacy-policy"
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-lg border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Privacy Policy
               </Link>
               <Link
                 to="/review-policy"
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-lg border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Review Policy
               </Link>

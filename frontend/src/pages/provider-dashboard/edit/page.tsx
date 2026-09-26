@@ -128,7 +128,7 @@ export default function EditProviderProfile() {
             {slug && (
               <Link
                 to={`/provider/${slug}`}
-                className="px-4 py-2.5 bg-background-100 text-foreground-700 text-sm font-semibold rounded-full hover:bg-background-200 transition-colors whitespace-nowrap"
+                className="btn btn-md btn-secondary"
               >
                 View public profile
               </Link>
@@ -250,7 +250,7 @@ export default function EditProviderProfile() {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="px-6 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                    className="btn btn-lg btn-primary"
                   >
                     {isSaving ? "Saving..." : "Save changes"}
                   </button>

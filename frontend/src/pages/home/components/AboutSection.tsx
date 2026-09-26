@@ -42,14 +42,14 @@ export default function AboutSection() {
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row">
                 <Link
                   to="/methodology"
-                  className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-600"
+                  className="btn btn-md btn-primary"
                 >
                   How the comparison works
                   <i className="ri-arrow-right-line" />
                 </Link>
                 <Link
                   to="/about"
-                  className="inline-flex items-center gap-1 rounded-lg bg-background-100 px-5 py-2.5 text-sm font-medium text-foreground-700 transition-colors hover:bg-background-200"
+                  className="btn btn-md btn-secondary"
                 >
                   Who operates this site
                   <i className="ri-arrow-right-line" />

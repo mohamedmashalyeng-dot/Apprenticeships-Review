@@ -215,7 +215,7 @@ export default function ClaimProvider() {
                   <button
                     type="submit"
                     disabled={formStatus === "submitting"}
-                    className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
+                    className="btn btn-lg btn-primary w-full"
                   >
                     {formStatus === "submitting" ? "Submitting..." : "Submit claim request"}
                   </button>

@@ -106,7 +106,7 @@ function ProviderCard({ provider, idx }: { provider: MiniProvider; idx: number }
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2 border-t border-background-200/60 pt-4">
-          <Link to={`/provider/${provider.id}`} className="rounded-lg bg-primary-500 px-4 py-2 text-xs font-semibold text-white hover:bg-primary-600">
+          <Link to={`/provider/${provider.id}`} className="btn btn-sm btn-primary">
             View provider
           </Link>
           <button
@@ -114,7 +114,7 @@ function ProviderCard({ provider, idx }: { provider: MiniProvider; idx: number }
             aria-pressed={selected}
             disabled={full}
             onClick={() => toggle({ id: provider.id, name: provider.name })}
-            className="rounded-lg border border-background-200 px-4 py-2 text-xs font-semibold text-foreground-700 hover:border-primary-400 disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn btn-sm btn-outline"
           >
             {selected ? "Selected" : full ? "3 selected" : "Add to comparison"}
           </button>
@@ -136,7 +136,7 @@ export default function AllProvidersSection({ title, subtitle, tracks, viewAllHr
             </div>
             <Link
               to={viewAllHref}
-              className="inline-flex items-center gap-2 self-start rounded-lg border border-background-200/70 bg-background-50 px-5 py-2.5 text-sm font-semibold text-primary-500 transition-all duration-200 hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 sm:self-auto"
+              className="btn btn-md btn-outline self-start sm:self-auto"
             >
               Browse providers
               <i className="ri-arrow-right-line text-sm" />

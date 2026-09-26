@@ -168,7 +168,7 @@ export default function HeroSection({ onReady }: { onReady?: () => void } = {}) 
               </div>
               <button
                 type="submit"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:w-auto"
+                className="btn btn-lg btn-primary w-full sm:w-auto"
               >
                 Search <i className="ri-arrow-right-line" aria-hidden="true" />
               </button>

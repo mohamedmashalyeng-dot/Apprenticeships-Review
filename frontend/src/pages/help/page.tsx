@@ -180,7 +180,7 @@ export default function Help() {
                   </p>
                   <Link
                     to="/contact"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap"
+                    className="btn btn-md btn-primary"
                   >
                     Contact us
                     <i className="ri-arrow-right-line" />

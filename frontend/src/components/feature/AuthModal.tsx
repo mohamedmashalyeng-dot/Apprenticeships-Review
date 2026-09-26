@@ -142,7 +142,7 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-60"
+            className="btn btn-lg btn-primary w-full"
           >
             {isSubmitting ? "Please wait…" : mode === "login" ? "Log in & publish" : "Create account & publish"}
           </button>

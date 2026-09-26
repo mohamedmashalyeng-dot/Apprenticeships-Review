@@ -124,14 +124,14 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
               <div className="flex flex-col sm:flex-row lg:flex-col gap-2 flex-shrink-0">
                 <Link
                   to={compareUrl}
-                  className="px-6 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors text-center whitespace-nowrap"
+                  className="btn btn-lg btn-primary"
                 >
                   Compare providers for this standard
                   <i className="ri-arrow-left-right-line ml-1.5" />
                 </Link>
                 <Link
                   to="/add-review"
-                  className="px-6 py-3 bg-background-100 text-foreground-700 text-sm font-semibold rounded-full hover:bg-background-200 transition-colors text-center whitespace-nowrap"
+                  className="btn btn-lg btn-secondary"
                 >
                   Add a review
                   <i className="ri-arrow-right-line ml-1.5" />
@@ -364,7 +364,7 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
                 </p>
                 <Link
                   to="/add-review"
-                  className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors"
+                  className="btn btn-md btn-primary mt-4"
                 >
                   Add a Review
                   <i className="ri-arrow-right-line" />
@@ -430,14 +430,14 @@ export default function StandardDetailLayout({ standard }: StandardDetailLayoutP
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to={compareUrl}
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-background-100 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-inverse w-full sm:w-auto"
               >
                 Compare providers
                 <i className="ri-arrow-left-right-line ml-1.5" />
               </Link>
               <Link
                 to="/standards"
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-full border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Browse all standards
               </Link>

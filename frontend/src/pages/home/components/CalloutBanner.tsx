@@ -29,7 +29,7 @@ export default function CalloutBanner() {
             <div className="flex items-center gap-6 flex-shrink-0">
               <Link
                 to="/compare"
-                className="px-7 py-3.5 bg-primary-500 text-white text-sm font-bold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap shadow-lg shadow-primary-500/25"
+                className="btn btn-lg btn-primary shadow-lg shadow-primary-500/25"
               >
                 Compare providers
                 <i className="ri-arrow-right-line ml-2" />

@@ -58,7 +58,7 @@ export default function ResetPassword() {
                 </p>
                 <Link
                   to="/login"
-                  className="inline-block w-full text-center py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors"
+                  className="btn btn-lg btn-primary w-full"
                 >
                   Log in
                 </Link>
@@ -101,7 +101,7 @@ export default function ResetPassword() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-60"
+                    className="btn btn-lg btn-primary w-full"
                   >
                     {isSubmitting ? "Saving…" : "Reset password"}
                   </button>

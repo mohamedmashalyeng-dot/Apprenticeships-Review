@@ -86,14 +86,14 @@ export default function StandardProviderCard({ provider, score, reviews }: Stand
       <div className="mt-auto pt-3 border-t border-background-200/70 flex items-center gap-2">
         <Link
           to={`/provider/${provider.provider_id}`}
-          className="flex-1 px-4 py-2 bg-background-100 text-foreground-700 text-xs font-semibold rounded-full hover:bg-background-200 transition-colors text-center whitespace-nowrap"
+          className="btn btn-sm btn-secondary flex-1"
         >
           View profile
           <i className="ri-arrow-right-line ml-1" />
         </Link>
         <Link
           to={`/compare?providers=${provider.provider_id}`}
-          className="flex-1 px-4 py-2 bg-primary-500 text-white text-xs font-semibold rounded-full hover:bg-primary-600 transition-colors text-center whitespace-nowrap"
+          className="btn btn-sm btn-primary flex-1"
         >
           Compare
           <i className="ri-arrow-left-right-line ml-1" />

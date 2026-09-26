@@ -461,7 +461,7 @@ export default function AddReview() {
                 <button
                   type="button"
                   onClick={handleWriteAnother}
-                  className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer"
+                  className="btn btn-lg btn-primary mt-6"
                 >
                   <i className="ri-add-line" />
                   Write another review
@@ -623,7 +623,7 @@ export default function AddReview() {
                       type="button"
                       onClick={handleAddProvider}
                       disabled={claimStatus === "submitting"}
-                      className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-amber-500 text-white text-xs font-semibold rounded-full hover:bg-amber-600 disabled:opacity-60 transition-colors cursor-pointer"
+                      className="btn btn-sm mt-3 bg-amber-500 text-white hover:bg-amber-600"
                     >
                       <i className="ri-add-line" />
                       {claimStatus === "submitting" ? "Submitting..." : "Request to add this provider"}
@@ -869,7 +869,7 @@ export default function AddReview() {
               <button
                 type="submit"
                 disabled={formStatus === "submitting" || authLoading}
-                className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
+                className="btn btn-lg btn-primary w-full"
               >
                 {formStatus === "submitting" ? (
                   <span className="inline-flex items-center gap-2">

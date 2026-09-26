@@ -111,7 +111,7 @@ export default function Login() {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-60"
+                        className="btn btn-lg btn-primary w-full"
                       >
                         {isSubmitting ? "Sending…" : "Send reset link"}
                       </button>
@@ -245,7 +245,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-60"
+                className="btn btn-lg btn-primary w-full"
               >
                 {isSubmitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
               </button>

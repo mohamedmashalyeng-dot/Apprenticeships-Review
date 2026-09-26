@@ -147,6 +147,37 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ===== Buttons =====
+   One shape (pill) for every action on the site.
+   Usage: <Link className="btn btn-md btn-primary">…</Link>
+   Sizes:    btn-sm | btn-md | btn-lg
+   Variants: btn-primary   – main call to action
+             btn-secondary – neutral action on light surfaces
+             btn-soft      – tinted primary, low emphasis
+             btn-outline   – bordered, low emphasis
+             btn-danger    – destructive action
+             btn-inverse   – solid light button on dark / image backgrounds
+             btn-glass     – translucent button on dark / image backgrounds */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold text-center whitespace-nowrap cursor-pointer transition-colors duration-200;
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500;
+    @apply disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-sm { @apply px-4 py-2 text-xs; }
+  .btn-md { @apply px-5 py-2.5 text-sm; }
+  .btn-lg { @apply px-8 py-3.5 text-sm; }
+
+  .btn-primary   { @apply bg-primary-500 text-white hover:bg-primary-600; }
+  .btn-secondary { @apply bg-background-100 text-foreground-700 hover:bg-background-200; }
+  .btn-soft      { @apply bg-primary-50 text-primary-700 hover:bg-primary-100; }
+  .btn-outline   { @apply border border-background-200 bg-background-50 text-primary-600 hover:border-primary-300 hover:bg-primary-50; }
+  .btn-danger    { @apply bg-red-500 text-white hover:bg-red-600; }
+  .btn-inverse   { @apply bg-white text-primary-700 hover:bg-primary-50; }
+  .btn-glass     { @apply border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20; }
+}
+
 .honeypot-field {
   position: absolute;
   left: -9999px;

@@ -156,7 +156,7 @@ export default function Contact() {
                       </p>
                       <button
                         type="button"
-                        className="mt-4 px-5 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-full hover:bg-green-700 transition-colors whitespace-nowrap"
+                        className="btn btn-md mt-4 bg-green-600 text-white hover:bg-green-700"
                         onClick={() => {
                           setFormStatus("idle");
                           setFormError("");
@@ -281,7 +281,7 @@ export default function Contact() {
                         <button
                           type="submit"
                           disabled={formStatus === "submitting"}
-                          className="w-full sm:w-auto px-8 py-3.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                          className="btn btn-lg btn-primary w-full sm:w-auto"
                         >
                           {formStatus === "submitting" ? (
                             <span className="inline-flex items-center gap-2">

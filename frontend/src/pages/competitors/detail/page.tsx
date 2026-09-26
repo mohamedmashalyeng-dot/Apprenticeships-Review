@@ -81,7 +81,7 @@ function ReviewList({ reviews, emptyMessage }: { reviews: CompetitorReview[]; em
           <button
             type="button"
             onClick={() => setVisibleCount((count) => count + REVIEWS_PAGE_SIZE)}
-            className="px-4 py-2 bg-background-50 border border-background-200/70 text-sm font-semibold text-primary-500 rounded-full hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 transition-all duration-200 cursor-pointer"
+            className="btn btn-sm btn-outline"
           >
             Read more ({reviews.length - visibleCount} more)
           </button>

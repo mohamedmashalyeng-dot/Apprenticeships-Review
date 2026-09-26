@@ -270,7 +270,7 @@ export default function Standards() {
                     <p className="text-xs text-foreground-500 mb-4">Try adjusting your search or clearing the filters.</p>
                     <button
                       onClick={clearFilters}
-                      className="px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors"
+                      className="btn btn-sm btn-primary"
                     >
                       Clear all filters
                     </button>
@@ -295,14 +295,14 @@ export default function Standards() {
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/help"
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-background-100 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-inverse w-full sm:w-auto"
               >
                 Guide for learners
                 <i className="ri-arrow-right-line ml-1.5" />
               </Link>
               <Link
                 to="/help"
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-full border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Guide for employers
               </Link>

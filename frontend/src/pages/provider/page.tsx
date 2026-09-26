@@ -125,13 +125,13 @@ function ProviderNotFound({ attemptedId }: { attemptedId: string }) {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/compare"
-              className="w-full sm:w-auto px-6 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap"
+              className="btn btn-lg btn-primary w-full sm:w-auto"
             >
               Compare All Providers
             </Link>
             <Link
               to="/"
-              className="w-full sm:w-auto px-6 py-3 bg-background-100 text-foreground-700 text-sm font-semibold rounded-full hover:bg-background-200 transition-colors whitespace-nowrap"
+              className="btn btn-lg btn-secondary w-full sm:w-auto"
             >
               Back to Home
             </Link>
@@ -330,14 +330,14 @@ export default function ProviderProfile() {
                     aria-pressed={choices.some((item) => item.id === provider.provider_id)}
                     disabled={choices.length >= 3 && !choices.some((item) => item.id === provider.provider_id)}
                     onClick={() => toggle({ id: provider.provider_id, name: provider.trading_name })}
-                    className="flex-1 rounded-full border border-primary-200 bg-primary-50 px-5 py-3 text-sm font-semibold text-primary-700 disabled:opacity-50"
+                    className="btn btn-lg btn-soft flex-1"
                   >
                     {choices.some((item) => item.id === provider.provider_id) ? "Remove from comparison" : choices.length >= 3 ? "Comparison full (3/3)" : "Add to comparison"}
                   </button>
                 </div>
                 <Link
                   to={`/add-review?provider=${encodeURIComponent(provider.provider_id)}`}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors text-center whitespace-nowrap"
+                  className="btn btn-md btn-primary w-full sm:w-auto"
                 >
                   <i className="ri-pencil-line mr-1.5" />
                   Write a Review
@@ -518,7 +518,7 @@ export default function ProviderProfile() {
                 {reviews.learner.slice(0, learnerLimit).map((review) => (
                   <ReviewCard key={review.review_id} {...review} reviewerType="learner" />
                 ))}
-                {reviews.learner.length > learnerLimit && <button type="button" onClick={() => setLearnerLimit((value) => value + 6)} className="rounded-xl border border-primary-200 px-5 py-3 text-sm font-semibold text-primary-600 md:col-span-2">Show more learner reviews</button>}
+                {reviews.learner.length > learnerLimit && <button type="button" onClick={() => setLearnerLimit((value) => value + 6)} className="btn btn-lg btn-outline md:col-span-2">Show more learner reviews</button>}
               </div>
             ) : (
               <div className="p-10 bg-background-50 rounded-xl border border-background-200/70 text-center">
@@ -529,7 +529,7 @@ export default function ProviderProfile() {
                 <p className="mt-1 text-xs text-foreground-500">Be the first to share your experience.</p>
                 <Link
                   to={`/add-review?provider=${encodeURIComponent(provider.provider_id)}`}
-                  className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors"
+                  className="btn btn-md btn-primary mt-4"
                 >
                   Add a Review
                   <i className="ri-arrow-right-line" />
@@ -559,7 +559,7 @@ export default function ProviderProfile() {
                 {reviews.employer.slice(0, employerLimit).map((review) => (
                   <ReviewCard key={review.review_id} {...review} reviewerType="employer" />
                 ))}
-                {reviews.employer.length > employerLimit && <button type="button" onClick={() => setEmployerLimit((value) => value + 6)} className="rounded-xl border border-primary-200 px-5 py-3 text-sm font-semibold text-primary-600 md:col-span-2">Show more employer reviews</button>}
+                {reviews.employer.length > employerLimit && <button type="button" onClick={() => setEmployerLimit((value) => value + 6)} className="btn btn-lg btn-outline md:col-span-2">Show more employer reviews</button>}
               </div>
             ) : (
               <div className="p-10 bg-background-100 rounded-xl border border-background-200/70 text-center">
@@ -570,7 +570,7 @@ export default function ProviderProfile() {
                 <p className="mt-1 text-xs text-foreground-500">Employer feedback helps others choose the right training partner.</p>
                 <Link
                   to={`/add-review?provider=${encodeURIComponent(provider.provider_id)}`}
-                  className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors"
+                  className="btn btn-md btn-primary mt-4"
                 >
                   Add a Review
                   <i className="ri-arrow-right-line" />
@@ -660,14 +660,14 @@ export default function ProviderProfile() {
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to={`/compare?providers=${provider.provider_id}`}
-                className="w-full sm:w-auto px-8 py-3.5 bg-background-50 text-primary-700 text-sm font-semibold rounded-full hover:bg-background-100 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-inverse w-full sm:w-auto"
               >
                 Compare this provider
                 <i className="ri-arrow-left-right-line ml-1.5" />
               </Link>
               <Link
                 to={`/add-review?provider=${encodeURIComponent(provider.provider_id)}`}
-                className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-white text-sm font-semibold rounded-full border border-background-50/30 hover:bg-background-50/10 transition-colors whitespace-nowrap"
+                className="btn btn-lg btn-glass w-full sm:w-auto"
               >
                 Leave a review
               </Link>

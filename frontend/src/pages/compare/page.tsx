@@ -381,7 +381,7 @@ export default function CompareProviders() {
               {selectedProviderObjects.length === 1 && (
                 <Link
                   to={`/provider/${selectedProviderObjects[0].provider_id}`}
-                  className="mt-6 inline-block px-6 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors"
+                  className="btn btn-lg btn-primary mt-6"
                 >
                   View {selectedProviderObjects[0].trading_name}
                 </Link>

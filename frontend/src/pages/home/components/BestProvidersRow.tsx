@@ -58,7 +58,7 @@ export default function BestProvidersRow({
             {!isCompetitorMode && (
               <Link
                 to={viewAllHref}
-                className="inline-flex items-center gap-2 self-start sm:self-auto px-5 py-2.5 bg-background-50 border border-background-200/70 text-sm font-semibold text-primary-500 rounded-full hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 transition-all duration-200 whitespace-nowrap"
+                className="btn btn-md btn-outline self-start sm:self-auto"
               >
                 View all providers
                 <i className="ri-arrow-right-line text-sm" />

@@ -96,10 +96,10 @@ export default function ProviderDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Link to={`/provider/${providerId}`} className="px-5 py-2.5 bg-background-100 text-foreground-700 text-sm font-semibold rounded-full hover:bg-background-200 transition-colors whitespace-nowrap">
+              <Link to={`/provider/${providerId}`} className="btn btn-md btn-secondary">
                 View public profile
               </Link>
-              <Link to="/provider-dashboard/edit" className="px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap">
+              <Link to="/provider-dashboard/edit" className="btn btn-md btn-primary">
                 Manage profile
               </Link>
             </div>
@@ -218,7 +218,7 @@ export default function ProviderDashboard() {
                             className="w-full px-4 py-3 text-sm bg-background-100 border border-background-200/70 rounded-lg text-foreground-900 placeholder:text-foreground-400 focus:outline-none focus:border-primary-400 transition-colors resize-none"
                           />
                           <div className="flex items-center gap-2 mt-2">
-                            <button onClick={() => submitResponse(review.review_id)} className="px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors cursor-pointer whitespace-nowrap">
+                            <button onClick={() => submitResponse(review.review_id)} className="btn btn-sm btn-primary">
                               Post response
                             </button>
                             <button onClick={() => setRespondingTo(null)} className="px-4 py-2 text-sm text-foreground-500 hover:text-foreground-700 cursor-pointer whitespace-nowrap">

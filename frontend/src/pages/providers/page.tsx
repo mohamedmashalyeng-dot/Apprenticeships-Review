@@ -225,7 +225,7 @@ export default function FindProvider() {
                 <button
                   type="button"
                   onClick={() => updateFilter("q", searchQuery.trim())}
-                  className="rounded-lg bg-primary-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-600"
+                  className="btn btn-lg btn-primary"
                 >
                   Find providers
                 </button>
@@ -411,7 +411,7 @@ export default function FindProvider() {
                           key={filter.key}
                           type="button"
                           onClick={() => removeFilter(filter.key)}
-                          className="inline-flex items-center gap-2 rounded-lg border border-primary-100 bg-primary-50 px-3 py-2 text-xs font-medium text-primary-700 hover:border-primary-300"
+                          className="btn btn-sm btn-soft"
                         >
                           {filter.label}
                           <span aria-hidden="true">x</span>
@@ -438,7 +438,7 @@ export default function FindProvider() {
                         setIsLoading(true);
                         setRetry((value) => value + 1);
                       }}
-                      className="mt-4 rounded-xl bg-primary-500 px-5 py-3 text-sm font-semibold text-white"
+                      className="btn btn-lg btn-primary mt-4"
                     >
                       Try again
                     </button>
@@ -469,7 +469,7 @@ export default function FindProvider() {
                             type="button"
                             onClick={() => setPage(currentPage + 1)}
                             disabled={currentPage >= totalPages}
-                            className="rounded-lg border border-background-200 px-4 py-2 text-sm font-semibold text-foreground-700 hover:border-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="btn btn-sm btn-outline"
                           >
                             Next
                           </button>
@@ -486,7 +486,7 @@ export default function FindProvider() {
                     <p className="mb-4 text-xs text-foreground-500">Try a different provider name or clear some filters.</p>
                     <button
                       onClick={clearFilters}
-                      className="cursor-pointer rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-600"
+                      className="btn btn-sm btn-primary"
                     >
                       Clear all filters
                     </button>

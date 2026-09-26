@@ -220,7 +220,7 @@ function EditReviewModal({
               type="button"
               onClick={handleSave}
               disabled={isSaving}
-              className="flex-1 py-3 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 transition-colors cursor-pointer"
+              className="btn btn-lg btn-primary flex-1"
             >
               {isSaving ? "Saving..." : "Save changes"}
             </button>
@@ -454,7 +454,7 @@ export default function Dashboard() {
                     })}
                     <Link
                       to="/add-review"
-                      className="inline-flex items-center gap-2 self-start px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 transition-colors whitespace-nowrap"
+                      className="btn btn-md btn-primary self-start"
                     >
                       <i className="ri-add-line" />
                       Write a new review
@@ -540,7 +540,7 @@ export default function Dashboard() {
                     <button
                       type="submit"
                       disabled={isSavingSettings || displayName.trim() === user.displayName}
-                      className="self-start px-5 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-full hover:bg-primary-600 disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap"
+                      className="btn btn-md btn-primary self-start"
                     >
                       {isSavingSettings ? "Saving..." : "Save changes"}
                     </button>
